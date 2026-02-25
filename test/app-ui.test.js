@@ -111,9 +111,13 @@ test("initialize handles unavailable WebGL with an accessible fallback message",
   assert.equal(ui.webglMessage.textContent.includes("WebGL is unavailable"), true);
   assert.equal(ui.webglMessage.classList.contains("message--hidden"), false);
   assert.equal(ui.submitButton.getAttribute("disabled"), "true");
+  assert.equal(ui.timelineControls.classList.contains("timeline-controls--disabled"), true);
   assert.equal(ui.timelineControls.disabled, true);
   assert.equal(ui.timelineScrubber.disabled, true);
   assert.equal(ui.timelinePlayToggle.disabled, true);
+  assert.equal(ui.resetButton.disabled, true);
+  assert.equal(ui.speedSelect.disabled, true);
+  assert.equal(ui.timelinePlayToggle.getAttribute("aria-label"), null);
 });
 
 test("submit flow enables timeline controls and updates playback UI state", (t) => {
@@ -141,10 +145,24 @@ test("submit flow enables timeline controls and updates playback UI state", (t) 
 
   const app = new OrbitalApp(ui);
   app.initialize();
+
+  assert.equal(ui.timelineControls.classList.contains("timeline-controls--disabled"), true);
+  assert.equal(ui.timelineControls.disabled, true);
+  assert.equal(ui.timelineScrubber.disabled, true);
+  assert.equal(ui.timelinePlayToggle.disabled, true);
+  assert.equal(ui.resetButton.disabled, true);
+  assert.equal(ui.speedSelect.disabled, true);
+  assert.equal(ui.submitButton.getAttribute("disabled"), null);
+
   ui.form.dispatch("submit");
 
   assert.equal(ui.validationMessage.textContent, "");
+  assert.equal(ui.timelineControls.classList.contains("timeline-controls--disabled"), false);
   assert.equal(ui.timelineControls.disabled, false);
+  assert.equal(ui.timelineScrubber.disabled, false);
+  assert.equal(ui.timelinePlayToggle.disabled, false);
+  assert.equal(ui.resetButton.disabled, false);
+  assert.equal(ui.speedSelect.disabled, false);
   assert.equal(ui.timelineDate.textContent, "2000-01-01");
   assert.equal(ui.timelineDate.value, "2000-01-01");
   assert.equal(ui.timelinePlayToggle.textContent, "Pause");

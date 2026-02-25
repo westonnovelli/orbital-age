@@ -39,22 +39,32 @@ This project is currently source-only and does not require a bundling step.
 
 ## Performance Validation (Desktop + Mobile)
 
-Use browser DevTools Performance panel with 20-second recordings while the timeline plays.
+Validation window: February 25, 2026
 
-Desktop checklist:
-- Chrome/Edge (Blink): average FPS near 60 on a modern laptop/desktop.
-- Firefox (Gecko): no sustained frame drops below ~45 FPS.
-- Safari (WebKit): no repeated long tasks greater than 50 ms.
+### Recorded runs
 
-Mobile checklist:
-- iOS Safari 17+: interactions remain responsive while playing/scrubbing.
-- Chrome Android 120+: no multi-second input stalls while dragging the scrubber.
+1. Desktop run
+- Device: MacBook Pro (Mac16,7, Apple M4 Pro, 48 GB RAM)
+- Browser target: Google Chrome 145.0.7632.110
+- Recording duration target: 20 seconds
+- Result: blocked in this execution environment
+- Blocker details: launching browser processes from this sandbox exits immediately with `nice(5) failed: operation not permitted`
+- Repro command:
+  - `/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --headless=new --dump-dom http://127.0.0.1:4173/index.html`
 
-Record:
+2. Mobile run
+- Device target: iPhone Safari 17+ and Chrome Android 120+ (per spec)
+- Recording duration target: 20 seconds
+- Result: not executable in this sandbox
+- Blocker details: no physical/emulated mobile browser can be launched from this environment because of the same `nice(5)` failure
+
+### Required manual completion outside this sandbox
+
+Capture and record all of the following for one desktop and one mobile browser run:
 - Device + browser version
 - Average FPS
 - Long-task count
-- Any dropped-frame periods
+- Any dropped-frame periods or interaction stalls
 
 ## Accessibility Basics Verification
 
@@ -74,5 +84,5 @@ npm test
 
 - The project has no automated browser E2E suite yet (Node tests cover logic and critical UI behavior with fakes).
 - There is no production bundling/minification pipeline yet.
-- Performance validation on specific physical desktop/mobile devices is still a manual QA step.
+- Performance validation on specific physical desktop/mobile devices cannot be executed in this sandbox; complete it on a host machine with browser process launch permissions.
 - Orbit math uses a simplified ephemeris model intended for educational visualization, not high-precision astronomy.
