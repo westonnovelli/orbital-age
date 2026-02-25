@@ -28,6 +28,21 @@ test("normalizeToUtcMidnight uses UTC day boundaries for timezone-safe determini
   assert.equal(normalized.toISOString(), "2020-07-02T00:00:00.000Z");
 });
 
+test("normalizeToUtcMidnight rejects ambiguous strings without explicit timezone", () => {
+  assert.throws(
+    () => normalizeToUtcMidnight("2024-01-15T00:00:00"),
+    /explicit timezone/
+  );
+});
+
+test("normalizeToUtcMidnight accepts explicit-zone ISO timestamps deterministically", () => {
+  const withOffset = normalizeToUtcMidnight("2024-01-15T03:00:00+03:00");
+  const withZ = normalizeToUtcMidnight("2024-01-15T00:00:00Z");
+
+  assert.equal(withOffset.toISOString(), "2024-01-15T00:00:00.000Z");
+  assert.equal(withOffset.toISOString(), withZ.toISOString());
+});
+
 test("assertDateInSupportedRange enforces model range", () => {
   assert.equal(assertDateInSupportedRange(SUPPORTED_DATE_RANGE.min).toISOString(), "1900-01-01T00:00:00.000Z");
   assert.equal(assertDateInSupportedRange(SUPPORTED_DATE_RANGE.max).toISOString(), "2100-12-31T00:00:00.000Z");

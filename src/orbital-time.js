@@ -41,6 +41,13 @@ export function parseIsoDateUtc(dateString) {
   return utcDate;
 }
 
+function isIsoTimestampWithExplicitZone(value) {
+  return (
+    /^\d{4}-\d{2}-\d{2}T/.test(value) &&
+    /(Z|[+-]\d{2}:\d{2})$/.test(value)
+  );
+}
+
 export function normalizeToUtcMidnight(input) {
   if (input instanceof Date || typeof input === "number") {
     const source = new Date(input);
@@ -62,7 +69,18 @@ export function normalizeToUtcMidnight(input) {
       return parseIsoDateUtc(input);
     }
 
-    return normalizeToUtcMidnight(new Date(input));
+    if (!isIsoTimestampWithExplicitZone(input)) {
+      throw new Error(
+        `Expected YYYY-MM-DD or ISO-8601 timestamp with explicit timezone, received: ${input}`
+      );
+    }
+
+    const source = new Date(input);
+    if (Number.isNaN(source.getTime())) {
+      throw new Error(`Invalid ISO-8601 timestamp: ${input}`);
+    }
+
+    return normalizeToUtcMidnight(source);
   }
 
   throw new Error(`Unsupported date input type: ${typeof input}`);
