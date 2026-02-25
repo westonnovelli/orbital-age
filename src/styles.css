@@ -83,8 +83,57 @@ canvas {
   color: var(--error);
 }
 
+.message--info {
+  color: #2d526d;
+}
+
 .message--hidden {
   display: none;
+}
+
+.timeline {
+  margin: 1rem 0 0;
+  border: 1px solid #d8d0be;
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.timeline[disabled] {
+  opacity: 0.65;
+}
+
+.timeline legend {
+  font-weight: 600;
+  padding: 0 0.25rem;
+}
+
+.timeline__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.timeline__row + .timeline__row {
+  margin-top: 0.75rem;
+}
+
+.timeline__row--stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+select {
+  font: inherit;
+}
+
+#date-scrubber {
+  width: 100%;
+}
+
+#timeline-date {
+  font-weight: 600;
 }
 
 @media (max-width: 640px) {
@@ -94,5 +143,9 @@ canvas {
 
   canvas {
     height: 320px;
+  }
+
+  .timeline__row {
+    gap: 0.5rem;
   }
 }

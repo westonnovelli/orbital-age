@@ -16,10 +16,39 @@
       <section class="controls" aria-label="Birthday controls">
         <form id="birthday-form" novalidate>
           <label for="birthday">Birthday</label>
-          <input id="birthday" name="birthday" type="date" required />
+          <input id="birthday" name="birthday" type="date" required min="1900-01-01" max="2100-12-31" />
           <button type="submit">Render Orbit</button>
         </form>
         <p id="validation-message" class="message" aria-live="polite"></p>
+        <fieldset id="timeline-controls" class="timeline" disabled>
+          <legend>Timeline controls</legend>
+          <div class="timeline__row">
+            <button id="play-pause" type="button" aria-label="Play timeline">Play</button>
+            <button id="reset-timeline" type="button">Reset</button>
+            <label for="playback-speed">Speed</label>
+            <select id="playback-speed" name="playback-speed">
+              <option value="1">1x</option>
+              <option value="10">10x</option>
+              <option value="30" selected>30x</option>
+              <option value="90">90x</option>
+            </select>
+          </div>
+          <div class="timeline__row timeline__row--stack">
+            <label for="date-scrubber">Date scrubber</label>
+            <input
+              id="date-scrubber"
+              name="date-scrubber"
+              type="range"
+              min="0"
+              max="0"
+              value="0"
+              step="1"
+              aria-label="Timeline date scrubber"
+            />
+            <p id="timeline-status" class="message message--info" aria-live="polite">Enter a birthday to enable timeline controls.</p>
+            <output id="timeline-date" for="date-scrubber">--</output>
+          </div>
+        </fieldset>
       </section>
 
       <section class="viewport">

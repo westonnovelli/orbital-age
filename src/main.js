@@ -5,6 +5,13 @@ const app = new OrbitalApp({
   dateInput: document.querySelector("#birthday"),
   validationMessage: document.querySelector("#validation-message"),
   webglMessage: document.querySelector("#webgl-message"),
+  timelineControls: document.querySelector("#timeline-controls"),
+  playPauseButton: document.querySelector("#play-pause"),
+  resetButton: document.querySelector("#reset-timeline"),
+  speedSelect: document.querySelector("#playback-speed"),
+  scrubber: document.querySelector("#date-scrubber"),
+  timelineStatus: document.querySelector("#timeline-status"),
+  timelineDateOutput: document.querySelector("#timeline-date"),
   canvas: document.querySelector("#orbit-canvas")
 });
 
