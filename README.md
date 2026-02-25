@@ -65,7 +65,17 @@ The probe records a 20 second sample and returns:
 
 ### Result log
 
-Current state: blocked in this sandbox. Browser launches fail with `nice(5) failed: operation not permitted`, so only external host runs can produce valid measurements.
+Current state: blocked in this sandbox. Browser launches fail, so only external host runs can produce valid measurements.
+
+Blocker evidence (captured February 25, 2026):
+- `safaridriver -p 4444` -> `nice(5) failed: operation not permitted`
+- `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --disable-gpu --dump-dom about:blank` -> process abort (`exit 134`)
+
+Pass thresholds for sign-off:
+- Avg FPS `>= 55`
+- Avg frame time `<= 18.2 ms`
+- No long task over `200 ms`
+- No stutter window with `maxFrameMs > 100 ms`
 
 | Run | Device | OS | Browser | Duration | Avg FPS | Avg Frame (ms) | Long Tasks | Dropped Frames | Stutter Windows | Pass/Fail |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
