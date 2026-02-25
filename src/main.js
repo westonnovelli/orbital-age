@@ -1,4 +1,5 @@
 import { OrbitalApp } from "./app.js";
+import { createPerfProbe } from "./perf-probe.js";
 
 const modernTimelineControls = document.querySelector(".timeline-controls");
 const legacyTimelineControls = document.querySelector("fieldset.timeline");
@@ -31,3 +32,10 @@ const app = new OrbitalApp({
 });
 
 app.initialize();
+
+if (typeof window !== "undefined") {
+  window.runOrbitalPerfProbe = async (options = {}) => {
+    const probe = createPerfProbe(options);
+    return probe.run();
+  };
+}

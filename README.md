@@ -41,30 +41,36 @@ This project is currently source-only and does not require a bundling step.
 
 Validation window: February 25, 2026
 
-### Recorded runs
+### Probe command
 
-1. Desktop run
-- Device: MacBook Pro (Mac16,7, Apple M4 Pro, 48 GB RAM)
-- Browser target: Google Chrome 145.0.7632.110
-- Recording duration target: 20 seconds
-- Result: blocked in this execution environment
-- Blocker details: launching browser processes from this sandbox exits immediately with `nice(5) failed: operation not permitted`
-- Repro command:
-  - `/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --headless=new --dump-dom http://127.0.0.1:4173/index.html`
+Use the in-browser probe after submitting a valid birthday:
 
-2. Mobile run
-- Device target: iPhone Safari 17+ and Chrome Android 120+ (per spec)
-- Recording duration target: 20 seconds
-- Result: not executable in this sandbox
-- Blocker details: no physical/emulated mobile browser can be launched from this environment because of the same `nice(5)` failure
+```js
+await window.runOrbitalPerfProbe()
+```
 
-### Required manual completion outside this sandbox
+The probe records a 20 second sample and returns:
+- `averageFps`
+- `averageFrameTimeMs`
+- `longTaskCount` plus `longTasks[]`
+- `droppedFrameCount` and grouped `stutterWindows[]`
 
-Capture and record all of the following for one desktop and one mobile browser run:
-- Device + browser version
-- Average FPS
-- Long-task count
-- Any dropped-frame periods or interaction stalls
+### Capture procedure
+
+1. Start local static server: `npx serve .`
+2. Open the app in the target browser/device.
+3. Enter a valid birthday and select `Render Orbit`.
+4. Open DevTools console and run `await window.runOrbitalPerfProbe()`.
+5. Copy the returned JSON into the result log below.
+
+### Result log
+
+Current state: blocked in this sandbox. Browser launches fail with `nice(5) failed: operation not permitted`, so only external host runs can produce valid measurements.
+
+| Run | Device | OS | Browser | Duration | Avg FPS | Avg Frame (ms) | Long Tasks | Dropped Frames | Stutter Windows | Pass/Fail |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Desktop | Pending external host run | Pending | Pending | 20s | Pending | Pending | Pending | Pending | Pending | Pending |
+| Mobile | Pending external host run | Pending | Pending | 20s | Pending | Pending | Pending | Pending | Pending | Pending |
 
 ## Accessibility Basics Verification
 
@@ -84,5 +90,5 @@ npm test
 
 - The project has no automated browser E2E suite yet (Node tests cover logic and critical UI behavior with fakes).
 - There is no production bundling/minification pipeline yet.
-- Performance validation on specific physical desktop/mobile devices cannot be executed in this sandbox; complete it on a host machine with browser process launch permissions.
+- Performance numbers must be captured on an external host/device because this sandbox blocks browser process launch with `nice(5) failed: operation not permitted`.
 - Orbit math uses a simplified ephemeris model intended for educational visualization, not high-precision astronomy.
