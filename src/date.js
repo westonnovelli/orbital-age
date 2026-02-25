@@ -5,6 +5,24 @@ function toUtcMidnight(dateString) {
   return new Date(`${dateString}T00:00:00Z`);
 }
 
+function isStrictIsoDate(dateString) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateString);
+  if (!match) {
+    return false;
+  }
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const utcDate = new Date(Date.UTC(year, month - 1, day));
+
+  return (
+    utcDate.getUTCFullYear() === year
+    && utcDate.getUTCMonth() === month - 1
+    && utcDate.getUTCDate() === day
+  );
+}
+
 export function todayUtcDate() {
   const now = new Date();
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
@@ -13,6 +31,10 @@ export function todayUtcDate() {
 export function validateBirthday(dateString) {
   if (!dateString) {
     return { ok: false, message: "Birthday is required." };
+  }
+
+  if (!isStrictIsoDate(dateString)) {
+    return { ok: false, message: "Enter a valid date." };
   }
 
   const date = toUtcMidnight(dateString);
