@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbital Age</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="app__header">
+        <h1>Orbital Age Map</h1>
+        <p>Enter your birthday to initialize the orbital scene.</p>
+      </header>
+
+      <section class="controls" aria-label="Birthday controls">
+        <form id="birthday-form" novalidate>
+          <label for="birthday">Birthday</label>
+          <input id="birthday" name="birthday" type="date" required />
+          <button type="submit">Render Orbit</button>
+        </form>
+        <p id="validation-message" class="message" aria-live="polite"></p>
+      </section>
+
+      <section class="viewport">
+        <canvas id="orbit-canvas" aria-label="Orbital map"></canvas>
+        <p id="webgl-message" class="message message--hidden" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
