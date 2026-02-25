@@ -4,14 +4,12 @@ export class EarthMarkerEntity {
   constructor({
     radiusX = 1,
     radiusY = 1,
-    speedDaysPerSecond = 30,
     initialAngle = 0,
     color = [0.18, 0.92, 0.64, 1],
     size = 10
   } = {}) {
     this.radiusX = radiusX;
     this.radiusY = radiusY;
-    this.speedDaysPerSecond = speedDaysPerSecond;
     this.angle = initialAngle;
     this.color = color;
     this.size = size;
@@ -28,14 +26,10 @@ export class EarthMarkerEntity {
     gl.bufferData(gl.ARRAY_BUFFER, this.positionData, gl.DYNAMIC_DRAW);
   }
 
-  render({ gl, camera, deltaSeconds }) {
+  render({ gl, camera }) {
     if (!this.primitive || !this.buffer) {
       return;
     }
-
-    const dailyRadians = (Math.PI * 2) / 365.25;
-    this.angle += this.speedDaysPerSecond * deltaSeconds * dailyRadians;
-    this.#setPosition(this.angle);
 
     gl.useProgram(this.primitive.program);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
@@ -57,6 +51,11 @@ export class EarthMarkerEntity {
       gl.deleteProgram(this.primitive.program);
       this.primitive = null;
     }
+  }
+
+  setAngle(angle) {
+    this.angle = angle;
+    this.#setPosition(this.angle);
   }
 
   #setPosition(angle) {
