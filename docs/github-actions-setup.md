@@ -10,7 +10,7 @@ This repository uses two workflows:
   - Deploys only when all conditions are true:
     - CI conclusion is `success`.
     - Source event was `push`.
-    - Source branch was `main`.
+    - Source branch was `master`.
 
 ## One-time repository setup
 
@@ -22,10 +22,10 @@ This repository uses two workflows:
 
 ## Branch and trigger expectations
 
-- `main` is the deployment branch.
+- `master` is the deployment branch.
 - Pull requests run CI only.
-- Deploy runs only after a successful CI run that came from a push to `main`.
-- A successful CI run on non-`main` branches will not deploy.
+- Deploy runs only after a successful CI run that came from a push to `master`.
+- A successful CI run on non-`master` branches will not deploy.
 
 ## Required workflow permissions
 
