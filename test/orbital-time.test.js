@@ -6,6 +6,7 @@ import {
   assertDateInSupportedRange,
   computeOrbitalTimelineState,
   daysBetweenUtc,
+  earthPositionOnUnitOrbitAtInstant,
   earthPositionOnUnitOrbit,
   normalizeToUtcMidnight,
   parseIsoDateUtc
@@ -111,4 +112,13 @@ test("earthPositionOnUnitOrbit is deterministic for same UTC day input", () => {
   assert.equal(byIso.longitudeDeg, byDate.longitudeDeg);
   assert.equal(byIso.x, byDate.x);
   assert.equal(byIso.y, byDate.y);
+});
+
+test("earthPositionOnUnitOrbitAtInstant changes smoothly within the same UTC day", () => {
+  const start = earthPositionOnUnitOrbitAtInstant("2024-01-15T00:00:00Z");
+  const midday = earthPositionOnUnitOrbitAtInstant("2024-01-15T12:00:00Z");
+
+  assert.notEqual(start.longitudeDeg, midday.longitudeDeg);
+  const radius = Math.hypot(midday.x, midday.y);
+  assert.ok(Math.abs(radius - 1) < 1e-12);
 });

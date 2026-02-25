@@ -15,6 +15,7 @@ export class EarthMarkerEntity {
     this.size = size;
     this.primitive = null;
     this.buffer = null;
+    this.externalPosition = false;
     this.positionData = new Float32Array(2);
     this.#setPosition(this.angle);
   }
@@ -54,8 +55,15 @@ export class EarthMarkerEntity {
   }
 
   setAngle(angle) {
+    this.externalPosition = false;
     this.angle = angle;
     this.#setPosition(this.angle);
+  }
+
+  setPosition(x, y) {
+    this.externalPosition = true;
+    this.positionData[0] = x * this.radiusX;
+    this.positionData[1] = y * this.radiusY;
   }
 
   #setPosition(angle) {

@@ -19,6 +19,18 @@
           <input id="birthday" name="birthday" type="date" required min="1900-01-01" max="2100-12-31" />
           <button type="submit">Render Orbit</button>
         </form>
+        <div id="timeline-controls" class="timeline-controls timeline-controls--disabled" aria-label="Timeline controls">
+          <div class="timeline-controls__buttons">
+            <button id="timeline-step-back" type="button">-1 day</button>
+            <button id="timeline-toggle-play" type="button">Pause</button>
+            <button id="timeline-step-forward" type="button">+1 day</button>
+          </div>
+          <label for="timeline-scrubber">Timeline</label>
+          <input id="timeline-scrubber" type="range" min="0" max="1000" value="0" step="1" />
+          <p class="timeline-controls__meta">
+            <span id="timeline-date">--</span>
+          </p>
+        </div>
         <p id="validation-message" class="message" aria-live="polite"></p>
         <fieldset id="timeline-controls" class="timeline" disabled>
           <legend>Timeline controls</legend>

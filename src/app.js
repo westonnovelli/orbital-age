@@ -1,10 +1,11 @@
-import { validateBirthday, earthAngleFromDate, todayUtcDate } from "./date.js";
-import { daysBetweenUtc } from "./orbital-time.js";
+import { validateBirthday } from "./date.js";
+import { normalizeToUtcMidnight } from "./orbital-time.js";
 import { Scene } from "./webgl/scene.js";
 import { WebGLRenderer } from "./webgl/renderer.js";
 import { SunEntity } from "./webgl/entities/sun.js";
 import { OrbitPathEntity } from "./webgl/entities/orbit-path.js";
 import { EarthMarkerEntity } from "./webgl/entities/earth-marker.js";
+import { TimelineControllerEntity } from "./webgl/entities/timeline-controller.js";
 
 const DEFAULT_SPEED_DAYS_PER_SECOND = 30;
 
@@ -31,37 +32,39 @@ export class OrbitalApp {
     dateInput,
     validationMessage,
     webglMessage,
+    canvas,
     timelineControls,
+    timelineScrubber,
+    timelineDate,
+    timelineStepBack,
+    timelineStepForward,
+    timelinePlayToggle,
     playPauseButton,
     resetButton,
     speedSelect,
     scrubber,
     timelineStatus,
-    timelineDateOutput,
-    canvas
+    timelineDateOutput
   }) {
     this.form = form;
     this.dateInput = dateInput;
     this.validationMessage = validationMessage;
     this.webglMessage = webglMessage;
+    this.canvas = canvas;
     this.timelineControls = timelineControls;
-    this.playPauseButton = playPauseButton;
+
+    this.timelineScrubber = timelineScrubber ?? scrubber;
+    this.timelineDate = timelineDate ?? timelineDateOutput;
+    this.timelineStepBack = timelineStepBack;
+    this.timelineStepForward = timelineStepForward;
+    this.timelinePlayToggle = timelinePlayToggle ?? playPauseButton;
+
     this.resetButton = resetButton;
     this.speedSelect = speedSelect;
-    this.scrubber = scrubber;
     this.timelineStatus = timelineStatus;
-    this.timelineDateOutput = timelineDateOutput;
-    this.canvas = canvas;
+
     this.renderer = new WebGLRenderer(canvas);
-    this.earthEntity = null;
-    this.timelineStartDate = null;
-    this.timelineMaxDate = null;
-    this.timelineTotalDays = 0;
-    this.timelineOffsetDays = 0;
-    this.playing = false;
-    this.playbackSpeed = parseSpeedValue(this.speedSelect?.value);
-    this.timelineFrameRequest = 0;
-    this.lastTimelineTick = 0;
+    this.timelineController = null;
   }
 
   initialize() {
@@ -70,24 +73,15 @@ export class OrbitalApp {
       this.webglMessage.textContent = "WebGL is unavailable in this browser, so the orbital map cannot render.";
       this.webglMessage.classList.remove("message--hidden");
       this.form.querySelector("button")?.setAttribute("disabled", "true");
-      if (this.timelineControls) {
-        this.timelineControls.disabled = true;
-      }
+      this.#setTimelineEnabled(false);
       return;
     }
 
+    this.#bindTimelineControls();
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       this.#handleRenderSubmit();
     });
-    this.playPauseButton?.addEventListener("click", () => this.#togglePlayback());
-    this.resetButton?.addEventListener("click", () => this.#resetTimeline());
-    this.speedSelect?.addEventListener("change", () => {
-      this.playbackSpeed = parseSpeedValue(this.speedSelect.value);
-    });
-    this.scrubber?.addEventListener("input", () => this.#handleScrub());
-    this.scrubber?.addEventListener("keydown", (event) => this.#handleScrubberKeydown(event));
-    this.#startTimelineLoop();
   }
 
   #handleRenderSubmit() {
@@ -99,148 +93,146 @@ export class OrbitalApp {
     }
 
     this.validationMessage.textContent = "";
-    this.timelineStartDate = validation.date;
-    const timelineMaxDate = todayUtcDate();
-    this.timelineTotalDays = Math.max(0, daysBetweenUtc(this.timelineStartDate, timelineMaxDate));
-    this.timelineOffsetDays = 0;
-    this.playing = false;
-    this.lastTimelineTick = performance.now();
-
-    this.earthEntity = new EarthMarkerEntity({
-      radiusX: 1,
-      radiusY: 0.998,
-      initialAngle: earthAngleFromDate(this.timelineStartDate)
+    const earthMarker = new EarthMarkerEntity({ radiusX: 1, radiusY: 0.998 });
+    const timelineController = new TimelineControllerEntity({
+      birthday: validation.date,
+      maxTimelineDate: normalizeToUtcMidnight(new Date()),
+      initialTimelineDate: validation.date,
+      speedDaysPerSecond: parseSpeedValue(this.speedSelect?.value),
+      earthMarker,
+      onStateChange: (state) => this.#updateTimelineUi(state)
     });
 
     const scene = new Scene()
       .add(new SunEntity())
       .add(new OrbitPathEntity({ radiusX: 1, radiusY: 0.998 }))
-      .add(this.earthEntity);
+      .add(timelineController)
+      .add(earthMarker);
 
+    this.timelineController = timelineController;
     this.renderer.setScene(scene);
     this.renderer.start();
-    this.#syncControlsWithTimeline();
-    this.#renderTimelineDate();
-    if (this.timelineTotalDays > 0) {
-      this.#setTimelineStatus("Timeline ready.");
-    }
+
+    this.#setTimelineEnabled(true);
+    this.#updateTimelineUi(this.timelineController.getState());
   }
 
-  #togglePlayback() {
-    if (!this.timelineStartDate || this.timelineTotalDays === 0) {
-      return;
-    }
+  #bindTimelineControls() {
+    this.#setTimelineEnabled(false);
 
-    this.playing = !this.playing;
-    this.lastTimelineTick = performance.now();
-    this.#syncPlayPauseButton();
-    this.#setTimelineStatus(this.playing ? "Playback running." : "Playback paused.");
-  }
-
-  #resetTimeline() {
-    if (!this.timelineStartDate) {
-      return;
-    }
-
-    this.playing = false;
-    this.timelineOffsetDays = 0;
-    this.#syncPlayPauseButton();
-    this.#renderTimelineDate();
-    this.#setTimelineStatus("Timeline reset to birthday.");
-  }
-
-  #handleScrub() {
-    if (!this.timelineStartDate) {
-      return;
-    }
-
-    this.playing = false;
-    this.timelineOffsetDays = Number(this.scrubber.value);
-    this.#syncPlayPauseButton();
-    this.#renderTimelineDate();
-    this.#setTimelineStatus("Timeline scrubbed.");
-  }
-
-  #handleScrubberKeydown(event) {
-    if (!this.timelineStartDate) {
-      return;
-    }
-
-    if (event.key === " " || event.key === "Spacebar") {
-      event.preventDefault();
-      this.#togglePlayback();
-    }
-  }
-
-  #startTimelineLoop() {
-    if (this.timelineFrameRequest) {
-      return;
-    }
-
-    const tick = (now) => {
-      if (this.playing && this.timelineStartDate) {
-        const deltaSeconds = Math.max(0, (now - this.lastTimelineTick) / 1000);
-        this.lastTimelineTick = now;
-        this.timelineOffsetDays = Math.min(
-          this.timelineTotalDays,
-          this.timelineOffsetDays + deltaSeconds * this.playbackSpeed
-        );
-        this.#renderTimelineDate();
-        if (this.timelineOffsetDays >= this.timelineTotalDays) {
-          this.playing = false;
-          this.#syncPlayPauseButton();
-          this.#setTimelineStatus("Reached today.");
-        }
-      } else {
-        this.lastTimelineTick = now;
+    this.timelineStepBack?.addEventListener("click", () => {
+      if (!this.timelineController) {
+        return;
       }
-      this.timelineFrameRequest = requestAnimationFrame(tick);
-    };
+      this.timelineController.stepDays(-1);
+    });
 
-    this.timelineFrameRequest = requestAnimationFrame(tick);
+    this.timelineStepForward?.addEventListener("click", () => {
+      if (!this.timelineController) {
+        return;
+      }
+      this.timelineController.stepDays(1);
+    });
+
+    this.timelinePlayToggle?.addEventListener("click", () => {
+      if (!this.timelineController) {
+        return;
+      }
+      const playing = this.timelineController.togglePlaying();
+      this.#setPlayButtonState(playing);
+    });
+
+    this.timelineScrubber?.addEventListener("input", () => {
+      if (!this.timelineController || !this.timelineScrubber) {
+        return;
+      }
+
+      const max = Number(this.timelineScrubber.max);
+      if (Number.isFinite(max) && max > 1) {
+        const value = Number(this.timelineScrubber.value);
+        const progress = max === 1000 ? value / 1000 : value / this.timelineController.getState().totalDays;
+        this.timelineController.setNormalizedProgress(progress);
+      }
+    });
+
+    this.resetButton?.addEventListener("click", () => {
+      if (!this.timelineController) {
+        return;
+      }
+      this.timelineController.setPlaying(false);
+      const birthdayDate = this.timelineController.birthdayUtc;
+      this.timelineController.setTimelineDate(birthdayDate);
+      this.#setPlayButtonState(false);
+    });
+
+    this.speedSelect?.addEventListener("change", () => {
+      if (!this.timelineController) {
+        return;
+      }
+      this.timelineController.speedDaysPerSecond = parseSpeedValue(this.speedSelect.value);
+    });
   }
 
-  #syncControlsWithTimeline() {
-    if (!this.timelineControls || !this.scrubber) {
+  #setTimelineEnabled(enabled) {
+    this.timelineControls?.classList.toggle("timeline-controls--disabled", !enabled);
+    if (this.timelineControls instanceof HTMLFieldSetElement) {
+      this.timelineControls.disabled = !enabled;
+    }
+
+    const controls = [
+      this.timelineScrubber,
+      this.timelineStepBack,
+      this.timelineStepForward,
+      this.timelinePlayToggle,
+      this.resetButton,
+      this.speedSelect
+    ];
+
+    for (const control of controls) {
+      if (!control) {
+        continue;
+      }
+      control.disabled = !enabled;
+    }
+  }
+
+  #setPlayButtonState(playing) {
+    if (!this.timelinePlayToggle) {
       return;
     }
-
-    this.timelineControls.disabled = false;
-    this.scrubber.min = "0";
-    this.scrubber.max = String(this.timelineTotalDays);
-    this.scrubber.value = "0";
-    this.playPauseButton.disabled = this.timelineTotalDays === 0;
-    if (this.timelineTotalDays === 0) {
-      this.#setTimelineStatus("Birthday is today, so there is nothing to animate yet.");
-    }
-    this.#syncPlayPauseButton();
+    this.timelinePlayToggle.textContent = playing ? "Pause" : "Play";
+    this.timelinePlayToggle.setAttribute("aria-label", playing ? "Pause timeline" : "Play timeline");
   }
 
-  #syncPlayPauseButton() {
-    if (!this.playPauseButton) {
-      return;
-    }
-    this.playPauseButton.textContent = this.playing ? "Pause" : "Play";
-    this.playPauseButton.setAttribute("aria-label", this.playing ? "Pause timeline" : "Play timeline");
-  }
-
-  #renderTimelineDate() {
-    if (!this.timelineStartDate || !this.earthEntity || !this.scrubber || !this.timelineDateOutput) {
-      return;
+  #updateTimelineUi(state) {
+    if (this.timelineDate instanceof HTMLOutputElement) {
+      this.timelineDate.value = state.timelineDateIso;
+      this.timelineDate.textContent = state.timelineDateIso;
+    } else if (this.timelineDate) {
+      this.timelineDate.textContent = state.timelineDateIso;
     }
 
-    const wholeOffsetDays = Math.round(this.timelineOffsetDays);
-    const currentDate = addUtcDays(this.timelineStartDate, wholeOffsetDays);
-    const isoDate = toIsoUtcDate(currentDate);
-    this.scrubber.value = String(wholeOffsetDays);
-    this.timelineDateOutput.value = isoDate;
-    this.timelineDateOutput.textContent = isoDate;
-    this.earthEntity.setAngle(earthAngleFromDate(currentDate));
-  }
+    if (this.timelineScrubber) {
+      if (this.timelineScrubber.id === "timeline-scrubber") {
+        this.timelineScrubber.max = "1000";
+        this.timelineScrubber.value = String(Math.round(state.normalizedProgress * 1000));
+      } else {
+        this.timelineScrubber.min = "0";
+        this.timelineScrubber.max = String(state.totalDays);
+        this.timelineScrubber.value = String(Math.round(state.elapsedDays));
+      }
+    }
 
-  #setTimelineStatus(message) {
+    this.#setPlayButtonState(state.playing);
+
     if (this.timelineStatus) {
-      this.timelineStatus.textContent = message;
+      if (state.totalDays === 0) {
+        this.timelineStatus.textContent = "Birthday is today, so there is nothing to animate yet.";
+      } else if (!state.playing && state.elapsedDays >= state.totalDays) {
+        this.timelineStatus.textContent = "Reached today.";
+      } else {
+        this.timelineStatus.textContent = "";
+      }
     }
   }
 }

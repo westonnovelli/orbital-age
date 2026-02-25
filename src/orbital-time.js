@@ -12,6 +12,26 @@ function mod(value, base) {
   return result >= 0 ? result : result + base;
 }
 
+function toDateFromInput(input) {
+  if (input instanceof Date || typeof input === "number") {
+    const date = new Date(input);
+    if (Number.isNaN(date.getTime())) {
+      throw new Error("Invalid date input");
+    }
+    return date;
+  }
+
+  if (typeof input === "string") {
+    const date = new Date(input);
+    if (Number.isNaN(date.getTime())) {
+      throw new Error(`Invalid date input: ${input}`);
+    }
+    return date;
+  }
+
+  throw new Error(`Unsupported date input type: ${typeof input}`);
+}
+
 function toIsoUtcDate(date) {
   const year = date.getUTCFullYear();
   const month = String(date.getUTCMonth() + 1).padStart(2, "0");
@@ -124,8 +144,38 @@ export function earthHeliocentricLongitudeDeg(dateInput) {
   return mod(sunEclipticLongitude + 180, 360);
 }
 
+export function earthHeliocentricLongitudeDegAtInstant(dateInput) {
+  const instant = toDateFromInput(dateInput);
+  assertDateInSupportedRange(instant);
+
+  const julianDay = instant.getTime() / MS_PER_DAY + JULIAN_DAY_UNIX_EPOCH;
+  const daysSinceJ2000 = julianDay - J2000_JULIAN_DAY;
+
+  const meanAnomaly = mod(357.529 + 0.98560028 * daysSinceJ2000, 360);
+  const meanLongitude = mod(280.459 + 0.98564736 * daysSinceJ2000, 360);
+
+  const meanAnomalyRad = (meanAnomaly * Math.PI) / 180;
+  const sunEclipticLongitude =
+    meanLongitude +
+    1.915 * Math.sin(meanAnomalyRad) +
+    0.02 * Math.sin(2 * meanAnomalyRad);
+
+  return mod(sunEclipticLongitude + 180, 360);
+}
+
 export function earthPositionOnUnitOrbit(dateInput) {
   const longitudeDeg = earthHeliocentricLongitudeDeg(dateInput);
+  const longitudeRad = (longitudeDeg * Math.PI) / 180;
+
+  return {
+    x: Math.cos(longitudeRad),
+    y: Math.sin(longitudeRad),
+    longitudeDeg
+  };
+}
+
+export function earthPositionOnUnitOrbitAtInstant(dateInput) {
+  const longitudeDeg = earthHeliocentricLongitudeDegAtInstant(dateInput);
   const longitudeRad = (longitudeDeg * Math.PI) / 180;
 
   return {
