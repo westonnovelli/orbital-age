@@ -37,6 +37,11 @@ This project is currently source-only and does not require a bundling step.
 - Verification build step: run `npm test`.
 - Deployment artifact: static files in the repository root (`index.html`, `src/`).
 
+## CI/CD
+
+GitHub Actions CI and Pages deployment setup instructions are documented in
+`docs/github-actions-setup.md`.
+
 ## Performance Validation (Desktop + Mobile)
 
 Validation window: February 25, 2026
