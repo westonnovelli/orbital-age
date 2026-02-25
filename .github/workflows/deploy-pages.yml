@@ -20,7 +20,7 @@ jobs:
       ${{
         github.event.workflow_run.conclusion == 'success' &&
         github.event.workflow_run.event == 'push' &&
-        github.event.workflow_run.head_branch == 'master'
+        github.event.workflow_run.head_branch == 'main'
       }}
     runs-on: ubuntu-latest
     environment:
@@ -37,10 +37,18 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
+      - name: Prepare static artifact
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp -R src _site/src
+          if [ -f CNAME ]; then cp CNAME _site/; fi
+          if [ -f favicon.ico ]; then cp favicon.ico _site/; fi
+
       - name: Upload static site artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment

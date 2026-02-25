@@ -7,7 +7,7 @@ This repository uses a lean two-workflow setup:
   - Runs `npm test` on pushes to all branches.
 - `Deploy to GitHub Pages` (`.github/workflows/deploy-pages.yml`)
   - Triggers only after `CI` completes.
-  - Deploys only when CI succeeded for a `push` event and the source branch is `master`.
+  - Deploys only when CI succeeded for a `push` event and the source branch is `main`.
 
 ## One-time repository configuration
 
@@ -19,6 +19,9 @@ This repository uses a lean two-workflow setup:
 
 ## Notes
 
-- Deployment publishes the repository root as a static site artifact.
+- Deployment publishes a prepared static artifact containing:
+  - `index.html`
+  - `src/`
+  - Optional root assets if present (`CNAME`, `favicon.ico`)
 - Workflow permissions are scoped to minimum required for Pages deployment.
 - Deployment concurrency is enabled to avoid overlapping Pages publishes.
