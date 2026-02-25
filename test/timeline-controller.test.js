@@ -101,3 +101,59 @@ test("timeline controller advances during render while playing and pauses at end
   assert.equal(state.elapsedDays, 2);
   assert.equal(state.playing, false);
 });
+
+test("timeline controller emits state changes for fractional timeline progress", () => {
+  const marker = markerStub();
+  const emittedStates = [];
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-10",
+    speedDaysPerSecond: 0.25,
+    earthMarker: marker,
+    onStateChange: (state) => emittedStates.push(state)
+  });
+
+  controller.init();
+  controller.render({ deltaSeconds: 1 });
+  controller.render({ deltaSeconds: 1 });
+
+  assert.ok(emittedStates.length >= 3);
+  assert.ok(emittedStates[1].elapsedDays > 0);
+  assert.ok(emittedStates[2].elapsedDays > emittedStates[1].elapsedDays);
+});
+
+test("timeline controller does not resume playing when already at the end", () => {
+  const marker = markerStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-02",
+    earthMarker: marker
+  });
+
+  controller.init();
+  controller.stepDays(1);
+  assert.equal(controller.getState().playing, false);
+
+  const toggled = controller.togglePlaying();
+  assert.equal(toggled, false);
+  assert.equal(controller.getState().playing, false);
+
+  controller.setPlaying(true);
+  assert.equal(controller.getState().playing, false);
+});
+
+test("timeline controller handles invalid normalized progress values safely", () => {
+  const marker = markerStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    earthMarker: marker
+  });
+
+  controller.init();
+  controller.setNormalizedProgress(Number.NaN);
+
+  const state = controller.getState();
+  assert.equal(state.elapsedDays, 0);
+  assert.equal(state.timelineDateIso, "2000-01-01");
+});

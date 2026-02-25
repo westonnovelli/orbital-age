@@ -43,6 +43,9 @@ export class TimelineControllerEntity {
     }
 
     this.totalDays = daysBetweenUtc(this.birthdayUtc, this.maxTimelineUtc);
+    if (this.totalDays === 0) {
+      this.playing = false;
+    }
 
     const initialUtc = initialTimelineDate
       ? assertDateInSupportedRange(initialTimelineDate)
@@ -53,7 +56,6 @@ export class TimelineControllerEntity {
     }
 
     this.timelineDays = daysBetweenUtc(this.birthdayUtc, initialUtc);
-    this.lastReportedIso = "";
   }
 
   init() {
@@ -73,24 +75,26 @@ export class TimelineControllerEntity {
     );
 
     if (nextDays === this.timelineDays) {
+      this.#syncPlaybackForBounds();
       return;
     }
 
     this.timelineDays = nextDays;
-    if (this.timelineDays >= this.totalDays) {
-      this.playing = false;
-    }
-
+    this.#syncPlaybackForBounds();
     this.#applyToEarthMarker();
     this.#emitState();
   }
 
   setPlaying(playing) {
     this.playing = Boolean(playing);
+    this.#syncPlaybackForBounds();
+    this.#emitState(true);
   }
 
   togglePlaying() {
     this.playing = !this.playing;
+    this.#syncPlaybackForBounds();
+    this.#emitState(true);
     return this.playing;
   }
 
@@ -101,6 +105,7 @@ export class TimelineControllerEntity {
     }
 
     this.timelineDays = daysBetweenUtc(this.birthdayUtc, date);
+    this.#syncPlaybackForBounds();
     this.#applyToEarthMarker();
     this.#emitState(true);
   }
@@ -111,13 +116,16 @@ export class TimelineControllerEntity {
     const currentDayIndex = daysBetweenUtc(this.birthdayUtc, currentTimelineDate);
     const candidate = currentDayIndex + dayStep;
     this.timelineDays = clamp(candidate, 0, this.totalDays);
+    this.#syncPlaybackForBounds();
     this.#applyToEarthMarker();
     this.#emitState(true);
   }
 
   setNormalizedProgress(progress) {
-    const normalized = clamp(Number(progress), 0, 1);
+    const parsed = Number(progress);
+    const normalized = Number.isFinite(parsed) ? clamp(parsed, 0, 1) : 0;
     this.timelineDays = this.totalDays * normalized;
+    this.#syncPlaybackForBounds();
     this.#applyToEarthMarker();
     this.#emitState(true);
   }
@@ -144,17 +152,17 @@ export class TimelineControllerEntity {
     this.earthMarker.setPosition(orbit.x, orbit.y);
   }
 
+  #syncPlaybackForBounds() {
+    if (this.totalDays <= 0 || this.timelineDays >= this.totalDays) {
+      this.playing = false;
+    }
+  }
+
   #emitState(force = false) {
     if (!this.onStateChange) {
       return;
     }
 
-    const state = this.getState();
-    if (!force && state.timelineDateIso === this.lastReportedIso) {
-      return;
-    }
-
-    this.lastReportedIso = state.timelineDateIso;
-    this.onStateChange(state);
+    this.onStateChange(this.getState(), { force });
   }
 }
