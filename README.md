@@ -68,8 +68,8 @@ The probe records a 20 second sample and returns:
 Current state: blocked in this sandbox. Browser launches fail, so only external host runs can produce valid measurements.
 
 Blocker evidence (captured February 25, 2026):
-- `safaridriver -p 4444` -> `nice(5) failed: operation not permitted`
-- `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --disable-gpu --dump-dom about:blank` -> process abort (`exit 134`)
+- `safaridriver -p 4444` -> process exits (`exit 1`) in sandbox.
+- `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --disable-gpu --dump-dom about:blank` -> process abort (`exit 134`) in sandbox.
 
 Pass thresholds for sign-off:
 - Avg FPS `>= 55`
@@ -79,8 +79,8 @@ Pass thresholds for sign-off:
 
 | Run | Device | OS | Browser | Duration | Avg FPS | Avg Frame (ms) | Long Tasks | Dropped Frames | Stutter Windows | Pass/Fail |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Desktop | Pending external host run | Pending | Pending | 20s | Pending | Pending | Pending | Pending | Pending | Pending |
-| Mobile | Pending external host run | Pending | Pending | 20s | Pending | Pending | Pending | Pending | Pending | Pending |
+| Desktop | Blocked in sandbox; external run required | N/A | N/A | 20s | Not captured | Not captured | Not captured | Not captured | Not captured | Blocked |
+| Mobile | Blocked in sandbox; external run required | N/A | N/A | 20s | Not captured | Not captured | Not captured | Not captured | Not captured | Blocked |
 
 ## Accessibility Basics Verification
 
