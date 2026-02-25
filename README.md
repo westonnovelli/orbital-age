@@ -70,6 +70,9 @@ Current state: blocked in this sandbox. Browser launches fail, so only external 
 Blocker evidence (captured February 25, 2026):
 - `safaridriver -p 4444` -> process exits (`exit 1`) in sandbox.
 - `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --disable-gpu --dump-dom about:blank` -> process abort (`exit 134`) in sandbox.
+- `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --no-sandbox --disable-gpu --dump-dom about:blank` -> process abort (`exit 134`) in sandbox.
+
+Next action required outside sandbox: run both desktop and mobile browser captures and replace the blocked rows below with measured values.
 
 Pass thresholds for sign-off:
 - Avg FPS `>= 55`
