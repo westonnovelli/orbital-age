@@ -4,10 +4,10 @@ This repository uses a lean two-workflow setup:
 
 - `CI` (`.github/workflows/ci.yml`)
   - Runs `npm test` on all pull requests.
-  - Runs `npm test` on pushes to `main`.
+  - Runs `npm test` on pushes to `master`.
 - `Deploy to GitHub Pages` (`.github/workflows/deploy-pages.yml`)
   - Triggers only after `CI` completes.
-  - Deploys only when CI succeeded and the source branch is `main`.
+  - Deploys only when CI succeeded for a `push` event and the source branch is `master`.
 
 ## One-time repository configuration
 
