@@ -13,8 +13,8 @@ data is updated.
 
 Repository source of truth:
 
-- [header.json](/Users/weston/_code/fulcrum-dev/workspace/vectors/obj-OBJ-096/data/ephemeris/v1/header.json)
-- [snapshots.ndjson](/Users/weston/_code/fulcrum-dev/workspace/vectors/obj-OBJ-096/data/ephemeris/v1/snapshots.ndjson)
+- [header.json](../data/ephemeris/v1/header.json)
+- [snapshots.ndjson](../data/ephemeris/v1/snapshots.ndjson)
 
 ## Licensing and Citation Notes
 
@@ -56,9 +56,39 @@ Dataset directory: `data/ephemeris/v1`
 
 Runtime artifact:
 
-- [generated-v1.js](/Users/weston/_code/fulcrum-dev/workspace/vectors/obj-OBJ-096/src/ephemeris/generated-v1.js)
+- [generated-v1.js](../src/ephemeris/generated-v1.js)
   - Generated module consumed by runtime interpolation logic.
   - Stores per-body float vectors as base64-encoded `Float32Array` payloads.
+
+## Exact Refresh Commands (JPL Horizons -> Canonical Dataset)
+
+The refresh entry point is:
+
+```bash
+npm run data:ephemeris:refresh -- --fetch --yes
+```
+
+This command:
+
+- Calls `https://ssd.jpl.nasa.gov/api/horizons.api` with fixed query parameters
+  from the header contract (`CENTER=500@10`, `REF_PLANE=ECLIPTIC`,
+  `REF_SYSTEM=J2000`, `STEP_SIZE=1 d`, vectors in AU).
+- Writes raw upstream payloads to `data/ephemeris/v1/raw-horizons/<naifId>.json`.
+- Rewrites `data/ephemeris/v1/snapshots.ndjson`.
+- Updates `data/ephemeris/v1/header.json` `ephemerisSource.retrievedOn`.
+
+Useful variants:
+
+```bash
+# print exact request URLs without modifying data
+npm run data:ephemeris:refresh -- --print-plan
+
+# refresh from previously cached raw payloads only (no network calls)
+npm run data:ephemeris:refresh -- --yes
+
+# pin retrieval date for deterministic commits
+npm run data:ephemeris:refresh -- --yes --retrieved-on 2026-03-07
+```
 
 ## Exact Regeneration Commands
 
@@ -72,8 +102,9 @@ npm test
 
 Commands are backed by:
 
-- [rebuild-v1.mjs](/Users/weston/_code/fulcrum-dev/workspace/vectors/obj-OBJ-096/scripts/ephemeris/rebuild-v1.mjs)
-- [verify-v1.mjs](/Users/weston/_code/fulcrum-dev/workspace/vectors/obj-OBJ-096/scripts/ephemeris/verify-v1.mjs)
+- [refresh-v1.mjs](../scripts/ephemeris/refresh-v1.mjs)
+- [rebuild-v1.mjs](../scripts/ephemeris/rebuild-v1.mjs)
+- [verify-v1.mjs](../scripts/ephemeris/verify-v1.mjs)
 
 What `data:ephemeris:rebuild` regenerates:
 
