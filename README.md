@@ -37,6 +37,16 @@ This project is currently source-only and does not require a bundling step.
 - Verification build step: run `npm test`.
 - Deployment artifact: static files in the repository root (`index.html`, `src/`).
 
+## Positional Fidelity Verification
+
+Automated reference checks run in `npm test` via `test/positional-fidelity.test.js`.
+
+- Compares Earth heliocentric AU coordinates against known reference outputs for representative dates across `1926-01-01` to `2025-12-30`.
+- Confirms AU component error bound: `<= 5e-7 AU`.
+- Confirms longitude error bound: `<= 1e-4 deg`.
+- Confirms linear interpolation midpoint fidelity for an intra-day sample (`2024-02-29T12:00:00Z`).
+- Confirms rendered marker updates are fed from the same model positions through `TimelineControllerEntity`.
+
 ## CI/CD
 
 GitHub Actions CI and Pages deployment setup instructions are documented in
@@ -59,6 +69,12 @@ The probe records a 20 second sample and returns:
 - `averageFrameTimeMs`
 - `longTaskCount` plus `longTasks[]`
 - `droppedFrameCount` and grouped `stutterWindows[]`
+
+Long-timeline trail validation is also covered by automated tests in `test/orbital-trail.test.js`:
+- Runtime sampling probe over `200,000` timeline points
+- Bounded retained trail samples (`<= 720`)
+- Bounded vertex buffer memory (`5760 bytes`)
+- Runtime budget check (`< 3000 ms` in Node test environment)
 
 ### Capture procedure
 
