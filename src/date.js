@@ -1,5 +1,7 @@
-const MIN_DATE_ISO = "1900-01-01";
-const MAX_DATE_ISO = "2100-12-31";
+import { SUPPORTED_DATE_RANGE } from "./orbital-time.js";
+
+const MIN_DATE_ISO = SUPPORTED_DATE_RANGE.min;
+const MAX_DATE_ISO = SUPPORTED_DATE_RANGE.max;
 
 function toUtcMidnight(dateString) {
   return new Date(`${dateString}T00:00:00Z`);
