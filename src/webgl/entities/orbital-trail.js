@@ -4,6 +4,13 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+function nowMs() {
+  if (globalThis.performance && typeof globalThis.performance.now === "function") {
+    return globalThis.performance.now();
+  }
+  return Date.now();
+}
+
 export class OrbitalTrailEntity {
   constructor({
     radiusX = 1,
@@ -101,13 +108,16 @@ export class OrbitalTrailEntity {
   #prune(currentDay) {
     if (this.historyDays > 0) {
       const minDay = currentDay - this.historyDays;
-      while (this.samples.length > 0 && this.samples[0].day < minDay) {
-        this.samples.shift();
+      const firstRetainedIndex = this.samples.findIndex((sample) => sample.day >= minDay);
+      if (firstRetainedIndex === -1) {
+        this.samples.length = 0;
+      } else if (firstRetainedIndex > 0) {
+        this.samples.splice(0, firstRetainedIndex);
       }
     }
 
-    while (this.samples.length > this.maxSamples) {
-      this.samples.shift();
+    if (this.samples.length > this.maxSamples) {
+      this.samples.splice(0, this.samples.length - this.maxSamples);
     }
   }
 
@@ -119,4 +129,31 @@ export class OrbitalTrailEntity {
       this.vertices[offset + 1] = sample.y;
     }
   }
+}
+
+export function runTrailSamplingProbe({
+  sampleCount = 120_000,
+  sampleDayStep = 0.05,
+  angularVelocityDegPerDay = 0.9856,
+  trailOptions = {}
+} = {}) {
+  const trail = new OrbitalTrailEntity(trailOptions);
+  const startMs = nowMs();
+
+  for (let index = 0; index < sampleCount; index += 1) {
+    const day = index * sampleDayStep;
+    const angleRad = (day * angularVelocityDegPerDay * Math.PI) / 180;
+    trail.addSample(day, Math.cos(angleRad), Math.sin(angleRad));
+  }
+
+  const elapsedMs = nowMs() - startMs;
+
+  return {
+    elapsedMs: Number(elapsedMs.toFixed(2)),
+    sampleCount,
+    retainedSamples: trail.samples.length,
+    maxSamples: trail.maxSamples,
+    historyDays: trail.historyDays,
+    vertexBufferBytes: trail.vertices.byteLength
+  };
 }

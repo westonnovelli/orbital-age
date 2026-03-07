@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { OrbitalTrailEntity } from "../src/webgl/entities/orbital-trail.js";
+import { OrbitalTrailEntity, runTrailSamplingProbe } from "../src/webgl/entities/orbital-trail.js";
 
 test("orbital trail prunes by maxSamples", () => {
   const trail = new OrbitalTrailEntity({
@@ -54,4 +54,35 @@ test("orbital trail ignores dense samples under configured thresholds", () => {
 
   assert.equal(trail.samples.length, 2);
   assert.deepEqual(trail.samples.map((sample) => sample.day), [10, 10.2]);
+});
+
+test("orbital trail probe keeps long-run trail memory bounded", () => {
+  const result = runTrailSamplingProbe({
+    sampleCount: 200_000,
+    trailOptions: {
+      maxSamples: 720,
+      historyDays: 480,
+      minDayDelta: 0.2,
+      minSampleDistance: 0.0025
+    }
+  });
+
+  assert.equal(result.maxSamples, 720);
+  assert.equal(result.vertexBufferBytes, 720 * 2 * Float32Array.BYTES_PER_ELEMENT);
+  assert.ok(result.retainedSamples <= 720);
+  assert.ok(result.retainedSamples > 0);
+});
+
+test("orbital trail probe runtime stays within budget for long timelines", () => {
+  const result = runTrailSamplingProbe({
+    sampleCount: 200_000,
+    trailOptions: {
+      maxSamples: 720,
+      historyDays: 480,
+      minDayDelta: 0.2,
+      minSampleDistance: 0.0025
+    }
+  });
+
+  assert.ok(result.elapsedMs < 3000, `expected <3000ms, got ${result.elapsedMs}ms`);
 });
