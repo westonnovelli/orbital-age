@@ -12,12 +12,23 @@ function markerStub() {
   };
 }
 
+function trailStub() {
+  return {
+    samples: [],
+    addSample(day, x, y) {
+      this.samples.push({ day, x, y });
+    }
+  };
+}
+
 test("timeline controller initializes from birthday and updates marker", () => {
   const marker = markerStub();
+  const trail = trailStub();
   const controller = new TimelineControllerEntity({
     birthday: "2000-01-01",
     maxTimelineDate: "2000-01-11",
-    earthMarker: marker
+    earthMarker: marker,
+    motionTrails: [trail]
   });
 
   controller.init();
@@ -27,6 +38,8 @@ test("timeline controller initializes from birthday and updates marker", () => {
   assert.equal(state.elapsedDays, 0);
   assert.equal(state.totalDays, 10);
   assert.equal(marker.positions.length, 1);
+  assert.equal(trail.samples.length, 1);
+  assert.equal(trail.samples[0].day, 0);
 });
 
 test("timeline controller supports stepping and normalized scrubbing with bounds", () => {
@@ -156,4 +169,21 @@ test("timeline controller handles invalid normalized progress values safely", ()
   const state = controller.getState();
   assert.equal(state.elapsedDays, 0);
   assert.equal(state.timelineDateIso, "2000-01-01");
+});
+
+test("timeline controller reports rewinds to motion trails", () => {
+  const marker = markerStub();
+  const trail = trailStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    earthMarker: marker,
+    motionTrails: [trail]
+  });
+
+  controller.init();
+  controller.stepDays(3);
+  controller.stepDays(-2);
+
+  assert.deepEqual(trail.samples.map((sample) => sample.day), [0, 3, 1]);
 });

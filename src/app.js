@@ -3,8 +3,8 @@ import { SUPPORTED_DATE_RANGE, normalizeToUtcMidnight, parseIsoDateUtc } from ".
 import { Scene } from "./webgl/scene.js";
 import { WebGLRenderer } from "./webgl/renderer.js";
 import { SunEntity } from "./webgl/entities/sun.js";
-import { OrbitPathEntity } from "./webgl/entities/orbit-path.js";
 import { EarthMarkerEntity } from "./webgl/entities/earth-marker.js";
+import { OrbitalTrailEntity } from "./webgl/entities/orbital-trail.js";
 import { TimelineControllerEntity } from "./webgl/entities/timeline-controller.js";
 
 const DEFAULT_SPEED_DAYS_PER_SECOND = 30;
@@ -94,6 +94,13 @@ export class OrbitalApp {
 
     this.validationMessage.textContent = "";
     const earthMarker = new EarthMarkerEntity({ radiusX: 1, radiusY: 0.998 });
+    const earthTrail = new OrbitalTrailEntity({
+      radiusX: 1,
+      radiusY: 0.998,
+      color: [0.2, 0.78, 0.96, 0.92],
+      maxSamples: 960,
+      historyDays: 600
+    });
     const todayUtc = normalizeToUtcMidnight(new Date());
     const datasetMaxUtc = parseIsoDateUtc(SUPPORTED_DATE_RANGE.max);
     const maxTimelineDate = todayUtc < datasetMaxUtc ? todayUtc : datasetMaxUtc;
@@ -103,12 +110,13 @@ export class OrbitalApp {
       initialTimelineDate: validation.date,
       speedDaysPerSecond: parseSpeedValue(this.speedSelect?.value),
       earthMarker,
+      motionTrails: [earthTrail],
       onStateChange: (state) => this.#updateTimelineUi(state)
     });
 
     const scene = new Scene()
       .add(new SunEntity())
-      .add(new OrbitPathEntity({ radiusX: 1, radiusY: 0.998 }))
+      .add(earthTrail)
       .add(timelineController)
       .add(earthMarker);
 
