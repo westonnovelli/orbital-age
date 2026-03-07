@@ -1,5 +1,5 @@
 import { validateBirthday } from "./date.js";
-import { normalizeToUtcMidnight } from "./orbital-time.js";
+import { SUPPORTED_DATE_RANGE, normalizeToUtcMidnight, parseIsoDateUtc } from "./orbital-time.js";
 import { Scene } from "./webgl/scene.js";
 import { WebGLRenderer } from "./webgl/renderer.js";
 import { SunEntity } from "./webgl/entities/sun.js";
@@ -94,9 +94,12 @@ export class OrbitalApp {
 
     this.validationMessage.textContent = "";
     const earthMarker = new EarthMarkerEntity({ radiusX: 1, radiusY: 0.998 });
+    const todayUtc = normalizeToUtcMidnight(new Date());
+    const datasetMaxUtc = parseIsoDateUtc(SUPPORTED_DATE_RANGE.max);
+    const maxTimelineDate = todayUtc < datasetMaxUtc ? todayUtc : datasetMaxUtc;
     const timelineController = new TimelineControllerEntity({
       birthday: validation.date,
-      maxTimelineDate: normalizeToUtcMidnight(new Date()),
+      maxTimelineDate,
       initialTimelineDate: validation.date,
       speedDaysPerSecond: parseSpeedValue(this.speedSelect?.value),
       earthMarker,

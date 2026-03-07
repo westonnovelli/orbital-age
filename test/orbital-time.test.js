@@ -4,8 +4,10 @@ import assert from "node:assert/strict";
 import {
   SUPPORTED_DATE_RANGE,
   assertDateInSupportedRange,
+  bodyHeliocentricPositionAuAtInstant,
   computeOrbitalTimelineState,
   daysBetweenUtc,
+  earthHeliocentricPositionAuAtInstant,
   earthPositionOnUnitOrbitAtInstant,
   earthPositionOnUnitOrbit,
   normalizeToUtcMidnight,
@@ -45,11 +47,11 @@ test("normalizeToUtcMidnight accepts explicit-zone ISO timestamps deterministica
 });
 
 test("assertDateInSupportedRange enforces model range", () => {
-  assert.equal(assertDateInSupportedRange(SUPPORTED_DATE_RANGE.min).toISOString(), "1900-01-01T00:00:00.000Z");
-  assert.equal(assertDateInSupportedRange(SUPPORTED_DATE_RANGE.max).toISOString(), "2100-12-31T00:00:00.000Z");
+  assert.equal(assertDateInSupportedRange(SUPPORTED_DATE_RANGE.min).toISOString(), "1926-01-01T00:00:00.000Z");
+  assert.equal(assertDateInSupportedRange(SUPPORTED_DATE_RANGE.max).toISOString(), "2025-12-31T00:00:00.000Z");
 
-  assert.throws(() => assertDateInSupportedRange("1899-12-31"), /outside supported range/);
-  assert.throws(() => assertDateInSupportedRange("2101-01-01"), /outside supported range/);
+  assert.throws(() => assertDateInSupportedRange("1925-12-31"), /outside supported range/);
+  assert.throws(() => assertDateInSupportedRange("2026-01-01"), /outside supported range/);
 });
 
 test("computeOrbitalTimelineState returns deterministic normalized progress and position", () => {
@@ -121,4 +123,26 @@ test("earthPositionOnUnitOrbitAtInstant changes smoothly within the same UTC day
   assert.notEqual(start.longitudeDeg, midday.longitudeDeg);
   const radius = Math.hypot(midday.x, midday.y);
   assert.ok(Math.abs(radius - 1) < 1e-12);
+});
+
+test("earth heliocentric AU position uses ephemeris values and linear interpolation", () => {
+  const midnight = earthHeliocentricPositionAuAtInstant("1926-01-01T00:00:00Z");
+  assert.equal(midnight.xAu, -0.18536214530467987);
+  assert.equal(midnight.yAu, 0.9655858278274536);
+
+  const midday = earthHeliocentricPositionAuAtInstant("1926-01-01T12:00:00Z");
+  assert.ok(Math.abs(midday.xAu - -0.19393327087163925) < 1e-12);
+  assert.ok(Math.abs(midday.yAu - 0.9638592302799225) < 1e-12);
+});
+
+test("bodyHeliocentricPositionAuAtInstant supports multiple planets", () => {
+  const mars = bodyHeliocentricPositionAuAtInstant("mars", "1926-01-01T00:00:00Z");
+  assert.equal(mars.body, "mars");
+  assert.equal(mars.xAu, -1.1745277643203735);
+  assert.equal(mars.yAu, -1.0424778461456299);
+
+  assert.throws(
+    () => bodyHeliocentricPositionAuAtInstant("pluto", "1926-01-01T00:00:00Z"),
+    /Unsupported body/
+  );
 });

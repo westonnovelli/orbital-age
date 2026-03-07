@@ -1,10 +1,16 @@
+import {
+  EPHEMERIS_WINDOW,
+  SUPPORTED_PLANET_KEYS,
+  getBodyPositionAuAtInstant
+} from "./ephemeris/runtime.js";
+
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const JULIAN_DAY_UNIX_EPOCH = 2440587.5;
 const J2000_JULIAN_DAY = 2451545.0;
 
 export const SUPPORTED_DATE_RANGE = Object.freeze({
-  min: "1900-01-01",
-  max: "2100-12-31"
+  min: EPHEMERIS_WINDOW.startUtc.slice(0, 10),
+  max: EPHEMERIS_WINDOW.endUtc.slice(0, 10)
 });
 
 function mod(value, base) {
@@ -127,26 +133,22 @@ export function assertDateInSupportedRange(dateInput) {
 }
 
 export function earthHeliocentricLongitudeDeg(dateInput) {
-  const date = assertDateInSupportedRange(dateInput);
-  const julianDay = date.getTime() / MS_PER_DAY + JULIAN_DAY_UNIX_EPOCH;
-  const daysSinceJ2000 = julianDay - J2000_JULIAN_DAY;
-
-  const meanAnomaly = mod(357.529 + 0.98560028 * daysSinceJ2000, 360);
-  const meanLongitude = mod(280.459 + 0.98564736 * daysSinceJ2000, 360);
-
-  const meanAnomalyRad = (meanAnomaly * Math.PI) / 180;
-  const sunEclipticLongitude =
-    meanLongitude +
-    1.915 * Math.sin(meanAnomalyRad) +
-    0.02 * Math.sin(2 * meanAnomalyRad);
-
-  // Solar longitude is geocentric; Earth's heliocentric longitude is opposite.
-  return mod(sunEclipticLongitude + 180, 360);
+  return earthHeliocentricLongitudeDegAtInstant(
+    normalizeToUtcMidnight(dateInput)
+  );
 }
 
 export function earthHeliocentricLongitudeDegAtInstant(dateInput) {
   const instant = toDateFromInput(dateInput);
   assertDateInSupportedRange(instant);
+
+  const earthPosition = getBodyPositionAuAtInstant("earth", instant);
+  if (earthPosition) {
+    return mod(
+      (Math.atan2(earthPosition.yAu, earthPosition.xAu) * 180) / Math.PI,
+      360
+    );
+  }
 
   const julianDay = instant.getTime() / MS_PER_DAY + JULIAN_DAY_UNIX_EPOCH;
   const daysSinceJ2000 = julianDay - J2000_JULIAN_DAY;
@@ -175,14 +177,49 @@ export function earthPositionOnUnitOrbit(dateInput) {
 }
 
 export function earthPositionOnUnitOrbitAtInstant(dateInput) {
-  const longitudeDeg = earthHeliocentricLongitudeDegAtInstant(dateInput);
-  const longitudeRad = (longitudeDeg * Math.PI) / 180;
+  const earthPositionAu = earthHeliocentricPositionAuAtInstant(dateInput);
+  const radius = Math.hypot(earthPositionAu.xAu, earthPositionAu.yAu);
+  const safeRadius = radius === 0 ? 1 : radius;
+  const longitudeDeg = mod(
+    (Math.atan2(earthPositionAu.yAu, earthPositionAu.xAu) * 180) / Math.PI,
+    360
+  );
 
   return {
-    x: Math.cos(longitudeRad),
-    y: Math.sin(longitudeRad),
+    x: earthPositionAu.xAu / safeRadius,
+    y: earthPositionAu.yAu / safeRadius,
     longitudeDeg
   };
+}
+
+export function bodyHeliocentricPositionAuAtInstant(bodyKey, dateInput) {
+  const normalizedBodyKey = String(bodyKey).toLowerCase();
+  if (!SUPPORTED_PLANET_KEYS.includes(normalizedBodyKey)) {
+    throw new Error(
+      `Unsupported body "${bodyKey}". Expected one of: ${SUPPORTED_PLANET_KEYS.join(", ")}`
+    );
+  }
+
+  const instant = toDateFromInput(dateInput);
+  assertDateInSupportedRange(instant);
+
+  const position = getBodyPositionAuAtInstant(normalizedBodyKey, instant);
+  if (!position) {
+    throw new Error(
+      `No ephemeris position available for ${normalizedBodyKey} at ${instant.toISOString()}`
+    );
+  }
+
+  return {
+    body: normalizedBodyKey,
+    xAu: position.xAu,
+    yAu: position.yAu,
+    zAu: position.zAu
+  };
+}
+
+export function earthHeliocentricPositionAuAtInstant(dateInput) {
+  return bodyHeliocentricPositionAuAtInstant("earth", dateInput);
 }
 
 export function computeOrbitalTimelineState({

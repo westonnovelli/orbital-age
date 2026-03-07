@@ -1,0 +1,52 @@
+{
+  "datasetSha256": "642e5d20153a14c9e3893eb4787706601e42e02965339bd86daaa22079d540ad",
+  "bodyIndexOffsets": {
+    "10": {
+      "startRow": 0,
+      "stride": 9,
+      "rowCount": 36525
+    },
+    "199": {
+      "startRow": 1,
+      "stride": 9,
+      "rowCount": 36525
+    },
+    "299": {
+      "startRow": 2,
+      "stride": 9,
+      "rowCount": 36525
+    },
+    "399": {
+      "startRow": 3,
+      "stride": 9,
+      "rowCount": 36525
+    },
+    "499": {
+      "startRow": 4,
+      "stride": 9,
+      "rowCount": 36525
+    },
+    "599": {
+      "startRow": 5,
+      "stride": 9,
+      "rowCount": 36525
+    },
+    "699": {
+      "startRow": 6,
+      "stride": 9,
+      "rowCount": 36525
+    },
+    "799": {
+      "startRow": 7,
+      "stride": 9,
+      "rowCount": 36525
+    },
+    "899": {
+      "startRow": 8,
+      "stride": 9,
+      "rowCount": 36525
+    }
+  },
+  "rowCount": 328725,
+  "generatedOn": "2026-03-07T03:38:07.951Z"
+}
