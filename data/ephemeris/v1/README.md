@@ -22,6 +22,32 @@ See `header.json` for the machine-readable source metadata and sampling contract
 - `snapshots.ndjson`: canonical row-wise dataset (one JSON object per line)
 - `snapshots.ndjson.gz`: compressed copy of `snapshots.ndjson`
 - `manifest.json`: integrity metadata (`datasetSha256`, row totals, body offsets)
+- `raw-horizons/*.json`: cached raw JPL Horizons API responses per `naifId`
+
+## Refresh From JPL Horizons
+
+Primary refresh command:
+
+```bash
+npm run data:ephemeris:refresh -- --fetch --yes
+```
+
+The script uses the window/cadence/targets in `header.json`, fetches all non-sun
+targets from Horizons API, writes raw payloads to `raw-horizons/`, rebuilds
+`snapshots.ndjson`, and updates `ephemerisSource.retrievedOn`.
+
+Useful variants:
+
+```bash
+# show exact request URLs and parameters only
+npm run data:ephemeris:refresh -- --print-plan
+
+# rebuild snapshots/header from existing raw cache only
+npm run data:ephemeris:refresh -- --yes
+
+# deterministic retrieval date
+npm run data:ephemeris:refresh -- --yes --retrieved-on 2026-03-07
+```
 
 ## Rebuild Artifacts
 
@@ -59,12 +85,11 @@ Verification checks:
 
 ## Contributor Refresh Workflow
 
-1. Export refreshed vectors from JPL Horizons using the same frame/origin/window/cadence contract.
-2. Replace `data/ephemeris/v1/header.json` and `data/ephemeris/v1/snapshots.ndjson`.
-3. Run `npm run data:ephemeris:rebuild`.
-4. Run `npm run data:ephemeris:verify`.
-5. Run `npm test`.
-6. Spot-check visualization behavior in browser (`npx serve .`):
+1. Run `npm run data:ephemeris:refresh -- --fetch --yes`.
+2. Run `npm run data:ephemeris:rebuild`.
+3. Run `npm run data:ephemeris:verify`.
+4. Run `npm test`.
+5. Spot-check visualization behavior in browser (`npx serve .`):
    - Earth remains smooth across day boundaries and leap days.
    - Trails remain continuous (no major jumps/teleports).
    - Date constraints still match ephemeris window.

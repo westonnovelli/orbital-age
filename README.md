@@ -57,6 +57,7 @@ Canonical dataset and source metadata live in `data/ephemeris/v1`.
 Regeneration commands:
 
 ```bash
+npm run data:ephemeris:refresh -- --fetch --yes
 npm run data:ephemeris:rebuild
 npm run data:ephemeris:verify
 ```
