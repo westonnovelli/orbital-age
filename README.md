@@ -47,6 +47,20 @@ Automated reference checks run in `npm test` via `test/positional-fidelity.test.
 - Confirms linear interpolation midpoint fidelity for an intra-day sample (`2024-02-29T12:00:00Z`).
 - Confirms rendered marker updates are fed from the same model positions through `TimelineControllerEntity`.
 
+## Ephemeris Data Provenance and Regeneration
+
+Canonical dataset and source metadata live in `data/ephemeris/v1`.
+
+- Provenance and contributor workflow: `docs/obj-096-data-provenance-and-regeneration.md`
+- Dataset-level README: `data/ephemeris/v1/README.md`
+
+Regeneration commands:
+
+```bash
+npm run data:ephemeris:rebuild
+npm run data:ephemeris:verify
+```
+
 ## CI/CD
 
 GitHub Actions CI and Pages deployment setup instructions are documented in

@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "data:ephemeris:rebuild": "node scripts/ephemeris/rebuild-v1.mjs",
+    "data:ephemeris:verify": "node scripts/ephemeris/verify-v1.mjs"
   }
 }
