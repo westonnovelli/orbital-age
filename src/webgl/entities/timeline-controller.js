@@ -25,6 +25,7 @@ export class TimelineControllerEntity {
     initialTimelineDate,
     speedDaysPerSecond = 12,
     earthMarker,
+    motionTrails = [],
     onStateChange
   }) {
     if (!earthMarker) {
@@ -35,6 +36,7 @@ export class TimelineControllerEntity {
     this.birthdayUtc = assertDateInSupportedRange(birthday);
     this.maxTimelineUtc = assertDateInSupportedRange(maxTimelineDate);
     this.speedDaysPerSecond = speedDaysPerSecond;
+    this.motionTrails = Array.isArray(motionTrails) ? motionTrails : [];
     this.onStateChange = onStateChange;
     this.playing = true;
 
@@ -150,6 +152,9 @@ export class TimelineControllerEntity {
     const instant = this.#instantFromTimelineDays();
     const position = earthHeliocentricPositionAuAtInstant(instant);
     this.earthMarker.setPosition(position.xAu, position.yAu);
+    for (const trail of this.motionTrails) {
+      trail.addSample?.(this.timelineDays, position.xAu, position.yAu);
+    }
   }
 
   #syncPlaybackForBounds() {
