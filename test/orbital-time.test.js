@@ -146,3 +146,16 @@ test("bodyHeliocentricPositionAuAtInstant supports multiple planets", () => {
     /Unsupported body/
   );
 });
+
+test("earth heliocentric AU position supports instants throughout max supported UTC day", () => {
+  assert.doesNotThrow(() =>
+    earthHeliocentricPositionAuAtInstant("2025-12-31T12:00:00Z")
+  );
+});
+
+test("earth heliocentric AU position rejects instants at and beyond first unsupported UTC day", () => {
+  assert.throws(
+    () => earthHeliocentricPositionAuAtInstant("2026-01-01T00:00:00Z"),
+    /outside supported range|No ephemeris position available/
+  );
+});

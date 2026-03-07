@@ -91,9 +91,10 @@ export function getBodyPositionAuAtInstant(bodyKey, dateInput) {
   const instant = toDateFromInput(dateInput);
   const startUnixS = Date.parse(EPHEMERIS_V1.startUtc) / 1000;
   const endUnixS = Date.parse(EPHEMERIS_V1.endUtc) / 1000;
+  const endExclusiveUnixS = endUnixS + EPHEMERIS_V1.stepSeconds;
   const unixSeconds = toUnixSeconds(instant);
 
-  if (unixSeconds < startUnixS || unixSeconds > endUnixS) {
+  if (unixSeconds < startUnixS || unixSeconds >= endExclusiveUnixS) {
     return null;
   }
 
@@ -112,4 +113,3 @@ export function getBodyPositionAuAtInstant(bodyKey, dateInput) {
     zAu: interpolate(vectors[lowerOffset + 2], vectors[upperOffset + 2], t)
   };
 }
-
