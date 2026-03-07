@@ -1,7 +1,7 @@
 import {
   assertDateInSupportedRange,
+  earthHeliocentricPositionAuAtInstant,
   daysBetweenUtc,
-  earthPositionOnUnitOrbitAtInstant,
   normalizeToUtcMidnight
 } from "../../orbital-time.js";
 
@@ -148,8 +148,8 @@ export class TimelineControllerEntity {
 
   #applyToEarthMarker() {
     const instant = this.#instantFromTimelineDays();
-    const orbit = earthPositionOnUnitOrbitAtInstant(instant);
-    this.earthMarker.setPosition(orbit.x, orbit.y);
+    const position = earthHeliocentricPositionAuAtInstant(instant);
+    this.earthMarker.setPosition(position.xAu, position.yAu);
   }
 
   #syncPlaybackForBounds() {

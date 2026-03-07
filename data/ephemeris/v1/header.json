@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0.0",
+  "ephemerisSource": {
+    "provider": "JPL NAIF / JPL Horizons",
+    "kernel": "de442s.bsp",
+    "retrievedOn": "2026-03-07"
+  },
+  "frame": "ECLIPJ2000",
+  "origin": "SUN",
+  "units": {
+    "position": "AU",
+    "time": "UTC"
+  },
+  "window": {
+    "startUtc": "1926-01-01T00:00:00Z",
+    "endUtc": "2025-12-31T00:00:00Z",
+    "days": 36525
+  },
+  "cadence": {
+    "step": "P1D",
+    "samplesPerBody": 36525
+  },
+  "targets": [
+    {
+      "key": "sun",
+      "naifId": 10
+    },
+    {
+      "key": "mercury",
+      "naifId": 199
+    },
+    {
+      "key": "venus",
+      "naifId": 299
+    },
+    {
+      "key": "earth",
+      "naifId": 399
+    },
+    {
+      "key": "mars",
+      "naifId": 499
+    },
+    {
+      "key": "jupiter",
+      "naifId": 599
+    },
+    {
+      "key": "saturn",
+      "naifId": 699
+    },
+    {
+      "key": "uranus",
+      "naifId": 799
+    },
+    {
+      "key": "neptune",
+      "naifId": 899
+    }
+  ],
+  "ordering": {
+    "primary": "epochUnixS",
+    "secondary": "naifId"
+  }
+}
