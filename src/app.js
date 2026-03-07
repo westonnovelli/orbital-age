@@ -98,8 +98,10 @@ export class OrbitalApp {
       radiusX: 1,
       radiusY: 0.998,
       color: [0.2, 0.78, 0.96, 0.92],
-      maxSamples: 960,
-      historyDays: 600
+      maxSamples: 720,
+      historyDays: 480,
+      minDayDelta: 0.2,
+      minSampleDistance: 0.0025
     });
     const todayUtc = normalizeToUtcMidnight(new Date());
     const datasetMaxUtc = parseIsoDateUtc(SUPPORTED_DATE_RANGE.max);
