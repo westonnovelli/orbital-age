@@ -80,6 +80,15 @@ export const EPHEMERIS_WINDOW = Object.freeze({
   endUtc: EPHEMERIS_V1.endUtc
 });
 
+const interpolableEndUtc = new Date(
+  Date.parse(EPHEMERIS_V1.endUtc) - EPHEMERIS_V1.stepSeconds * 1000
+).toISOString();
+
+export const EPHEMERIS_INTERPOLATION_WINDOW = Object.freeze({
+  startUtc: EPHEMERIS_V1.startUtc,
+  endUtc: interpolableEndUtc
+});
+
 export const SUPPORTED_PLANET_KEYS = Object.freeze([...EPHEMERIS_V1_BODY_KEYS]);
 
 export function getBodyPositionAuAtInstant(bodyKey, dateInput) {

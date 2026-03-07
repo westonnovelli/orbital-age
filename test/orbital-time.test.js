@@ -48,7 +48,7 @@ test("normalizeToUtcMidnight accepts explicit-zone ISO timestamps deterministica
 
 test("assertDateInSupportedRange enforces model range", () => {
   assert.equal(assertDateInSupportedRange(SUPPORTED_DATE_RANGE.min).toISOString(), "1926-01-01T00:00:00.000Z");
-  assert.equal(assertDateInSupportedRange(SUPPORTED_DATE_RANGE.max).toISOString(), "2025-12-31T00:00:00.000Z");
+  assert.equal(assertDateInSupportedRange(SUPPORTED_DATE_RANGE.max).toISOString(), "2025-12-30T00:00:00.000Z");
 
   assert.throws(() => assertDateInSupportedRange("1925-12-31"), /outside supported range/);
   assert.throws(() => assertDateInSupportedRange("2026-01-01"), /outside supported range/);
@@ -147,13 +147,19 @@ test("bodyHeliocentricPositionAuAtInstant supports multiple planets", () => {
   );
 });
 
-test("earth heliocentric AU position supports instants throughout max supported UTC day", () => {
-  assert.doesNotThrow(() =>
-    earthHeliocentricPositionAuAtInstant("2025-12-31T12:00:00Z")
-  );
+test("earth heliocentric AU position interpolates within the max supported UTC day", () => {
+  const start = earthHeliocentricPositionAuAtInstant("2025-12-30T00:00:00Z");
+  const midday = earthHeliocentricPositionAuAtInstant("2025-12-30T12:00:00Z");
+
+  assert.notEqual(start.xAu, midday.xAu);
+  assert.notEqual(start.yAu, midday.yAu);
 });
 
-test("earth heliocentric AU position rejects instants at and beyond first unsupported UTC day", () => {
+test("earth heliocentric AU position rejects instants at and beyond first non-interpolable UTC day", () => {
+  assert.throws(
+    () => earthHeliocentricPositionAuAtInstant("2025-12-31T12:00:00Z"),
+    /outside supported range|No ephemeris position available/
+  );
   assert.throws(
     () => earthHeliocentricPositionAuAtInstant("2026-01-01T00:00:00Z"),
     /outside supported range|No ephemeris position available/

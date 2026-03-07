@@ -1,5 +1,5 @@
 import {
-  EPHEMERIS_WINDOW,
+  EPHEMERIS_INTERPOLATION_WINDOW,
   SUPPORTED_PLANET_KEYS,
   getBodyPositionAuAtInstant
 } from "./ephemeris/runtime.js";
@@ -9,8 +9,8 @@ const JULIAN_DAY_UNIX_EPOCH = 2440587.5;
 const J2000_JULIAN_DAY = 2451545.0;
 
 export const SUPPORTED_DATE_RANGE = Object.freeze({
-  min: EPHEMERIS_WINDOW.startUtc.slice(0, 10),
-  max: EPHEMERIS_WINDOW.endUtc.slice(0, 10)
+  min: EPHEMERIS_INTERPOLATION_WINDOW.startUtc.slice(0, 10),
+  max: EPHEMERIS_INTERPOLATION_WINDOW.endUtc.slice(0, 10)
 });
 
 function mod(value, base) {
