@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cosmic Observatory</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Manrope:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container": "#1a1919",
+              "primary": "#c799ff",
+              "secondary-container": "#006a60",
+              "on-primary-container": "#340064",
+              "on-primary-fixed-variant": "#40007a",
+              "outline-variant": "#494847",
+              "surface-dim": "#0e0e0e",
+              "inverse-primary": "#7744b5",
+              "primary-container": "#bc87fe",
+              "secondary-fixed": "#4af8e3",
+              "background": "#0e0e0e",
+              "outline": "#777575",
+              "inverse-on-surface": "#565554",
+              "on-background": "#ffffff",
+              "on-tertiary-fixed": "#464e52",
+              "on-secondary-container": "#dcfff8",
+              "on-surface-variant": "#adaaaa",
+              "on-secondary-fixed-variant": "#00655b",
+              "inverse-surface": "#fcf8f8",
+              "error-dim": "#d73357",
+              "surface": "#0e0e0e",
+              "surface-container-low": "#131313",
+              "surface-container-high": "#201f1f",
+              "secondary": "#4af8e3",
+              "surface-container-lowest": "#000000",
+              "on-error": "#490013",
+              "primary-fixed-dim": "#af7aef",
+              "on-secondary": "#005b51",
+              "on-tertiary-container": "#4f585c",
+              "error": "#ff6e84",
+              "surface-variant": "#262626",
+              "on-tertiary": "#576064",
+              "on-primary-fixed": "#000000",
+              "secondary-dim": "#33e9d5",
+              "primary-dim": "#ba85fb",
+              "primary-fixed": "#bc87fe",
+              "tertiary": "#f2fbff",
+              "tertiary-container": "#e3ecf0",
+              "on-error-container": "#ffb2b9",
+              "surface-tint": "#c799ff",
+              "secondary-fixed-dim": "#33e9d5",
+              "tertiary-fixed-dim": "#e3ecf0",
+              "on-secondary-fixed": "#00463f",
+              "on-tertiary-fixed-variant": "#626b6f",
+              "on-surface": "#ffffff",
+              "tertiary-dim": "#e3ecf0",
+              "surface-bright": "#2c2c2c",
+              "surface-container-highest": "#262626",
+              "on-primary": "#440080",
+              "tertiary-fixed": "#f2fbff",
+              "error-container": "#a70138"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>body {
+    background-color: #0e0e0e;
+    color: #fff;
+    margin: 0;
+    overflow-x: hidden
+    }
+.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 24
+    }
+.cinematic-bg {
+    background-image: linear-gradient(to bottom, rgba(14, 14, 14, 0.4), rgba(14, 14, 14, 0.95)), url(https://lh3.googleusercontent.com/aida-public/AB6AXuBiDwVWLVX4avDeWHRrrRu8i_vhAAZNPNs7HOd-6N3ftXbOPY_lK5KlfSqkTUrD-NIcBNmz0WyQ7NaXEur7OLIRqRnSSsVIaFqxfaJ2qnp9YCy4EefLYf7S0oRU6YHAZ8tb-AenSDNZWgtzPPlTOTIKiC1sYYAzm4yuQkboKeFg_m5LW5gD4ZLPHFvoPPBE3KIZgjYv7ypGL0W6Die1LQr4ZFZjTj6JpgEupcdVCa0xMpAoMtcjno3o4Qob55f0eAFsWyj5g3FyDA);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed
+    }
+.input-glow:focus-within {
+    box-shadow: 0 0 15px rgba(74, 248, 227, 0.2)
+    }
+.nebula-gradient {
+    background: linear-gradient(45deg, #c799ff, #bc87fe)
+    }
+.text-glow {
+    text-shadow: 0 0 30px rgba(199, 153, 255, 0.3)
+    }</style>
+</head>
+<body class="font-body selection:bg-primary/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#0e0e0e]/40 backdrop-blur-xl flex justify-between items-center px-8 py-6 shadow-[0_20px_50px_rgba(199,153,255,0.08)] bg-gradient-to-b from-[#1a1919]/50 to-transparent">
+<div class="text-2xl font-bold tracking-tighter text-[#c799ff] font-headline">Cosmic Observatory</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="font-space-grotesk tracking-[0.1em] uppercase text-xs text-[#adaaaa] hover:text-[#c799ff] transition-colors" href="#">Observatory</a>
+<a class="font-space-grotesk tracking-[0.1em] uppercase text-xs text-[#adaaaa] hover:text-[#c799ff] transition-colors" href="#">Star Map</a>
+<a class="font-space-grotesk tracking-[0.1em] uppercase text-xs text-[#adaaaa] hover:text-[#c799ff] transition-colors" href="#">Telemetry</a>
+<a class="font-space-grotesk tracking-[0.1em] uppercase text-xs text-[#adaaaa] hover:text-[#c799ff] transition-colors" href="#">Archive</a>
+</nav>
+<div class="flex items-center gap-6">
+<button class="text-[#c799ff] hover:bg-[#2c2c2c]/50 p-2 rounded-full transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="text-[#c799ff] hover:bg-[#2c2c2c]/50 p-2 rounded-full transition-all duration-300 active:scale-95">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Hero Content -->
+<main class="relative min-h-screen flex flex-col items-center justify-center cinematic-bg px-6" data-alt="Deep space Milky Way background with atmospheric shadows">
+<div class="max-w-4xl w-full text-center mb-12 relative z-10">
+<h1 class="font-headline text-5xl md:text-7xl lg:text-8xl font-bold tracking-[-0.03em] text-white leading-none mb-6 text-glow">
+                CHRONOS <span class="text-primary">ALIGNMENT</span>
+</h1>
+<p class="font-label text-white/80 tracking-[0.2em] uppercase text-sm md:text-base max-w-lg mx-auto leading-relaxed [text-shadow:_0_2px_4px_rgba(0,0,0,0.8)]">
+                Calibrating your celestial trajectory relative to the cosmic horizon.
+            </p>
+</div>
+<!-- Input Section -->
+<div class="w-full max-w-2xl bg-black/60 backdrop-blur-3xl p-10 md:p-16 rounded-xl border border-white/10 shadow-2xl relative z-10">
+<div class="absolute -top-px left-1/2 -translate-x-1/2 w-24 h-px bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
+<div class="flex flex-col gap-12">
+<div class="grid grid-cols-3 gap-6 md:gap-10">
+<!-- Day -->
+<div class="flex flex-col gap-3 group">
+<label class="font-label text-[10px] tracking-[0.2em] uppercase text-on-surface-variant group-focus-within:text-secondary transition-colors">Day</label>
+<input class="bg-transparent border-0 border-b border-outline-variant/30 py-4 text-2xl md:text-3xl font-headline focus:ring-0 focus:border-secondary transition-all text-white placeholder:text-surface-bright outline-none" placeholder="DD" type="text"/>
+</div>
+<!-- Month -->
+<div class="flex flex-col gap-3 group">
+<label class="font-label text-[10px] tracking-[0.2em] uppercase text-on-surface-variant group-focus-within:text-secondary transition-colors">Month</label>
+<input class="bg-transparent border-0 border-b border-outline-variant/30 py-4 text-2xl md:text-3xl font-headline focus:ring-0 focus:border-secondary transition-all text-white placeholder:text-surface-bright outline-none" placeholder="MM" type="text"/>
+</div>
+<!-- Year -->
+<div class="flex flex-col gap-3 group">
+<label class="font-label text-[10px] tracking-[0.2em] uppercase text-on-surface-variant group-focus-within:text-secondary transition-colors">Year</label>
+<input class="bg-transparent border-0 border-b border-outline-variant/30 py-4 text-2xl md:text-3xl font-headline focus:ring-0 focus:border-secondary transition-all text-white placeholder:text-surface-bright outline-none" placeholder="YYYY" type="text"/>
+</div>
+</div>
+<button class="nebula-gradient text-on-primary font-headline font-bold py-5 px-10 rounded-md tracking-[0.05em] uppercase text-sm hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primary/20">
+                    Begin Your Journey
+                </button>
+</div>
+<div class="mt-12 flex justify-between items-center opacity-60">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-xs" data-icon="location_on">location_on</span>
+<span class="font-label text-[9px] tracking-widest uppercase">Orbital Sync: Active</span>
+</div>
+<div class="font-label text-[9px] tracking-widest uppercase">v.4.0.2 telemetry</div>
+</div>
+</div>
+<!-- Background Accents -->
+<div class="absolute bottom-20 left-10 hidden lg:block z-10">
+<div class="flex flex-col gap-4">
+<div class="h-px w-32 bg-gradient-to-r from-outline-variant/40 to-transparent"></div>
+<div class="font-label text-[10px] tracking-[0.3em] uppercase text-on-surface-variant rotate-90 origin-left mt-8">Nadir Point 0.0021</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-8 bg-[#1a1919]/60 backdrop-blur-2xl w-fit rounded-full px-6 py-3 outline outline-1 outline-[#494847]/15 shadow-[0_0_30px_rgba(199,153,255,0.1)]">
+<button class="flex flex-col items-center justify-center text-[#adaaaa] p-3 hover:text-[#c799ff] transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="play_arrow">play_arrow</span>
+<span class="font-space-grotesk text-[10px] tracking-widest uppercase mt-1">Play/Pause</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#adaaaa] p-3 hover:text-[#c799ff] transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="speed">speed</span>
+<span class="font-space-grotesk text-[10px] tracking-widest uppercase mt-1">Speed</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#4af8e3] bg-[#2c2c2c] rounded-full p-3 active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="straighten">straighten</span>
+<span class="font-space-grotesk text-[10px] tracking-widest uppercase mt-1">Distance</span>
+</button>
+<button class="flex flex-col items-center justify-center text-[#adaaaa] p-3 hover:text-[#c799ff] transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="restart_alt">restart_alt</span>
+<span class="font-space-grotesk text-[10px] tracking-widest uppercase mt-1">Reset</span>
+</button>
+</nav>
+<footer class="bg-surface-container-lowest py-12 px-8 text-center relative z-10">
+<div class="max-w-7xl mx-auto flex flex-col items-center gap-6">
+<div class="text-primary font-headline font-bold text-xl tracking-tighter">COSMIC OBSERVATORY</div>
+<div class="h-px w-24 bg-surface-bright"></div>
+<p class="font-label text-[10px] tracking-[0.4em] uppercase text-on-surface-variant">Deep Space Initiative © 2024</p>
+</div>
+</footer>
+</body></html>
