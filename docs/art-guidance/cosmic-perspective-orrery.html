@@ -1,0 +1,366 @@
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Manrope:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container": "#111111",
+            "primary": "#c799ff",
+            "secondary-container": "#006a60",
+            "on-primary-container": "#340064",
+            "on-primary-fixed-variant": "#40007a",
+            "outline-variant": "#333333",
+            "surface-dim": "#080808",
+            "inverse-primary": "#7744b5",
+            "primary-container": "#bc87fe",
+            "secondary-fixed": "#4af8e3",
+            "background": "#050505",
+            "outline": "#555555",
+            "inverse-on-surface": "#565554",
+            "on-background": "#ffffff",
+            "on-tertiary-fixed": "#464e52",
+            "on-secondary-container": "#dcfff8",
+            "on-surface-variant": "#9ca3af",
+            "on-secondary-fixed-variant": "#00655b",
+            "inverse-surface": "#fcf8f8",
+            "error-dim": "#d73357",
+            "surface": "#050505",
+            "surface-container-low": "#0d0d0d",
+            "surface-container-high": "#1a1a1a",
+            "secondary": "#4af8e3",
+            "surface-container-lowest": "#000000",
+            "on-error": "#490013",
+            "primary-fixed-dim": "#af7aef",
+            "on-secondary": "#005b51",
+            "on-tertiary-container": "#4f585c",
+            "error": "#ff6e84",
+            "surface-variant": "#1f1f1f",
+            "on-tertiary": "#576064",
+            "on-primary-fixed": "#000000",
+            "secondary-dim": "#33e9d5",
+            "primary-dim": "#ba85fb",
+            "primary-fixed": "#bc87fe",
+            "tertiary": "#f2fbff",
+            "tertiary-container": "#e3ecf0",
+            "on-error-container": "#ffb2b9",
+            "surface-tint": "#c799ff",
+            "secondary-fixed-dim": "#33e9d5",
+            "tertiary-fixed-dim": "#e3ecf0",
+            "on-secondary-fixed": "#00463f",
+            "on-tertiary-fixed-variant": "#626b6f",
+            "on-surface": "#ffffff",
+            "tertiary-dim": "#e3ecf0",
+            "surface-bright": "#222222",
+            "surface-container-highest": "#262626",
+            "on-primary": "#440080",
+            "tertiary-fixed": "#f2fbff",
+            "error-container": "#a70138"
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Manrope"],
+            "label": ["Space Grotesk"]
+          },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        },
+      },
+    }
+  </script>
+<style>
+    body { font-family: 'Manrope', sans-serif; cursor: crosshair; }
+    .font-space-grotesk { font-family: 'Space Grotesk', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    
+    @keyframes orbit {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    .celestial-orbit {
+      border: 1px solid rgba(199, 153, 255, 0.08);
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .planet-body {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      box-shadow: inset -4px -4px 12px rgba(0,0,0,0.8), 0 0 20px rgba(74, 248, 227, 0.2);
+    }
+
+    .animate-orbit-slow { animation: orbit 120s linear infinite; }
+    .animate-orbit-medium { animation: orbit 60s linear infinite; }
+    .animate-orbit-fast { animation: orbit 30s linear infinite; }
+
+    .star-bg {
+      background-image: 
+        radial-gradient(1px 1px at 20px 30px, #eee, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 130px 80px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 160px 120px, #ddd, rgba(0,0,0,0));
+      background-repeat: repeat;
+      background-size: 200px 200px;
+      opacity: 0.3;
+    }
+
+    .nebula {
+      filter: blur(80px);
+      opacity: 0.15;
+    }
+
+    .hud-line {
+      position: absolute;
+      background: rgba(199, 153, 255, 0.2);
+      height: 1px;
+    }
+    
+    .scan-line {
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(to right, transparent, rgba(199, 153, 255, 0.2), transparent);
+      position: absolute;
+      animation: scan 4s linear infinite;
+    }
+    
+    @keyframes scan {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface selection:bg-primary/30 overflow-hidden">
+<!-- HUD Overlay: Top Elements -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-8 py-6 w-full bg-transparent">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 border border-primary/40 flex items-center justify-center relative">
+<div class="absolute inset-0 border border-primary/10 scale-125"></div>
+<span class="material-symbols-outlined text-primary text-xl">blur_on</span>
+</div>
+<div class="flex flex-col">
+<div class="text-xl font-bold tracking-widest text-primary font-space-grotesk uppercase">Cosmic Observatory</div>
+<div class="text-[8px] font-label text-on-surface-variant tracking-[0.4em] uppercase">Universe Sandbox v4.2.0</div>
+</div>
+</div>
+<div class="hidden md:flex gap-10 items-center">
+<a class="font-space-grotesk tracking-[0.2em] uppercase text-[10px] text-secondary border-b border-secondary/50 pb-1" href="#">Simulate</a>
+<a class="font-space-grotesk tracking-[0.2em] uppercase text-[10px] text-on-surface-variant hover:text-primary transition-colors" href="#">Navigation</a>
+<a class="font-space-grotesk tracking-[0.2em] uppercase text-[10px] text-on-surface-variant hover:text-primary transition-colors" href="#">Spectroscopy</a>
+<a class="font-space-grotesk tracking-[0.2em] uppercase text-[10px] text-on-surface-variant hover:text-primary transition-colors" href="#">Data-Node</a>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex flex-col items-end mr-4 border-r border-outline-variant/30 pr-6">
+<span class="text-[9px] text-on-surface-variant font-label tracking-tighter uppercase">Simulation clock</span>
+<span class="text-xs font-headline tabular-nums">1.02s / real-time</span>
+</div>
+<button class="hover:text-primary transition-all duration-300">
+<span class="material-symbols-outlined text-xl">sensors</span>
+</button>
+<button class="hover:text-primary transition-all duration-300">
+<span class="material-symbols-outlined text-xl">account_circle</span>
+</button>
+</div>
+</nav>
+<!-- Main Simulation Environment -->
+<main class="relative w-screen h-screen flex items-center justify-center overflow-hidden">
+<!-- Space Atmosphere -->
+<div class="absolute inset-0 z-0 bg-black">
+<div class="absolute inset-0 star-bg"></div>
+<!-- Nebula Layers -->
+<div class="absolute top-[10%] left-[20%] w-[600px] h-[600px] bg-primary/20 rounded-full nebula"></div>
+<div class="absolute bottom-[20%] right-[10%] w-[500px] h-[500px] bg-secondary/10 rounded-full nebula"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-60"></div>
+</div>
+<!-- 3D-Feeling Orrery Visualizer -->
+<div class="relative w-full h-full flex items-center justify-center pointer-events-none perspective-[2000px]">
+<div class="relative w-[1200px] h-[1200px] origin-center [transform:rotateX(65deg)]">
+<!-- Central Star: The Sun -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 [transform:rotateX(-65deg)]">
+<!-- Glow Layers -->
+<div class="absolute inset-0 w-32 h-32 -translate-x-1/2 -translate-y-1/2 bg-primary rounded-full blur-[40px] opacity-40 animate-pulse"></div>
+<div class="absolute inset-0 w-24 h-24 -translate-x-1/2 -translate-y-1/2 bg-white rounded-full blur-[20px] opacity-30"></div>
+<!-- Core -->
+<div class="w-16 h-16 rounded-full bg-gradient-to-br from-white via-primary to-on-primary-container shadow-[0_0_80px_rgba(199,153,255,1)] border-4 border-white/20"></div>
+</div>
+<!-- Orbits & Planets -->
+<!-- Inner Planet -->
+<div class="celestial-orbit w-[350px] h-[350px] animate-orbit-fast">
+<div class="planet-body w-4 h-4 bg-orange-400 [transform:rotateX(-65deg)]">
+<div class="absolute inset-0 rounded-full shadow-[0_0_10px_rgba(251,146,60,0.4)]"></div>
+</div>
+</div>
+<!-- Earth -->
+<div class="celestial-orbit w-[600px] h-[600px] animate-orbit-medium border-secondary/20">
+<div class="planet-body w-6 h-6 bg-secondary [transform:rotateX(-65deg)]">
+<!-- Earth Texture Hint -->
+<div class="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_30%_30%,_#4af8e3,_#005b51)]"></div>
+<div class="absolute -inset-1 rounded-full border border-secondary/30 blur-[2px]"></div>
+<!-- Label HUD hint -->
+<div class="absolute top-8 left-1/2 -translate-x-1/2 whitespace-nowrap">
+<div class="h-12 w-[1px] bg-secondary/40 mx-auto"></div>
+<div class="px-2 py-1 bg-black/80 border border-secondary/30 text-[8px] tracking-widest text-secondary font-label uppercase">Terra (01)</div>
+</div>
+</div>
+</div>
+<!-- Outer Planet -->
+<div class="celestial-orbit w-[900px] h-[900px] animate-orbit-slow border-primary/10">
+<div class="planet-body w-5 h-5 bg-primary/80 [transform:rotateX(-65deg)] shadow-[0_0_15px_rgba(199,153,255,0.3)]"></div>
+</div>
+<!-- Grid System -->
+<div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 50px 50px;"></div>
+</div>
+</div>
+<!-- Main HUD: Central Metrics -->
+<div class="absolute top-[15%] left-1/2 -translate-x-1/2 text-center z-20 pointer-events-none">
+<div class="mb-4 inline-flex items-center gap-3">
+<div class="h-[1px] w-12 bg-gradient-to-r from-transparent to-primary/40"></div>
+<p class="font-label text-primary/80 tracking-[0.4em] uppercase text-[10px]">Distance Accumulation Metric</p>
+<div class="h-[1px] w-12 bg-gradient-to-l from-transparent to-primary/40"></div>
+</div>
+<div class="relative inline-block">
+<h1 class="font-headline text-[7rem] font-bold leading-none tracking-tighter text-white/90 drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+      26,842,109,552
+    </h1>
+<!-- HUD Decoration -->
+<div class="absolute -top-4 -left-8 w-4 h-4 border-t border-l border-primary/40"></div>
+<div class="absolute -bottom-4 -right-8 w-4 h-4 border-b border-r border-primary/40"></div>
+</div>
+<div class="flex justify-center items-center gap-20 mt-8">
+<div class="group relative px-6 py-2">
+<div class="absolute left-0 top-0 h-full w-[2px] bg-secondary/50"></div>
+<span class="block font-label text-secondary text-[9px] tracking-[0.3em] uppercase mb-1">Metrics Units</span>
+<span class="font-headline text-3xl text-on-surface">6.712 <span class="text-on-surface-variant text-base">T-KM</span></span>
+</div>
+<div class="group relative px-6 py-2">
+<div class="absolute left-0 top-0 h-full w-[2px] bg-primary/50"></div>
+<span class="block font-label text-primary text-[9px] tracking-[0.3em] uppercase mb-1">Astron. Distance</span>
+<span class="font-headline text-3xl text-on-surface">179.43 <span class="text-on-surface-variant text-base">AU</span></span>
+</div>
+</div>
+</div>
+<!-- Right HUD: Telemetry Panel -->
+<aside class="absolute right-12 top-1/2 -translate-y-1/2 w-80 space-y-4 z-30">
+<!-- Velocity Card -->
+<div class="bg-surface-container-low/40 backdrop-blur-md p-6 border border-outline-variant/20 relative overflow-hidden">
+<div class="scan-line opacity-20"></div>
+<div class="flex justify-between items-start mb-8">
+<div>
+<h3 class="font-label text-[10px] tracking-[0.2em] text-primary uppercase mb-1 flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary animate-pulse"></span>
+          Vector Velocity
+        </h3>
+<p class="font-headline text-4xl font-light tabular-nums">29.78</p>
+<span class="text-[10px] text-on-surface-variant font-label uppercase tracking-widest">Kilometers per second</span>
+</div>
+<div class="w-12 h-12 border border-outline-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary/70">speed</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-px bg-outline-variant/10 border-t border-outline-variant/20 pt-4 mt-4">
+<div class="py-2">
+<div class="text-[8px] font-label text-on-surface-variant uppercase tracking-widest">Path</div>
+<div class="text-xs font-headline text-on-surface">Elliptical</div>
+</div>
+<div class="py-2">
+<div class="text-[8px] font-label text-on-surface-variant uppercase tracking-widest">Inclination</div>
+<div class="text-xs font-headline text-on-surface">7.155°</div>
+</div>
+</div>
+</div>
+<!-- Simulation Facts -->
+<div class="space-y-3">
+<div class="bg-black/40 border-l border-primary/30 p-4">
+<div class="text-[9px] font-label text-primary uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-xs">info</span>
+        Orbital Mechanics
+      </div>
+<p class="font-body text-[11px] text-on-surface-variant leading-relaxed">
+        Earth orbits the Sun at an average distance of ~150M km. This cycle is critical for seasonal flux and biological preservation.
+      </p>
+</div>
+<div class="bg-black/40 border-l border-secondary/30 p-4">
+<div class="text-[9px] font-label text-secondary uppercase tracking-[0.2em] mb-2">Subject Status: Nominal</div>
+<div class="flex items-center gap-3">
+<div class="flex-1 h-1 bg-outline-variant/20 rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-3/4"></div>
+</div>
+<span class="text-[10px] font-headline">75% Sync</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Left HUD: Planet Selection -->
+<div class="absolute left-12 bottom-32 z-30 space-y-4">
+<div class="text-[10px] font-label text-on-surface-variant uppercase tracking-[0.3em] mb-6">Targeting Systems</div>
+<div class="group flex items-center gap-5 cursor-pointer">
+<div class="w-14 h-14 border border-secondary bg-secondary/5 flex items-center justify-center transition-all group-hover:bg-secondary/20">
+<span class="material-symbols-outlined text-secondary">public</span>
+</div>
+<div class="border-l border-outline-variant/30 pl-4 py-1">
+<div class="font-label text-[9px] uppercase text-secondary tracking-widest">Active Focus</div>
+<div class="font-headline text-lg tracking-widest">TERRA</div>
+<div class="text-[8px] font-mono text-on-surface-variant uppercase">ID: 001-SOL-C</div>
+</div>
+</div>
+<div class="group flex items-center gap-5 cursor-pointer opacity-40 hover:opacity-100 transition-opacity">
+<div class="w-14 h-14 border border-outline-variant bg-white/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">brightness_4</span>
+</div>
+<div class="border-l border-outline-variant/30 pl-4 py-1">
+<div class="font-label text-[9px] uppercase text-on-surface-variant tracking-widest">Secondary</div>
+<div class="font-headline text-lg tracking-widest">LUNA</div>
+<div class="text-[8px] font-mono text-on-surface-variant uppercase">ID: 001-SOL-M</div>
+</div>
+</div>
+</div>
+<!-- Bottom Control Bar -->
+<footer class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
+<div class="bg-black/60 backdrop-blur-xl border border-outline-variant/20 rounded-lg p-2 flex items-center gap-2 shadow-2xl">
+<!-- Play Control -->
+<button class="flex items-center gap-3 px-6 py-3 bg-secondary/10 hover:bg-secondary/20 text-secondary border border-secondary/20 transition-all active:scale-95 group">
+<span class="material-symbols-outlined fill-1" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+<span class="font-space-grotesk text-[10px] tracking-[0.2em] uppercase font-bold">Resuming Simulation</span>
+</button>
+<div class="w-[1px] h-8 bg-outline-variant/30 mx-2"></div>
+<!-- Action Icons -->
+<div class="flex items-center px-2">
+<button class="p-3 text-on-surface-variant hover:text-primary transition-colors flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-xl">speed</span>
+<span class="text-[7px] font-label uppercase">Time</span>
+</button>
+<button class="p-3 text-on-surface-variant hover:text-primary transition-colors flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-xl">straighten</span>
+<span class="text-[7px] font-label uppercase">Tape</span>
+</button>
+<button class="p-3 text-on-surface-variant hover:text-primary transition-colors flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-xl">restart_alt</span>
+<span class="text-[7px] font-label uppercase">Reset</span>
+</button>
+<button class="p-3 text-on-surface-variant hover:text-primary transition-colors flex flex-col items-center gap-1">
+<span class="material-symbols-outlined text-xl">videocam</span>
+<span class="text-[7px] font-label uppercase">Cam</span>
+</button>
+</div>
+</div>
+</footer>
+<!-- Viewport Visual Accents -->
+<div class="fixed top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent z-[60]"></div>
+<div class="fixed bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-secondary/30 to-transparent z-[60]"></div>
+<div class="fixed inset-0 pointer-events-none border-[20px] border-black/20 z-[5]"></div>
+</main></body></html>
