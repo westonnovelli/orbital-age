@@ -24,12 +24,14 @@ export class OrbitalTrailEntity {
     this.radiusX = radiusX;
     this.radiusY = radiusY;
     this.color = color;
-    this.maxSamples = clamp(Math.floor(maxSamples), 2, 8192);
+    this.maxSamples = clamp(Math.floor(maxSamples), 2, 16384);
     this.historyDays = Math.max(0, Number(historyDays) || 0);
     this.minSampleDistance = Math.max(0, Number(minSampleDistance) || 0);
     this.minDayDelta = Math.max(0, Number(minDayDelta) || 0);
 
     this.samples = [];
+    this.cursorIndex = 0;
+    this.precomputed = false;
     this.vertices = new Float32Array(this.maxSamples * 2);
     this.dirty = false;
     this.primitive = null;
@@ -43,7 +45,85 @@ export class OrbitalTrailEntity {
     gl.bufferData(gl.ARRAY_BUFFER, this.vertices.byteLength, gl.DYNAMIC_DRAW);
   }
 
+  /**
+   * Pre-compute the full trail from day 0 to totalDays in a single pass.
+   * @param {number} totalDays - Total number of days to compute
+   * @param {(day: number) => {x: number, y: number}} positionAtDay - Callback returning position for a given day offset
+   */
+  precomputeTrail(totalDays, positionAtDay) {
+    const step = Math.max(this.minDayDelta, 0.01);
+    const samples = [];
+
+    for (let day = 0; day <= totalDays; day += step) {
+      const pos = positionAtDay(day);
+      const pointX = pos.x * this.radiusX;
+      const pointY = pos.y * this.radiusY;
+      const last = samples[samples.length - 1];
+
+      if (last) {
+        const dayDelta = day - last.day;
+        const dx = pointX - last.x;
+        const dy = pointY - last.y;
+        const distance = Math.hypot(dx, dy);
+        if (dayDelta < this.minDayDelta && distance < this.minSampleDistance) {
+          continue;
+        }
+      }
+
+      samples.push({ day, x: pointX, y: pointY });
+    }
+
+    // Ensure the final day is included
+    const lastDay = samples[samples.length - 1]?.day;
+    if (lastDay === undefined || lastDay < totalDays) {
+      const pos = positionAtDay(totalDays);
+      samples.push({ day: totalDays, x: pos.x * this.radiusX, y: pos.y * this.radiusY });
+    }
+
+    // Apply maxSamples cap (keep the most recent)
+    if (samples.length > this.maxSamples) {
+      samples.splice(0, samples.length - this.maxSamples);
+    }
+
+    this.samples = samples;
+    this.cursorIndex = samples.length;
+    this.precomputed = true;
+    this.dirty = true;
+  }
+
+  /**
+   * Set the cursor to the sample closest to the given day value using binary search.
+   * Only the first `cursorIndex` samples are rendered, enabling instant scrubbing.
+   * @param {number} day - The day value to seek to
+   */
+  setCursorForDay(day) {
+    const arr = this.samples;
+    if (arr.length === 0) {
+      this.cursorIndex = 0;
+      return;
+    }
+
+    // Binary search for the rightmost sample with sample.day <= day
+    let lo = 0;
+    let hi = arr.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >>> 1;
+      if (arr[mid].day <= day) {
+        lo = mid + 1;
+      } else {
+        hi = mid;
+      }
+    }
+
+    // lo is now the count of samples with day <= target
+    this.cursorIndex = lo;
+  }
+
   addSample(day, x, y) {
+    if (this.precomputed) {
+      return;
+    }
+
     const dayValue = Number(day);
     const xValue = Number(x);
     const yValue = Number(y);
@@ -55,9 +135,7 @@ export class OrbitalTrailEntity {
     const pointY = yValue * this.radiusY;
     const last = this.samples[this.samples.length - 1];
 
-    if (last && dayValue < last.day) {
-      this.samples.length = 0;
-    } else if (last) {
+    if (last) {
       const dayDelta = dayValue - last.day;
       const dx = pointX - last.x;
       const dy = pointY - last.y;
@@ -73,7 +151,8 @@ export class OrbitalTrailEntity {
   }
 
   render({ gl, camera }) {
-    if (!this.primitive || !this.buffer || this.samples.length < 2) {
+    const drawCount = this.precomputed ? this.cursorIndex : this.samples.length;
+    if (!this.primitive || !this.buffer || drawCount < 2) {
       return;
     }
 
@@ -91,7 +170,7 @@ export class OrbitalTrailEntity {
     gl.uniformMatrix3fv(this.primitive.uniforms.matrix, false, camera.matrix);
     gl.uniform4fv(this.primitive.uniforms.color, this.color);
     gl.uniform1f(this.primitive.uniforms.pointSize, 1);
-    gl.drawArrays(gl.LINE_STRIP, 0, this.samples.length);
+    gl.drawArrays(gl.LINE_STRIP, 0, drawCount);
   }
 
   dispose(gl) {
