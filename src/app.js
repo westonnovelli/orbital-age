@@ -6,6 +6,7 @@ import { SunEntity } from "./webgl/entities/sun.js";
 import { EarthMarkerEntity } from "./webgl/entities/earth-marker.js";
 import { OrbitalTrailEntity } from "./webgl/entities/orbital-trail.js";
 import { TimelineControllerEntity } from "./webgl/entities/timeline-controller.js";
+import { StarfieldEntity } from "./webgl/entities/starfield.js";
 
 const DEFAULT_SPEED_DAYS_PER_SECOND = 30;
 
@@ -117,6 +118,7 @@ export class OrbitalApp {
     });
 
     const scene = new Scene()
+      .add(new StarfieldEntity())
       .add(new SunEntity())
       .add(earthTrail)
       .add(timelineController)
