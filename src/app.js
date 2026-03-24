@@ -102,8 +102,8 @@ export class OrbitalApp {
       radiusX: 1,
       radiusY: 0.998,
       color: [0.2, 0.78, 0.96, 0.92],
-      maxSamples: 2000,
-      historyDays: 1825,
+      maxSamples: 8192,
+      historyDays: 0,
       minDayDelta: 0.2,
       minSampleDistance: 0.0025
     });

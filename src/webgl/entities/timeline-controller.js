@@ -62,8 +62,23 @@ export class TimelineControllerEntity {
   }
 
   init() {
+    this.#precomputeTrails();
     this.#applyToEarthMarker();
     this.#emitState();
+  }
+
+  #precomputeTrails() {
+    const birthdayMs = this.birthdayUtc.getTime();
+    for (const trail of this.motionTrails) {
+      if (typeof trail.precomputeTrail !== "function") {
+        continue;
+      }
+      trail.precomputeTrail(this.totalDays, (day) => {
+        const instant = new Date(birthdayMs + day * MS_PER_DAY);
+        const position = earthHeliocentricPositionAuAtInstant(instant);
+        return { x: position.xAu, y: position.yAu };
+      });
+    }
   }
 
   render({ deltaSeconds }) {
@@ -165,7 +180,7 @@ export class TimelineControllerEntity {
     const position = earthHeliocentricPositionAuAtInstant(instant);
     this.earthMarker.setPosition(position.xAu, position.yAu);
     for (const trail of this.motionTrails) {
-      trail.addSample?.(this.timelineDays, position.xAu, position.yAu);
+      trail.setCursorForDay?.(this.timelineDays);
     }
   }
 
