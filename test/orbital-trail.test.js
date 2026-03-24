@@ -68,7 +68,7 @@ test("orbital trail probe keeps long-run trail memory bounded", () => {
   });
 
   assert.equal(result.maxSamples, 720);
-  assert.equal(result.vertexBufferBytes, 720 * 2 * Float32Array.BYTES_PER_ELEMENT);
+  assert.equal(result.vertexBufferBytes, 720 * 3 * Float32Array.BYTES_PER_ELEMENT);
   assert.ok(result.retainedSamples <= 720);
   assert.ok(result.retainedSamples > 0);
 });
@@ -97,7 +97,7 @@ test("orbital trail works with high-speed config (maxSamples=2000, historyDays=1
 
   assert.equal(trail.maxSamples, 2000);
   assert.equal(trail.historyDays, 1825);
-  assert.equal(trail.vertices.byteLength, 2000 * 2 * Float32Array.BYTES_PER_ELEMENT);
+  assert.equal(trail.vertices.byteLength, 2000 * 3 * Float32Array.BYTES_PER_ELEMENT);
 });
 
 test("orbital trail probe stays bounded with high-speed trail config", () => {
@@ -112,7 +112,7 @@ test("orbital trail probe stays bounded with high-speed trail config", () => {
   });
 
   assert.equal(result.maxSamples, 2000);
-  assert.equal(result.vertexBufferBytes, 2000 * 2 * Float32Array.BYTES_PER_ELEMENT);
+  assert.equal(result.vertexBufferBytes, 2000 * 3 * Float32Array.BYTES_PER_ELEMENT);
   assert.ok(result.retainedSamples <= 2000);
   assert.ok(result.retainedSamples > 0);
   assert.ok(result.elapsedMs < 3000, `expected <3000ms, got ${result.elapsedMs}ms`);
