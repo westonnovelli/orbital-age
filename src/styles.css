@@ -103,10 +103,35 @@ button:active {
 }
 
 .viewport {
+  position: relative;
   min-height: 360px;
   background: transparent;
   border: none;
   padding: 0;
+}
+
+.hud {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  gap: 1rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(5, 8, 16, 0.75);
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.65rem;
+  pointer-events: none;
+}
+
+.hud--hidden {
+  display: none;
+}
+
+.hud__item {
+  color: var(--accent);
 }
 
 canvas {
@@ -253,5 +278,11 @@ input[type="range"]::-moz-range-thumb {
 
   .timeline__row {
     gap: 0.5rem;
+  }
+
+  .hud {
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.65rem;
   }
 }
