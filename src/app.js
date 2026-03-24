@@ -8,6 +8,7 @@ import { OrbitalTrailEntity } from "./webgl/entities/orbital-trail.js";
 import { TimelineControllerEntity } from "./webgl/entities/timeline-controller.js";
 import { BirthdayMarkerEntity } from "./webgl/entities/birthday-markers.js";
 import { StarfieldEntity } from "./webgl/entities/starfield.js";
+import { orbitsCompleted, currentAge, distanceTraveledKm } from "./stats.js";
 
 const DEFAULT_SPEED_DAYS_PER_SECOND = 120;
 
@@ -47,7 +48,11 @@ export class OrbitalApp {
     rampToggle,
     scrubber,
     timelineStatus,
-    timelineDateOutput
+    timelineDateOutput,
+    statsHud,
+    hudOrbits,
+    hudAge,
+    hudDistance
   }) {
     this.form = form;
     this.dateInput = dateInput;
@@ -66,6 +71,11 @@ export class OrbitalApp {
     this.speedSelect = speedSelect;
     this.rampToggle = rampToggle;
     this.timelineStatus = timelineStatus;
+
+    this.statsHud = statsHud;
+    this.hudOrbits = hudOrbits;
+    this.hudAge = hudAge;
+    this.hudDistance = hudDistance;
 
     this.renderer = new WebGLRenderer(canvas);
     this.timelineController = null;
@@ -138,6 +148,7 @@ export class OrbitalApp {
     this.renderer.start();
 
     this.#setTimelineEnabled(true);
+    this.statsHud?.classList.remove("hud--hidden");
     this.#updateTimelineUi(this.timelineController.getState());
   }
 
@@ -275,6 +286,17 @@ export class OrbitalApp {
 
     this.#setPlayButtonState(state.playing);
     this.#setRampToggleState(state.rampActive);
+
+    if (this.hudOrbits) {
+      this.hudOrbits.textContent = `ORBITS ${orbitsCompleted(state.elapsedDays)}`;
+    }
+    if (this.hudAge) {
+      this.hudAge.textContent = `AGE ${currentAge(state.elapsedDays)}`;
+    }
+    if (this.hudDistance) {
+      const km = distanceTraveledKm(state.elapsedDays);
+      this.hudDistance.textContent = `DIST ${km.toLocaleString(undefined, { maximumFractionDigits: 0 })} km`;
+    }
 
     if (this.timelineStatus) {
       if (state.totalDays === 0) {
