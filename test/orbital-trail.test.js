@@ -20,7 +20,7 @@ test("orbital trail prunes by maxSamples", () => {
   assert.deepEqual(trail.samples.map((sample) => sample.day), [1, 2, 3]);
 });
 
-test("orbital trail prunes by historyDays and resets on rewind", () => {
+test("orbital trail prunes by historyDays", () => {
   const trail = new OrbitalTrailEntity({
     maxSamples: 10,
     historyDays: 2,
@@ -34,10 +34,6 @@ test("orbital trail prunes by historyDays and resets on rewind", () => {
   trail.addSample(4, 4, 0);
 
   assert.deepEqual(trail.samples.map((sample) => sample.day), [2, 4]);
-
-  trail.addSample(1, 9, 9);
-  assert.equal(trail.samples.length, 1);
-  assert.deepEqual(trail.samples[0], { day: 1, x: 9, y: 9 });
 });
 
 test("orbital trail ignores dense samples under configured thresholds", () => {
@@ -56,29 +52,31 @@ test("orbital trail ignores dense samples under configured thresholds", () => {
   assert.deepEqual(trail.samples.map((sample) => sample.day), [10, 10.2]);
 });
 
-test("orbital trail probe keeps long-run trail memory bounded", () => {
+test("orbital trail probe keeps full-lifetime trail memory bounded", () => {
   const result = runTrailSamplingProbe({
     sampleCount: 200_000,
     trailOptions: {
-      maxSamples: 720,
-      historyDays: 480,
+      maxSamples: 8192,
+      historyDays: 0,
       minDayDelta: 0.2,
       minSampleDistance: 0.0025
     }
   });
 
-  assert.equal(result.maxSamples, 720);
-  assert.equal(result.vertexBufferBytes, 720 * 2 * Float32Array.BYTES_PER_ELEMENT);
-  assert.ok(result.retainedSamples <= 720);
+  assert.equal(result.maxSamples, 8192);
+  assert.equal(result.vertexBufferBytes, 8192 * 2 * Float32Array.BYTES_PER_ELEMENT);
+  assert.ok(result.retainedSamples <= 8192);
   assert.ok(result.retainedSamples > 0);
+  // historyDays: 0 means no time-based pruning occurred
+  assert.equal(result.historyDays, 0);
 });
 
 test("orbital trail probe runtime stays within budget for long timelines", () => {
   const result = runTrailSamplingProbe({
     sampleCount: 200_000,
     trailOptions: {
-      maxSamples: 720,
-      historyDays: 480,
+      maxSamples: 8192,
+      historyDays: 0,
       minDayDelta: 0.2,
       minSampleDistance: 0.0025
     }
@@ -87,53 +85,202 @@ test("orbital trail probe runtime stays within budget for long timelines", () =>
   assert.ok(result.elapsedMs < 3000, `expected <3000ms, got ${result.elapsedMs}ms`);
 });
 
-test("orbital trail works with high-speed config (maxSamples=2000, historyDays=1825)", () => {
+test("orbital trail works with full-lifetime config (maxSamples=16384, historyDays=0)", () => {
   const trail = new OrbitalTrailEntity({
-    maxSamples: 2000,
-    historyDays: 1825,
+    maxSamples: 16384,
+    historyDays: 0,
     minDayDelta: 0.2,
     minSampleDistance: 0.0025
   });
 
-  assert.equal(trail.maxSamples, 2000);
-  assert.equal(trail.historyDays, 1825);
-  assert.equal(trail.vertices.byteLength, 2000 * 2 * Float32Array.BYTES_PER_ELEMENT);
+  assert.equal(trail.maxSamples, 16384);
+  assert.equal(trail.historyDays, 0);
+  assert.equal(trail.vertices.byteLength, 16384 * 2 * Float32Array.BYTES_PER_ELEMENT);
 });
 
-test("orbital trail probe stays bounded with high-speed trail config", () => {
+test("orbital trail probe stays bounded with full-lifetime trail config", () => {
   const result = runTrailSamplingProbe({
     sampleCount: 200_000,
     trailOptions: {
-      maxSamples: 2000,
-      historyDays: 1825,
+      maxSamples: 16384,
+      historyDays: 0,
       minDayDelta: 0.2,
       minSampleDistance: 0.0025
     }
   });
 
-  assert.equal(result.maxSamples, 2000);
-  assert.equal(result.vertexBufferBytes, 2000 * 2 * Float32Array.BYTES_PER_ELEMENT);
-  assert.ok(result.retainedSamples <= 2000);
+  assert.equal(result.maxSamples, 16384);
+  assert.equal(result.vertexBufferBytes, 16384 * 2 * Float32Array.BYTES_PER_ELEMENT);
+  assert.ok(result.retainedSamples <= 16384);
   assert.ok(result.retainedSamples > 0);
+  assert.equal(result.historyDays, 0);
   assert.ok(result.elapsedMs < 3000, `expected <3000ms, got ${result.elapsedMs}ms`);
 });
 
-test("orbital trail prunes correctly with 1825-day history window", () => {
+test("precomputeTrail builds full trail in a single pass", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 16384,
+    historyDays: 0,
+    minDayDelta: 0.2,
+    minSampleDistance: 0.0025
+  });
+
+  const totalDays = 365.25 * 5; // 5 years — fits within maxSamples
+  trail.precomputeTrail(totalDays, (day) => {
+    const angle = (day * 0.9856 * Math.PI) / 180;
+    return { x: Math.cos(angle), y: Math.sin(angle) };
+  });
+
+  assert.ok(trail.precomputed, "trail should be marked as precomputed");
+  assert.ok(trail.samples.length > 0, "should have samples");
+  assert.ok(trail.samples.length <= 16384, "should respect maxSamples cap");
+  assert.equal(trail.samples[0].day, 0, "first sample should be day 0");
+  assert.equal(trail.samples[trail.samples.length - 1].day, totalDays, "last sample should be final day");
+  assert.ok(trail.dirty, "should be marked dirty for GPU sync");
+});
+
+test("full-lifetime benchmark: 30 years within 16384 cap and <500ms", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 16384,
+    historyDays: 0,
+    minDayDelta: 0.2,
+    minSampleDistance: 0.0025
+  });
+
+  const totalDays = 365 * 30;
+  const start = performance.now();
+  trail.precomputeTrail(totalDays, (day) => {
+    const angle = (day * 0.9856 * Math.PI) / 180;
+    return { x: Math.cos(angle), y: Math.sin(angle) };
+  });
+  const elapsed = performance.now() - start;
+
+  assert.ok(elapsed < 500, `expected <500ms, got ${elapsed.toFixed(1)}ms`);
+  assert.ok(trail.samples.length <= 16384, `samples ${trail.samples.length} should fit within 16384 cap`);
+  assert.ok(trail.samples.length > 0, "should have samples");
+  assert.equal(trail.samples[trail.samples.length - 1].day, totalDays, "last sample at final day");
+});
+
+test("precomputeTrail makes addSample a no-op", () => {
   const trail = new OrbitalTrailEntity({
     maxSamples: 100,
-    historyDays: 1825,
+    historyDays: 0,
     minDayDelta: 0,
     minSampleDistance: 0
   });
 
-  // Add samples spanning more than 1825 days
+  trail.precomputeTrail(10, (day) => ({ x: day, y: 0 }));
+  const countAfterPrecompute = trail.samples.length;
+
+  trail.addSample(20, 99, 99);
+  assert.equal(trail.samples.length, countAfterPrecompute, "addSample should be no-op when precomputed");
+});
+
+test("precomputeTrail applies spatial and temporal filters", () => {
+  // With minDayDelta=5 and minSampleDistance=0.5, a slowly moving object
+  // should have many samples filtered out by BOTH thresholds
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 16384,
+    historyDays: 0,
+    minDayDelta: 5,
+    minSampleDistance: 0.5
+  });
+
+  // Object barely moves — 0.001 per day, so distance < 0.5 for ~500 days
+  trail.precomputeTrail(100, (day) => ({ x: day * 0.001, y: 0 }));
+
+  // Without filters: ~20 steps (100/5). With spatial filter,
+  // samples within 5 days AND within 0.5 distance are skipped.
+  // Since movement is tiny (0.005 per step), most intermediate samples filtered.
+  assert.ok(trail.samples.length >= 2, "should have at least first and last");
+  assert.ok(trail.samples.length < 22, "filters should reduce sample count");
+});
+
+test("historyDays: 0 retains all samples regardless of age", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 100,
+    historyDays: 0,
+    minDayDelta: 0,
+    minSampleDistance: 0
+  });
+
+  // Add samples spanning a very wide time range
   trail.addSample(0, 0, 0);
   trail.addSample(1000, 1, 0);
-  trail.addSample(1825, 0, 1);
-  trail.addSample(2000, 1, 1);
+  trail.addSample(5000, 0, 1);
+  trail.addSample(10000, 1, 1);
 
-  // Day 0 is 2000 days ago (> 1825), should be pruned
-  // Day 1000 is 1000 days ago (within 1825 window from day 2000: minDay = 175)
-  assert.ok(trail.samples.every((s) => s.day >= 175));
-  assert.ok(trail.samples.length <= 100);
+  // With historyDays: 0, no time-based pruning — all 4 samples retained
+  assert.equal(trail.samples.length, 4);
+  assert.deepEqual(trail.samples.map((s) => s.day), [0, 1000, 5000, 10000]);
+});
+
+test("setCursorForDay binary-searches to the correct position", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 16384,
+    historyDays: 0,
+    minDayDelta: 1,
+    minSampleDistance: 0
+  });
+
+  trail.precomputeTrail(10, (day) => ({ x: day, y: 0 }));
+
+  // Cursor starts at full length after precompute
+  assert.equal(trail.cursorIndex, trail.samples.length);
+
+  // Seek to day 0 — should include the sample at day 0
+  trail.setCursorForDay(0);
+  assert.equal(trail.cursorIndex, 1);
+
+  // Seek to midpoint
+  trail.setCursorForDay(5);
+  assert.ok(trail.cursorIndex > 1);
+  assert.ok(trail.cursorIndex < trail.samples.length);
+  // All visible samples should have day <= 5
+  for (let i = 0; i < trail.cursorIndex; i++) {
+    assert.ok(trail.samples[i].day <= 5);
+  }
+
+  // Seek to end
+  trail.setCursorForDay(10);
+  assert.equal(trail.cursorIndex, trail.samples.length);
+
+  // Seek before start
+  trail.setCursorForDay(-1);
+  assert.equal(trail.cursorIndex, 0);
+});
+
+test("setCursorForDay on empty samples sets cursor to 0", () => {
+  const trail = new OrbitalTrailEntity({ maxSamples: 10 });
+  trail.setCursorForDay(5);
+  assert.equal(trail.cursorIndex, 0);
+});
+
+test("cursorIndex controls rendered vertex count for precomputed trails", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 16384,
+    historyDays: 0,
+    minDayDelta: 1,
+    minSampleDistance: 0
+  });
+
+  trail.precomputeTrail(10, (day) => ({ x: day, y: 0 }));
+  const totalSamples = trail.samples.length;
+
+  // Set cursor to half
+  trail.setCursorForDay(5);
+  const halfCursor = trail.cursorIndex;
+  assert.ok(halfCursor < totalSamples);
+  assert.ok(halfCursor > 0);
+
+  // Scrub backward then forward — cursor moves without destroying data
+  trail.setCursorForDay(2);
+  const earlyPos = trail.cursorIndex;
+  assert.ok(earlyPos < halfCursor);
+
+  trail.setCursorForDay(8);
+  assert.ok(trail.cursorIndex > halfCursor);
+
+  // Full sample array is preserved through all cursor moves
+  assert.equal(trail.samples.length, totalSamples);
 });

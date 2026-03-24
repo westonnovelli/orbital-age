@@ -14,9 +14,9 @@ function markerStub() {
 
 function trailStub() {
   return {
-    samples: [],
-    addSample(day, x, y) {
-      this.samples.push({ day, x, y });
+    cursorDays: [],
+    setCursorForDay(day) {
+      this.cursorDays.push(day);
     }
   };
 }
@@ -38,8 +38,8 @@ test("timeline controller initializes from birthday and updates marker", () => {
   assert.equal(state.elapsedDays, 0);
   assert.equal(state.totalDays, 10);
   assert.equal(marker.positions.length, 1);
-  assert.equal(trail.samples.length, 1);
-  assert.equal(trail.samples[0].day, 0);
+  assert.equal(trail.cursorDays.length, 1);
+  assert.equal(trail.cursorDays[0], 0);
 });
 
 test("timeline controller supports stepping and normalized scrubbing with bounds", () => {
@@ -171,7 +171,7 @@ test("timeline controller handles invalid normalized progress values safely", ()
   assert.equal(state.timelineDateIso, "2000-01-01");
 });
 
-test("timeline controller reports rewinds to motion trails", () => {
+test("timeline controller sets cursor on motion trails during scrubbing", () => {
   const marker = markerStub();
   const trail = trailStub();
   const controller = new TimelineControllerEntity({
@@ -185,7 +185,7 @@ test("timeline controller reports rewinds to motion trails", () => {
   controller.stepDays(3);
   controller.stepDays(-2);
 
-  assert.deepEqual(trail.samples.map((sample) => sample.day), [0, 3, 1]);
+  assert.deepEqual(trail.cursorDays, [0, 3, 1]);
 });
 
 test("timeline controller exposes rampActive state via enableRamp/disableRamp", () => {
