@@ -187,3 +187,121 @@ test("timeline controller reports rewinds to motion trails", () => {
 
   assert.deepEqual(trail.samples.map((sample) => sample.day), [0, 3, 1]);
 });
+
+test("timeline controller exposes rampActive state via enableRamp/disableRamp", () => {
+  const marker = markerStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    earthMarker: marker
+  });
+
+  controller.init();
+  assert.equal(controller.getState().rampActive, false);
+
+  controller.enableRamp();
+  assert.equal(controller.getState().rampActive, true);
+
+  controller.disableRamp();
+  assert.equal(controller.getState().rampActive, false);
+});
+
+test("timeline controller emits state change on ramp toggle", () => {
+  const marker = markerStub();
+  const emittedStates = [];
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    earthMarker: marker,
+    onStateChange: (state) => emittedStates.push(state)
+  });
+
+  controller.init();
+  const countAfterInit = emittedStates.length;
+
+  controller.enableRamp();
+  assert.equal(emittedStates.length, countAfterInit + 1);
+  assert.equal(emittedStates[emittedStates.length - 1].rampActive, true);
+
+  controller.disableRamp();
+  assert.equal(emittedStates.length, countAfterInit + 2);
+  assert.equal(emittedStates[emittedStates.length - 1].rampActive, false);
+});
+
+test("manual speed change cancels ramp", () => {
+  const marker = markerStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    earthMarker: marker
+  });
+
+  controller.init();
+  controller.enableRamp();
+  assert.equal(controller.getState().rampActive, true);
+
+  // Simulate what app.js does on speed change: set speed, then disableRamp
+  controller.speedDaysPerSecond = 365;
+  controller.disableRamp();
+  assert.equal(controller.getState().rampActive, false);
+  assert.equal(controller.speedDaysPerSecond, 365);
+});
+
+test("high-speed playback (365 days/sec) does not overshoot totalDays", () => {
+  const marker = markerStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-04-10",  // 100 days total
+    speedDaysPerSecond: 365,
+    earthMarker: marker
+  });
+
+  controller.init();
+
+  // 365 * 0.25 = 91.25 days in one frame — should not exceed 100
+  controller.render({ deltaSeconds: 0.25 });
+  assert.equal(controller.getState().elapsedDays, 91.25);
+  assert.equal(controller.getState().playing, true);
+
+  // Next frame would push past 100, should clamp to totalDays
+  controller.render({ deltaSeconds: 0.25 });
+  assert.equal(controller.getState().elapsedDays, 100);
+  assert.equal(controller.getState().playing, false);
+});
+
+test("high-speed playback clamps to totalDays in a single large frame", () => {
+  const marker = markerStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-02-10",  // 40 days total
+    speedDaysPerSecond: 365,
+    earthMarker: marker
+  });
+
+  controller.init();
+
+  // 365 * 1 = 365 days attempted, but totalDays is only 40
+  controller.render({ deltaSeconds: 1 });
+  assert.equal(controller.getState().elapsedDays, 40);
+  assert.equal(controller.getState().playing, false);
+});
+
+test("all supported speeds advance timeline correctly", () => {
+  for (const speed of [1, 10, 30, 120, 365]) {
+    const marker = markerStub();
+    const controller = new TimelineControllerEntity({
+      birthday: "2000-01-01",
+      maxTimelineDate: "2025-12-30",  // large range so we don't hit the end
+      speedDaysPerSecond: speed,
+      earthMarker: marker
+    });
+
+    controller.init();
+    controller.render({ deltaSeconds: 1 });
+    assert.equal(
+      controller.getState().elapsedDays,
+      speed,
+      `speed ${speed}: expected ${speed} elapsed days after 1 second`
+    );
+  }
+});
