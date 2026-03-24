@@ -3,12 +3,22 @@ import assert from "node:assert/strict";
 
 import { addUtcDays, parseSpeedValue, toIsoUtcDate } from "../src/app.js";
 
-test("parseSpeedValue returns positive finite speeds and falls back otherwise", () => {
+test("parseSpeedValue returns positive finite speeds and falls back to 120", () => {
   assert.equal(parseSpeedValue("30"), 30);
   assert.equal(parseSpeedValue(90), 90);
-  assert.equal(parseSpeedValue("0"), 30);
-  assert.equal(parseSpeedValue("-5"), 30);
-  assert.equal(parseSpeedValue("invalid"), 30);
+  assert.equal(parseSpeedValue("0"), 120);
+  assert.equal(parseSpeedValue("-5"), 120);
+  assert.equal(parseSpeedValue("invalid"), 120);
+  assert.equal(parseSpeedValue(undefined), 120);
+  assert.equal(parseSpeedValue(NaN), 120);
+  assert.equal(parseSpeedValue(Infinity), 120);
+});
+
+test("parseSpeedValue parses all supported speed options correctly", () => {
+  for (const speed of [1, 10, 30, 120, 365]) {
+    assert.equal(parseSpeedValue(String(speed)), speed);
+    assert.equal(parseSpeedValue(speed), speed);
+  }
 });
 
 test("addUtcDays moves dates in UTC days", () => {

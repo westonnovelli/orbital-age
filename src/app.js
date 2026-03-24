@@ -7,7 +7,7 @@ import { EarthMarkerEntity } from "./webgl/entities/earth-marker.js";
 import { OrbitalTrailEntity } from "./webgl/entities/orbital-trail.js";
 import { TimelineControllerEntity } from "./webgl/entities/timeline-controller.js";
 
-const DEFAULT_SPEED_DAYS_PER_SECOND = 30;
+const DEFAULT_SPEED_DAYS_PER_SECOND = 120;
 
 export function addUtcDays(date, daysToAdd) {
   const msPerDay = 24 * 60 * 60 * 1000;
@@ -42,6 +42,7 @@ export class OrbitalApp {
     playPauseButton,
     resetButton,
     speedSelect,
+    rampToggle,
     scrubber,
     timelineStatus,
     timelineDateOutput
@@ -61,6 +62,7 @@ export class OrbitalApp {
 
     this.resetButton = resetButton;
     this.speedSelect = speedSelect;
+    this.rampToggle = rampToggle;
     this.timelineStatus = timelineStatus;
 
     this.renderer = new WebGLRenderer(canvas);
@@ -98,8 +100,8 @@ export class OrbitalApp {
       radiusX: 1,
       radiusY: 0.998,
       color: [0.2, 0.78, 0.96, 0.92],
-      maxSamples: 720,
-      historyDays: 480,
+      maxSamples: 2000,
+      historyDays: 1825,
       minDayDelta: 0.2,
       minSampleDistance: 0.0025
     });
@@ -183,6 +185,23 @@ export class OrbitalApp {
         return;
       }
       this.timelineController.speedDaysPerSecond = parseSpeedValue(this.speedSelect.value);
+      if (this.timelineController.rampActive) {
+        this.timelineController.disableRamp();
+        this.#setRampToggleState(false);
+      }
+    });
+
+    this.rampToggle?.addEventListener("click", () => {
+      if (!this.timelineController) {
+        return;
+      }
+      const willBeActive = !this.timelineController.rampActive;
+      if (willBeActive) {
+        this.timelineController.enableRamp();
+      } else {
+        this.timelineController.disableRamp();
+      }
+      this.#setRampToggleState(willBeActive);
     });
   }
 
@@ -198,7 +217,8 @@ export class OrbitalApp {
       this.timelineStepForward,
       this.timelinePlayToggle,
       this.resetButton,
-      this.speedSelect
+      this.speedSelect,
+      this.rampToggle
     ];
 
     for (const control of controls) {
@@ -207,6 +227,14 @@ export class OrbitalApp {
       }
       control.disabled = !enabled;
     }
+  }
+
+  #setRampToggleState(active) {
+    if (!this.rampToggle) {
+      return;
+    }
+    this.rampToggle.setAttribute("aria-pressed", String(active));
+    this.rampToggle.classList.toggle("ramp-toggle--active", active);
   }
 
   #setPlayButtonState(playing) {
@@ -237,6 +265,7 @@ export class OrbitalApp {
     }
 
     this.#setPlayButtonState(state.playing);
+    this.#setRampToggleState(state.rampActive);
 
     if (this.timelineStatus) {
       if (state.totalDays === 0) {
