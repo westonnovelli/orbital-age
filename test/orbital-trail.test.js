@@ -86,3 +86,54 @@ test("orbital trail probe runtime stays within budget for long timelines", () =>
 
   assert.ok(result.elapsedMs < 3000, `expected <3000ms, got ${result.elapsedMs}ms`);
 });
+
+test("orbital trail works with high-speed config (maxSamples=2000, historyDays=1825)", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 2000,
+    historyDays: 1825,
+    minDayDelta: 0.2,
+    minSampleDistance: 0.0025
+  });
+
+  assert.equal(trail.maxSamples, 2000);
+  assert.equal(trail.historyDays, 1825);
+  assert.equal(trail.vertices.byteLength, 2000 * 2 * Float32Array.BYTES_PER_ELEMENT);
+});
+
+test("orbital trail probe stays bounded with high-speed trail config", () => {
+  const result = runTrailSamplingProbe({
+    sampleCount: 200_000,
+    trailOptions: {
+      maxSamples: 2000,
+      historyDays: 1825,
+      minDayDelta: 0.2,
+      minSampleDistance: 0.0025
+    }
+  });
+
+  assert.equal(result.maxSamples, 2000);
+  assert.equal(result.vertexBufferBytes, 2000 * 2 * Float32Array.BYTES_PER_ELEMENT);
+  assert.ok(result.retainedSamples <= 2000);
+  assert.ok(result.retainedSamples > 0);
+  assert.ok(result.elapsedMs < 3000, `expected <3000ms, got ${result.elapsedMs}ms`);
+});
+
+test("orbital trail prunes correctly with 1825-day history window", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 100,
+    historyDays: 1825,
+    minDayDelta: 0,
+    minSampleDistance: 0
+  });
+
+  // Add samples spanning more than 1825 days
+  trail.addSample(0, 0, 0);
+  trail.addSample(1000, 1, 0);
+  trail.addSample(1825, 0, 1);
+  trail.addSample(2000, 1, 1);
+
+  // Day 0 is 2000 days ago (> 1825), should be pruned
+  // Day 1000 is 1000 days ago (within 1825 window from day 2000: minDay = 175)
+  assert.ok(trail.samples.every((s) => s.day >= 175));
+  assert.ok(trail.samples.length <= 100);
+});

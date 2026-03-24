@@ -213,6 +213,18 @@ input[type="range"]::-moz-range-thumb {
   border: none;
 }
 
+.ramp-toggle--active {
+  background: #1a4d66;
+  border-color: #133a4f;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+#ramp-toggle[aria-pressed="true"] {
+  background: #1a4d66;
+  border-color: #133a4f;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
 #date-scrubber {
   width: 100%;
 }
