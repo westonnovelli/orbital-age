@@ -6,6 +6,7 @@ import { SunEntity } from "./webgl/entities/sun.js";
 import { EarthMarkerEntity } from "./webgl/entities/earth-marker.js";
 import { OrbitalTrailEntity } from "./webgl/entities/orbital-trail.js";
 import { TimelineControllerEntity } from "./webgl/entities/timeline-controller.js";
+import { BirthdayMarkerEntity } from "./webgl/entities/birthday-markers.js";
 
 const DEFAULT_SPEED_DAYS_PER_SECOND = 30;
 
@@ -106,6 +107,11 @@ export class OrbitalApp {
     const todayUtc = normalizeToUtcMidnight(new Date());
     const datasetMaxUtc = parseIsoDateUtc(SUPPORTED_DATE_RANGE.max);
     const maxTimelineDate = todayUtc < datasetMaxUtc ? todayUtc : datasetMaxUtc;
+    const birthdayMarkers = new BirthdayMarkerEntity({
+      birthday: validation.date,
+      radiusX: 1,
+      radiusY: 0.998
+    });
     const timelineController = new TimelineControllerEntity({
       birthday: validation.date,
       maxTimelineDate,
@@ -119,6 +125,7 @@ export class OrbitalApp {
     const scene = new Scene()
       .add(new SunEntity())
       .add(earthTrail)
+      .add(birthdayMarkers)
       .add(timelineController)
       .add(earthMarker);
 
