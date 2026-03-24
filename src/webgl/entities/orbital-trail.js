@@ -1,4 +1,4 @@
-import { createPrimitiveProgram } from "./primitives.js";
+import { createTrailProgram } from "./trail-program.js";
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -19,7 +19,8 @@ export class OrbitalTrailEntity {
     maxSamples = 720,
     historyDays = 540,
     minSampleDistance = 0.002,
-    minDayDelta = 0.1
+    minDayDelta = 0.1,
+    minFade = 0.05
   } = {}) {
     this.radiusX = radiusX;
     this.radiusY = radiusY;
@@ -28,16 +29,17 @@ export class OrbitalTrailEntity {
     this.historyDays = Math.max(0, Number(historyDays) || 0);
     this.minSampleDistance = Math.max(0, Number(minSampleDistance) || 0);
     this.minDayDelta = Math.max(0, Number(minDayDelta) || 0);
+    this.minFade = clamp(Number(minFade) || 0, 0, 1);
 
     this.samples = [];
-    this.vertices = new Float32Array(this.maxSamples * 2);
+    this.vertices = new Float32Array(this.maxSamples * 3);
     this.dirty = false;
     this.primitive = null;
     this.buffer = null;
   }
 
   init(gl) {
-    this.primitive = createPrimitiveProgram(gl);
+    this.primitive = createTrailProgram(gl);
     this.buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
     gl.bufferData(gl.ARRAY_BUFFER, this.vertices.byteLength, gl.DYNAMIC_DRAW);
@@ -80,17 +82,19 @@ export class OrbitalTrailEntity {
     if (this.dirty) {
       this.#syncVertices();
       gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices.subarray(0, this.samples.length * 2));
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices.subarray(0, this.samples.length * 3));
       this.dirty = false;
     }
 
     gl.useProgram(this.primitive.program);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
     gl.enableVertexAttribArray(this.primitive.attributes.position);
-    gl.vertexAttribPointer(this.primitive.attributes.position, 2, gl.FLOAT, false, 0, 0);
-    gl.uniformMatrix3fv(this.primitive.uniforms.matrix, false, camera.matrix);
+    gl.vertexAttribPointer(this.primitive.attributes.position, 2, gl.FLOAT, false, 12, 0);
+    gl.enableVertexAttribArray(this.primitive.attributes.fade);
+    gl.vertexAttribPointer(this.primitive.attributes.fade, 1, gl.FLOAT, false, 12, 8);
+    gl.uniformMatrix3fv(this.primitive.uniforms.projection, false, camera.matrix);
     gl.uniform4fv(this.primitive.uniforms.color, this.color);
-    gl.uniform1f(this.primitive.uniforms.pointSize, 1);
+    gl.uniform1f(this.primitive.uniforms.scale, 1.0);
     gl.drawArrays(gl.LINE_STRIP, 0, this.samples.length);
   }
 
@@ -122,11 +126,13 @@ export class OrbitalTrailEntity {
   }
 
   #syncVertices() {
-    for (let i = 0; i < this.samples.length; i += 1) {
+    const count = this.samples.length;
+    for (let i = 0; i < count; i += 1) {
       const sample = this.samples[i];
-      const offset = i * 2;
+      const offset = i * 3;
       this.vertices[offset] = sample.x;
       this.vertices[offset + 1] = sample.y;
+      this.vertices[offset + 2] = count === 1 ? 1.0 : this.minFade + (1.0 - this.minFade) * (i / (count - 1));
     }
   }
 }
