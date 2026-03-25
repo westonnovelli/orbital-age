@@ -64,7 +64,7 @@ test("orbital trail probe keeps full-lifetime trail memory bounded", () => {
   });
 
   assert.equal(result.maxSamples, 8192);
-  assert.equal(result.vertexBufferBytes, 8192 * 2 * Float32Array.BYTES_PER_ELEMENT);
+  assert.equal(result.vertexBufferBytes, 8192 * 3 * Float32Array.BYTES_PER_ELEMENT);
   assert.ok(result.retainedSamples <= 8192);
   assert.ok(result.retainedSamples > 0);
   // historyDays: 0 means no time-based pruning occurred
@@ -95,7 +95,7 @@ test("orbital trail works with full-lifetime config (maxSamples=16384, historyDa
 
   assert.equal(trail.maxSamples, 16384);
   assert.equal(trail.historyDays, 0);
-  assert.equal(trail.vertices.byteLength, 16384 * 2 * Float32Array.BYTES_PER_ELEMENT);
+  assert.equal(trail.vertices.byteLength, 16384 * 3 * Float32Array.BYTES_PER_ELEMENT);
 });
 
 test("orbital trail probe stays bounded with full-lifetime trail config", () => {
@@ -110,7 +110,7 @@ test("orbital trail probe stays bounded with full-lifetime trail config", () => 
   });
 
   assert.equal(result.maxSamples, 16384);
-  assert.equal(result.vertexBufferBytes, 16384 * 2 * Float32Array.BYTES_PER_ELEMENT);
+  assert.equal(result.vertexBufferBytes, 16384 * 3 * Float32Array.BYTES_PER_ELEMENT);
   assert.ok(result.retainedSamples <= 16384);
   assert.ok(result.retainedSamples > 0);
   assert.equal(result.historyDays, 0);
