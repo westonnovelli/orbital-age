@@ -29,7 +29,11 @@ const app = new OrbitalApp({
   rampToggle: legacyTimelineControls?.querySelector("#ramp-toggle"),
   timelineStatus: legacyTimelineControls?.querySelector("#timeline-status"),
   timelineDateOutput: legacyTimelineControls?.querySelector("output#timeline-date"),
-  scrubber: legacyTimelineControls?.querySelector("#date-scrubber")
+  scrubber: legacyTimelineControls?.querySelector("#date-scrubber"),
+  statsHud: document.querySelector("#stats-hud"),
+  hudOrbits: document.querySelector("#hud-orbits"),
+  hudAge: document.querySelector("#hud-age"),
+  hudDistance: document.querySelector("#hud-distance")
 });
 
 app.initialize();
