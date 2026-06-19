@@ -18,6 +18,10 @@ class FakeClassList {
     }
   }
 
+  add(name) {
+    this.tokens.add(name);
+  }
+
   remove(name) {
     this.tokens.delete(name);
   }
@@ -70,6 +74,7 @@ function buildUi() {
   form.querySelector = (selector) => (selector === "button" ? submitButton : null);
 
   const ui = {
+    root: new FakeElement(),
     form,
     submitButton,
     dateInput: new FakeElement(),
@@ -153,9 +158,11 @@ test("submit flow enables timeline controls and updates playback UI state", (t) 
   assert.equal(ui.resetButton.disabled, true);
   assert.equal(ui.speedSelect.disabled, true);
   assert.equal(ui.submitButton.getAttribute("disabled"), null);
+  assert.equal(ui.root.classList.contains("journey-active"), false);
 
   ui.form.dispatch("submit");
 
+  assert.equal(ui.root.classList.contains("journey-active"), true);
   assert.equal(ui.validationMessage.textContent, "");
   assert.equal(ui.timelineControls.classList.contains("timeline-controls--disabled"), false);
   assert.equal(ui.timelineControls.disabled, false);

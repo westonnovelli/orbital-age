@@ -6,6 +6,7 @@ const legacyTimelineControls = document.querySelector("fieldset.timeline");
 const timelineControls = modernTimelineControls ?? legacyTimelineControls;
 
 const app = new OrbitalApp({
+  root: document.querySelector(".stage"),
   form: document.querySelector("#birthday-form"),
   dateInput: document.querySelector("#birthday"),
   validationMessage: document.querySelector("#validation-message"),
