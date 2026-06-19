@@ -30,12 +30,45 @@ function parseArgs(argv) {
     yes: flags.has("--yes"),
     printPlan: flags.has("--print-plan"),
     retrievedOn: values.get("--retrieved-on") ?? null,
+    endUtc: values.get("--end-utc") ?? null,
     dataDir: values.get("--data-dir") ?? process.env.EPHEMERIS_DATA_DIR ?? DEFAULT_DATA_DIR
   };
 }
 
 function utcDateFromIso(iso) {
   return new Date(iso).toISOString().slice(0, 10);
+}
+
+const MS_PER_DAY = 86400000;
+
+function utcMidnightIso(date) {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())).toISOString().replace(".000Z", "Z");
+}
+
+// The interpolation ceiling at runtime is endUtc - stepSeconds (see runtime.js), so
+// extending the window through "today + 1 day" is what makes *today* interpolable.
+function targetEndUtcIso(options) {
+  if (options.endUtc) {
+    return utcMidnightIso(new Date(options.endUtc));
+  }
+  const tomorrow = new Date(Date.now() + MS_PER_DAY);
+  return utcMidnightIso(tomorrow);
+}
+
+// Recompute the daily-cadence window so it spans [startUtc, desiredEndUtc] inclusive.
+// `days` and `samplesPerBody` both track the inclusive daily sample count. The window
+// is only ever extended forward, never shrunk.
+function extendWindowToEnd(header, desiredEndUtcIso) {
+  const startMs = Date.parse(header.window.startUtc);
+  const currentEndMs = Date.parse(header.window.endUtc);
+  const desiredEndMs = Date.parse(desiredEndUtcIso);
+  const endMs = Math.max(currentEndMs, desiredEndMs);
+  const inclusiveSamples = Math.round((endMs - startMs) / MS_PER_DAY) + 1;
+
+  header.window.endUtc = new Date(endMs).toISOString().replace(".000Z", "Z");
+  header.window.days = inclusiveSamples;
+  header.cadence.samplesPerBody = inclusiveSamples;
+  return header;
 }
 
 function horizonsParams({ naifId, startDate, stopDate }) {
@@ -164,6 +197,13 @@ async function main() {
   const rawDir = path.join(dataDir, RAW_DIR_NAME);
 
   const header = JSON.parse(fs.readFileSync(headerPath, "utf8"));
+
+  // Only extend the window during a live fetch. Cached-raw rebuilds (no --fetch) keep
+  // the existing window so their fixed-size raw payloads still line up.
+  if (options.fetch) {
+    extendWindowToEnd(header, targetEndUtcIso(options));
+  }
+
   const startDate = utcDateFromIso(header.window.startUtc);
   const stopDate = utcDateFromIso(header.window.endUtc);
 

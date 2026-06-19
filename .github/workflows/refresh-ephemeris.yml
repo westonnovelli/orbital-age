@@ -1,0 +1,106 @@
+name: Refresh Ephemeris
+
+# Keeps the deployed ephemeris dataset current (<=24h old) by re-fetching JPL
+# Horizons through "today + 1 day", regenerating the dataset artifacts, committing
+# them to master, and then publishing to GitHub Pages via the inline deploy steps.
+#
+# Why deploy inline instead of relying on the existing push -> CI -> deploy chain:
+# a push made with the default GITHUB_TOKEN does NOT trigger another workflow run,
+# so committing data here would never re-fire CI/deploy-pages. We therefore run the
+# Pages build + deploy steps directly in this workflow (mirrored from
+# deploy-pages.yml) and still commit the data to master for persistence.
+#
+# Caveats:
+# - Scheduled workflows only run from the default branch (master).
+# - GitHub auto-disables scheduled workflows after ~60 days of repo inactivity; the
+#   daily data commit itself keeps this workflow alive.
+# - Cron start times can drift by several minutes under load.
+
+on:
+  schedule:
+    # Daily at 07:10 UTC (offset from the top of the hour to dodge cron contention).
+    - cron: "10 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: refresh-ephemeris
+  cancel-in-progress: false
+
+jobs:
+  refresh-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: master
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Refresh dataset from JPL Horizons
+        run: |
+          TODAY="$(date -u +%F)"
+          echo "Refreshing ephemeris through today+1 (retrieved-on=$TODAY)"
+          npm run data:ephemeris:refresh -- --fetch --yes --retrieved-on "$TODAY"
+
+      - name: Rebuild generated artifacts
+        run: npm run data:ephemeris:rebuild
+
+      - name: Verify dataset integrity
+        run: npm run data:ephemeris:verify
+
+      - name: Run tests
+        run: npm test
+
+      - name: Commit regenerated dataset
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            data/ephemeris/v1/header.json \
+            data/ephemeris/v1/manifest.json \
+            data/ephemeris/v1/snapshots.ndjson \
+            data/ephemeris/v1/snapshots.ndjson.gz \
+            src/ephemeris/generated-v1.js
+          if git diff --cached --quiet; then
+            echo "No dataset changes to commit."
+          else
+            git commit -m "chore(ephemeris): scheduled refresh through today+1"
+            git push origin master
+          fi
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+
+      - name: Prepare static artifact
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp -R src _site/src
+          if [ -f CNAME ]; then cp CNAME _site/; fi
+          if [ -f favicon.ico ]; then cp favicon.ico _site/; fi
+
+      - name: Upload static site artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

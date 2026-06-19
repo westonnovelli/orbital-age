@@ -46,12 +46,35 @@ test("normalizeToUtcMidnight accepts explicit-zone ISO timestamps deterministica
   assert.equal(withOffset.toISOString(), withZ.toISOString());
 });
 
-test("assertDateInSupportedRange enforces model range", () => {
-  assert.equal(assertDateInSupportedRange(SUPPORTED_DATE_RANGE.min).toISOString(), "1926-01-01T00:00:00.000Z");
-  assert.equal(assertDateInSupportedRange(SUPPORTED_DATE_RANGE.max).toISOString(), "2025-12-30T00:00:00.000Z");
+// The dataset window advances over time (Phase 5 extends it through "today + 1" on
+// every scheduled refresh), so boundary expectations are derived from the live
+// SUPPORTED_DATE_RANGE rather than pinned to fixed calendar dates.
+const MS_PER_DAY_TEST = 86400000;
 
-  assert.throws(() => assertDateInSupportedRange("1925-12-31"), /outside supported range/);
-  assert.throws(() => assertDateInSupportedRange("2026-01-01"), /outside supported range/);
+function isoDayOffset(isoDay, days) {
+  return new Date(Date.parse(`${isoDay}T00:00:00Z`) + days * MS_PER_DAY_TEST)
+    .toISOString()
+    .slice(0, 10);
+}
+
+test("assertDateInSupportedRange enforces model range", () => {
+  assert.equal(
+    assertDateInSupportedRange(SUPPORTED_DATE_RANGE.min).toISOString(),
+    `${SUPPORTED_DATE_RANGE.min}T00:00:00.000Z`
+  );
+  assert.equal(
+    assertDateInSupportedRange(SUPPORTED_DATE_RANGE.max).toISOString(),
+    `${SUPPORTED_DATE_RANGE.max}T00:00:00.000Z`
+  );
+
+  assert.throws(
+    () => assertDateInSupportedRange(isoDayOffset(SUPPORTED_DATE_RANGE.min, -1)),
+    /outside supported range/
+  );
+  assert.throws(
+    () => assertDateInSupportedRange(isoDayOffset(SUPPORTED_DATE_RANGE.max, 1)),
+    /outside supported range/
+  );
 });
 
 test("computeOrbitalTimelineState returns deterministic normalized progress and position", () => {
@@ -148,20 +171,26 @@ test("bodyHeliocentricPositionAuAtInstant supports multiple planets", () => {
 });
 
 test("earth heliocentric AU position interpolates within the max supported UTC day", () => {
-  const start = earthHeliocentricPositionAuAtInstant("2025-12-30T00:00:00Z");
-  const midday = earthHeliocentricPositionAuAtInstant("2025-12-30T12:00:00Z");
+  const maxDay = SUPPORTED_DATE_RANGE.max;
+  const start = earthHeliocentricPositionAuAtInstant(`${maxDay}T00:00:00Z`);
+  const midday = earthHeliocentricPositionAuAtInstant(`${maxDay}T12:00:00Z`);
 
   assert.notEqual(start.xAu, midday.xAu);
   assert.notEqual(start.yAu, midday.yAu);
 });
 
 test("earth heliocentric AU position rejects instants at and beyond first non-interpolable UTC day", () => {
+  // The last interpolable day is SUPPORTED_DATE_RANGE.max; the next two days lie at
+  // and beyond the interpolation ceiling (endUtc - stepSeconds).
+  const firstNonInterpolable = isoDayOffset(SUPPORTED_DATE_RANGE.max, 1);
+  const beyond = isoDayOffset(SUPPORTED_DATE_RANGE.max, 2);
+
   assert.throws(
-    () => earthHeliocentricPositionAuAtInstant("2025-12-31T12:00:00Z"),
+    () => earthHeliocentricPositionAuAtInstant(`${firstNonInterpolable}T12:00:00Z`),
     /outside supported range|No ephemeris position available/
   );
   assert.throws(
-    () => earthHeliocentricPositionAuAtInstant("2026-01-01T00:00:00Z"),
+    () => earthHeliocentricPositionAuAtInstant(`${beyond}T00:00:00Z`),
     /outside supported range|No ephemeris position available/
   );
 });
