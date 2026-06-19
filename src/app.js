@@ -114,7 +114,19 @@ export class OrbitalApp {
     const earthTrail = new OrbitalTrailEntity({
       radiusX: 1,
       radiusY: 1,
-      color: [0.2, 0.78, 0.96, 0.92],
+      // TUNING KNOB — trail alpha (the 4th component below, currently 0.06).
+      // The trail renders with additive blending (blendFunc(ONE, ONE) in
+      // OrbitalTrailEntity.render), so brightness accumulates wherever
+      // revolutions overlap. This low per-vertex alpha gives that build-up
+      // headroom so a dense core glows without saturating to solid white,
+      // while a single sparse lap stays visible.
+      //   - Raise it  -> overlaps brighten/saturate sooner (denser look).
+      //   - Lower it  -> sparse laps dim, core takes more overlap to glow.
+      // It's a visual judgment call; re-tune against real 30yr and 90yr
+      // spans if the core blows out or sparse laps disappear.
+      color: [0.2, 0.78, 0.96, 0.06],
+      colorOld: [0.467, 0.267, 0.71],
+      colorRecent: [0.29, 0.973, 0.89],
       maxSamples: 44000,
       historyDays: 0,
       minDayDelta: 1.0,

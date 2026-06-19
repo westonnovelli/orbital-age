@@ -71,7 +71,7 @@ test("orbital trail probe keeps full-lifetime trail memory bounded", () => {
   });
 
   assert.equal(result.maxSamples, 44000);
-  assert.equal(result.vertexBufferBytes, 44000 * 3 * Float32Array.BYTES_PER_ELEMENT);
+  assert.equal(result.vertexBufferBytes, 44000 * 4 * Float32Array.BYTES_PER_ELEMENT);
   assert.ok(result.retainedSamples <= 44000);
   assert.ok(result.retainedSamples > 0);
   // historyDays: 0 means no time-based pruning occurred
@@ -107,7 +107,7 @@ test("orbital trail works with full-lifetime config (maxSamples=44000, historyDa
 
   assert.equal(trail.maxSamples, 44000);
   assert.equal(trail.historyDays, 0);
-  assert.equal(trail.vertices.byteLength, 44000 * 3 * Float32Array.BYTES_PER_ELEMENT);
+  assert.equal(trail.vertices.byteLength, 44000 * 4 * Float32Array.BYTES_PER_ELEMENT);
 });
 
 test("orbital trail retains a full ~120yr lifespan without front-splicing", () => {
@@ -144,7 +144,7 @@ test("orbital trail probe stays bounded with full-lifetime trail config", () => 
   });
 
   assert.equal(result.maxSamples, 44000);
-  assert.equal(result.vertexBufferBytes, 44000 * 3 * Float32Array.BYTES_PER_ELEMENT);
+  assert.equal(result.vertexBufferBytes, 44000 * 4 * Float32Array.BYTES_PER_ELEMENT);
   assert.ok(result.retainedSamples <= 44000);
   assert.ok(result.retainedSamples > 0);
   assert.equal(result.historyDays, 0);
@@ -286,6 +286,144 @@ test("setCursorForDay binary-searches to the correct position", () => {
   // Seek before start
   trail.setCursorForDay(-1);
   assert.equal(trail.cursorIndex, 0);
+});
+
+function makeStubGL() {
+  const calls = [];
+  let attribIndex = 0;
+  let uniformIndex = 0;
+  return {
+    VERTEX_SHADER: 0x8B31,
+    FRAGMENT_SHADER: 0x8B30,
+    COMPILE_STATUS: 0x8B81,
+    LINK_STATUS: 0x8B82,
+    ARRAY_BUFFER: 0x8892,
+    DYNAMIC_DRAW: 0x88E8,
+    FLOAT: 0x1406,
+    LINE_STRIP: 0x0003,
+    ONE: 1,
+    SRC_ALPHA: 0x0302,
+    ONE_MINUS_SRC_ALPHA: 0x0303,
+    createShader(type) { return { type }; },
+    shaderSource() {},
+    compileShader() {},
+    getShaderParameter() { return true; },
+    getShaderInfoLog() { return ""; },
+    deleteShader() {},
+    createProgram() { return { id: 0 }; },
+    attachShader() {},
+    linkProgram() {},
+    getProgramParameter() { return true; },
+    getProgramInfoLog() { return ""; },
+    getAttribLocation() { return attribIndex++; },
+    getUniformLocation(_prog, name) { return { name, index: uniformIndex++ }; },
+    createBuffer() { return { id: 0 }; },
+    bindBuffer() {},
+    bufferData() {},
+    bufferSubData() {},
+    useProgram() {},
+    enableVertexAttribArray() {},
+    vertexAttribPointer(loc, size, type, normalized, stride, offset) {
+      calls.push({ fn: "vertexAttribPointer", loc, size, stride, offset });
+    },
+    uniformMatrix3fv() {},
+    uniform4fv() {},
+    uniform3fv() {},
+    uniform1f() {},
+    blendFunc(sfactor, dfactor) {
+      calls.push({ fn: "blendFunc", sfactor, dfactor });
+    },
+    drawArrays(mode, first, count) {
+      calls.push({ fn: "drawArrays", mode, first, count });
+    },
+    _calls: calls
+  };
+}
+
+test("syncVertices writes a 0->1 age in the 4th lane", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 10,
+    historyDays: 0,
+    minDayDelta: 0,
+    minSampleDistance: 0,
+    minFade: 0
+  });
+
+  trail.addSample(0, 0, 0);
+  trail.addSample(1, 1, 0);
+  trail.addSample(2, 2, 0);
+  trail.addSample(3, 3, 0);
+
+  // Force vertex sync via render with a stub GL.
+  const gl = makeStubGL();
+  trail.init(gl);
+  trail.render({ gl, camera: { matrix: new Float32Array(9) } });
+
+  const count = trail.samples.length;
+  // 4th lane (offset+3) holds age: oldest=0, newest=1, linear in between.
+  for (let i = 0; i < count; i += 1) {
+    const expected = i / (count - 1);
+    assert.ok(
+      Math.abs(trail.vertices[i * 4 + 3] - expected) < 1e-6,
+      `age lane at ${i} should be ${expected}, got ${trail.vertices[i * 4 + 3]}`
+    );
+  }
+});
+
+test("render uses a 4-float (16-byte) interleaved stride with age lane", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 10,
+    historyDays: 0,
+    minDayDelta: 0,
+    minSampleDistance: 0
+  });
+  trail.addSample(0, 0, 0);
+  trail.addSample(1, 1, 0);
+
+  const gl = makeStubGL();
+  trail.init(gl);
+  trail.render({ gl, camera: { matrix: new Float32Array(9) } });
+
+  const pointers = gl._calls.filter((c) => c.fn === "vertexAttribPointer");
+  // position, fade, age — all stride 16, offsets 0/8/12.
+  assert.equal(pointers.length, 3);
+  for (const p of pointers) {
+    assert.equal(p.stride, 16, "stride should be 16 bytes (4 floats)");
+  }
+  const offsets = pointers.map((p) => p.offset).sort((a, b) => a - b);
+  assert.deepEqual(offsets, [0, 8, 12]);
+});
+
+test("render sets additive blend then restores the renderer default", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 10,
+    historyDays: 0,
+    minDayDelta: 0,
+    minSampleDistance: 0
+  });
+  trail.addSample(0, 0, 0);
+  trail.addSample(1, 1, 0);
+
+  const gl = makeStubGL();
+  trail.init(gl);
+  trail.render({ gl, camera: { matrix: new Float32Array(9) } });
+
+  const sequence = gl._calls.filter((c) => c.fn === "blendFunc" || c.fn === "drawArrays");
+  // Additive blend before the draw, default restored after.
+  assert.equal(sequence.length, 3);
+  assert.deepEqual(sequence[0], { fn: "blendFunc", sfactor: gl.ONE, dfactor: gl.ONE });
+  assert.equal(sequence[1].fn, "drawArrays");
+  assert.deepEqual(sequence[2], {
+    fn: "blendFunc",
+    sfactor: gl.SRC_ALPHA,
+    dfactor: gl.ONE_MINUS_SRC_ALPHA
+  });
+});
+
+test("colorOld/colorRecent default to the trail color when omitted", () => {
+  const trail = new OrbitalTrailEntity({ color: [0.2, 0.4, 0.6, 0.9] });
+  assert.deepEqual(trail.colorOld, [0.2, 0.4, 0.6]);
+  assert.deepEqual(trail.colorRecent, [0.2, 0.4, 0.6]);
 });
 
 test("setCursorForDay on empty samples sets cursor to 0", () => {
