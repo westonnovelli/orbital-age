@@ -89,7 +89,7 @@ Long-timeline trail validation is also covered by automated tests in `test/orbit
 - Runtime sampling probe over `200,000` timeline points
 - Bounded retained trail samples (`<= 720`)
 - Bounded vertex buffer memory (`5760 bytes`)
-- Runtime budget check (`< 3000 ms` in Node test environment)
+- Runtime budget check (`< 6000 ms` in Node test environment; a generous guard against algorithmic blowup that stays stable on slower CI runners)
 
 ### Capture procedure
 
