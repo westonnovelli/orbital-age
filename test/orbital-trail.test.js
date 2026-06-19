@@ -436,6 +436,35 @@ test("hueSpan and saturation are clamped to non-negative / [0,1]", () => {
   assert.equal(trail.saturation, 1);
 });
 
+test("huePeriodDays derives hueSpan from the trail's real-time span", () => {
+  // One cycle per 100 days. A 300-day span -> 3 cycles; a 900-day span -> 9.
+  const short = new OrbitalTrailEntity({
+    huePeriodDays: 100,
+    maxSamples: 2000,
+    minDayDelta: 1,
+    minSampleDistance: 0
+  });
+  short.precomputeTrail(300, () => ({ x: 0, y: 0 }));
+  assert.ok(Math.abs(short.effectiveHueSpan() - 3) < 1e-9);
+
+  const long = new OrbitalTrailEntity({
+    huePeriodDays: 100,
+    maxSamples: 2000,
+    minDayDelta: 1,
+    minSampleDistance: 0
+  });
+  long.precomputeTrail(900, () => ({ x: 0, y: 0 }));
+  assert.ok(Math.abs(long.effectiveHueSpan() - 9) < 1e-9);
+});
+
+test("effectiveHueSpan falls back to static hueSpan when huePeriodDays is 0", () => {
+  const trail = new OrbitalTrailEntity({ hueSpan: 3 });
+  assert.equal(trail.effectiveHueSpan(), 3);
+
+  const empty = new OrbitalTrailEntity({ huePeriodDays: 100 });
+  assert.equal(empty.effectiveHueSpan(), 0, "no samples -> no sweep");
+});
+
 test("setCursorForDay on empty samples sets cursor to 0", () => {
   const trail = new OrbitalTrailEntity({ maxSamples: 10 });
   trail.setCursorForDay(5);

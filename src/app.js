@@ -122,18 +122,19 @@ export class OrbitalApp {
       //    build-up headroom.
       //      - Raise it -> overlaps brighten/saturate sooner (denser look).
       //      - Lower it -> sparse laps dim, core takes more overlap to glow.
-      // 2. hueSpan (currently 3.0): how many full turns of the color wheel the
-      //    trail sweeps across its age (oldest -> most recent). Cycling the hue
-      //    means overlapping eras land on different colors, so a dense core
-      //    reads as a moving spectrum instead of washing out to white.
-      //      - Raise it -> tighter rainbow bands, more per-lap distinction.
-      //      - Lower it -> slower, broader color sweep (0 = solid `color`).
+      // 2. huePeriodDays (currently 3652.5 = one decade): the real-time duration
+      //    of one full turn of the color wheel. Tying the period to time rather
+      //    than to trail length keeps the per-year color rate identical across
+      //    lifespans — a 90yr orbit shows ~9 cycles, a 30yr orbit ~3 — so dense
+      //    overlap reads as a moving spectrum instead of washing out to white.
+      //      - Lower it -> tighter rainbow bands, more per-lap distinction.
+      //      - Raise it -> slower, broader color sweep (use static hueSpan: 0 for solid).
       // 3. hueStart (0..1) shifts where on the wheel the sweep begins;
       //    saturation (0..1) controls vividness.
       // All visual judgment calls — re-tune against real 30yr and 90yr spans.
       color: [0.2, 0.78, 0.96, 0.06],
       hueStart: 0.5,
-      hueSpan: 3.0,
+      huePeriodDays: 3652.5,
       saturation: 0.85,
       maxSamples: 44000,
       historyDays: 0,
