@@ -16,8 +16,9 @@ export class OrbitalTrailEntity {
     radiusX = 1,
     radiusY = 1,
     color = [0.25, 0.74, 0.96, 0.95],
-    colorOld = null,
-    colorRecent = null,
+    hueStart = 0,
+    hueSpan = 0,
+    saturation = 1,
     maxSamples = 720,
     historyDays = 540,
     minSampleDistance = 0.002,
@@ -27,11 +28,12 @@ export class OrbitalTrailEntity {
     this.radiusX = radiusX;
     this.radiusY = radiusY;
     this.color = color;
-    // The age gradient defaults to the trail's single color so existing callers
-    // that only pass `color` render exactly as before (old === recent === color).
-    const baseRgb = [color[0], color[1], color[2]];
-    this.colorOld = colorOld ?? baseRgb;
-    this.colorRecent = colorRecent ?? baseRgb;
+    // Recency hue cycle. hueSpan defaults to 0, which keeps the trail a solid
+    // `color` exactly as before; a positive hueSpan sweeps that many full turns
+    // of the color wheel across the trail age (see trail-program fragment).
+    this.hueStart = Number(hueStart) || 0;
+    this.hueSpan = Math.max(0, Number(hueSpan) || 0);
+    this.saturation = Number.isFinite(Number(saturation)) ? clamp(Number(saturation), 0, 1) : 1;
     this.maxSamples = clamp(Math.floor(maxSamples), 2, 65536);
     this.historyDays = Math.max(0, Number(historyDays) || 0);
     this.minSampleDistance = Math.max(0, Number(minSampleDistance) || 0);
@@ -182,8 +184,9 @@ export class OrbitalTrailEntity {
     gl.vertexAttribPointer(this.primitive.attributes.age, 1, gl.FLOAT, false, 16, 12);
     gl.uniformMatrix3fv(this.primitive.uniforms.projection, false, camera.matrix);
     gl.uniform4fv(this.primitive.uniforms.color, this.color);
-    gl.uniform3fv(this.primitive.uniforms.colorOld, this.colorOld);
-    gl.uniform3fv(this.primitive.uniforms.colorRecent, this.colorRecent);
+    gl.uniform1f(this.primitive.uniforms.hueStart, this.hueStart);
+    gl.uniform1f(this.primitive.uniforms.hueSpan, this.hueSpan);
+    gl.uniform1f(this.primitive.uniforms.saturation, this.saturation);
     gl.uniform1f(this.primitive.uniforms.scale, 1.0);
 
     // Additive blending so brightness accumulates where revolutions overlap,

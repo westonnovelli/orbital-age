@@ -420,10 +420,20 @@ test("render sets additive blend then restores the renderer default", () => {
   });
 });
 
-test("colorOld/colorRecent default to the trail color when omitted", () => {
-  const trail = new OrbitalTrailEntity({ color: [0.2, 0.4, 0.6, 0.9] });
-  assert.deepEqual(trail.colorOld, [0.2, 0.4, 0.6]);
-  assert.deepEqual(trail.colorRecent, [0.2, 0.4, 0.6]);
+test("hue cycle is off by default (solid color) and configurable", () => {
+  const solid = new OrbitalTrailEntity({ color: [0.2, 0.4, 0.6, 0.9] });
+  assert.equal(solid.hueSpan, 0, "hueSpan defaults to 0 (solid color)");
+
+  const rainbow = new OrbitalTrailEntity({ hueStart: 0.5, hueSpan: 3, saturation: 0.85 });
+  assert.equal(rainbow.hueStart, 0.5);
+  assert.equal(rainbow.hueSpan, 3);
+  assert.equal(rainbow.saturation, 0.85);
+});
+
+test("hueSpan and saturation are clamped to non-negative / [0,1]", () => {
+  const trail = new OrbitalTrailEntity({ hueSpan: -2, saturation: 5 });
+  assert.equal(trail.hueSpan, 0);
+  assert.equal(trail.saturation, 1);
 });
 
 test("setCursorForDay on empty samples sets cursor to 0", () => {

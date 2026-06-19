@@ -53,12 +53,13 @@ test("createTrailProgram returns expected attribute and uniform locations", () =
   assert.equal(typeof result.attributes.fade, "number");
   assert.equal(typeof result.attributes.age, "number");
 
-  // Uniforms: projection, scale, color, colorOld, colorRecent
+  // Uniforms: projection, scale, color, hueStart, hueSpan, saturation
   assert.ok(result.uniforms.projection, "projection uniform should exist");
   assert.ok(result.uniforms.scale, "scale uniform should exist");
   assert.ok(result.uniforms.color, "color uniform should exist");
-  assert.ok(result.uniforms.colorOld, "colorOld uniform should exist");
-  assert.ok(result.uniforms.colorRecent, "colorRecent uniform should exist");
+  assert.ok(result.uniforms.hueStart, "hueStart uniform should exist");
+  assert.ok(result.uniforms.hueSpan, "hueSpan uniform should exist");
+  assert.ok(result.uniforms.saturation, "saturation uniform should exist");
 });
 
 test("createTrailProgram attributes have distinct locations", () => {
@@ -70,11 +71,16 @@ test("createTrailProgram attributes have distinct locations", () => {
   assert.equal(unique.size, 3, "all attribute locations should be distinct");
 });
 
-test("createTrailProgram color gradient uniforms have distinct locations", () => {
+test("createTrailProgram hue uniforms have distinct locations", () => {
   const gl = makeStubGL();
   const { uniforms } = createTrailProgram(gl);
 
-  const indices = [uniforms.colorOld.index, uniforms.colorRecent.index, uniforms.color.index];
+  const indices = [
+    uniforms.hueStart.index,
+    uniforms.hueSpan.index,
+    uniforms.saturation.index,
+    uniforms.color.index
+  ];
   const unique = new Set(indices);
-  assert.equal(unique.size, 3, "color/colorOld/colorRecent should be distinct uniforms");
+  assert.equal(unique.size, 4, "color/hueStart/hueSpan/saturation should be distinct uniforms");
 });
