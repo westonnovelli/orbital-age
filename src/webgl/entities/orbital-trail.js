@@ -18,6 +18,7 @@ export class OrbitalTrailEntity {
     color = [0.25, 0.74, 0.96, 0.95],
     hueStart = 0,
     hueSpan = 0,
+    huePeriodDays = 0,
     saturation = 1,
     maxSamples = 720,
     historyDays = 540,
@@ -31,8 +32,15 @@ export class OrbitalTrailEntity {
     // Recency hue cycle. hueSpan defaults to 0, which keeps the trail a solid
     // `color` exactly as before; a positive hueSpan sweeps that many full turns
     // of the color wheel across the trail age (see trail-program fragment).
+    //
+    // huePeriodDays makes the gradient period relative to time rather than to
+    // the trail length: when > 0 one full color cycle spans exactly that many
+    // days of real time, so the per-year color rate is identical regardless of
+    // lifespan (a 90yr orbit simply shows proportionally more cycles than a
+    // 30yr one). It overrides the static hueSpan when set.
     this.hueStart = Number(hueStart) || 0;
     this.hueSpan = Math.max(0, Number(hueSpan) || 0);
+    this.huePeriodDays = Math.max(0, Number(huePeriodDays) || 0);
     this.saturation = Number.isFinite(Number(saturation)) ? clamp(Number(saturation), 0, 1) : 1;
     this.maxSamples = clamp(Math.floor(maxSamples), 2, 65536);
     this.historyDays = Math.max(0, Number(historyDays) || 0);
@@ -185,7 +193,7 @@ export class OrbitalTrailEntity {
     gl.uniformMatrix3fv(this.primitive.uniforms.projection, false, camera.matrix);
     gl.uniform4fv(this.primitive.uniforms.color, this.color);
     gl.uniform1f(this.primitive.uniforms.hueStart, this.hueStart);
-    gl.uniform1f(this.primitive.uniforms.hueSpan, this.hueSpan);
+    gl.uniform1f(this.primitive.uniforms.hueSpan, this.effectiveHueSpan());
     gl.uniform1f(this.primitive.uniforms.saturation, this.saturation);
     gl.uniform1f(this.primitive.uniforms.scale, 1.0);
 
@@ -195,6 +203,24 @@ export class OrbitalTrailEntity {
     gl.blendFunc(gl.ONE, gl.ONE);
     gl.drawArrays(gl.LINE_STRIP, 0, drawCount);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  }
+
+  /**
+   * The number of full color-wheel turns the gradient sweeps across the trail.
+   * When huePeriodDays is set, this is derived from the trail's actual time span
+   * (lastDay - firstDay) so one cycle always equals huePeriodDays of real time;
+   * otherwise the static hueSpan is used.
+   */
+  effectiveHueSpan() {
+    if (this.huePeriodDays > 0) {
+      const arr = this.samples;
+      if (arr.length > 1) {
+        const span = arr[arr.length - 1].day - arr[0].day;
+        return span > 0 ? span / this.huePeriodDays : 0;
+      }
+      return 0;
+    }
+    return this.hueSpan;
   }
 
   dispose(gl) {
@@ -226,15 +252,22 @@ export class OrbitalTrailEntity {
 
   #syncVertices() {
     const count = this.samples.length;
+    // Age is normalized over the trail's real-time span (firstDay..lastDay) so the
+    // color gradient advances at a constant rate per unit time. Combined with
+    // effectiveHueSpan()'s span/huePeriodDays scaling this makes each point's hue
+    // a function of absolute elapsed days, stable as the scrub cursor moves.
+    const firstDay = count > 0 ? this.samples[0].day : 0;
+    const daySpan = count > 1 ? this.samples[count - 1].day - firstDay : 0;
     for (let i = 0; i < count; i += 1) {
       const sample = this.samples[i];
       const offset = i * 4;
       const progress = count === 1 ? 1.0 : i / (count - 1);
+      const age = daySpan > 0 ? (sample.day - firstDay) / daySpan : 1.0;
       this.vertices[offset] = sample.x;
       this.vertices[offset + 1] = sample.y;
       this.vertices[offset + 2] = count === 1 ? 1.0 : this.minFade + (1.0 - this.minFade) * progress;
       // Age 0 = oldest sample, 1 = most recent; drives the recency color gradient.
-      this.vertices[offset + 3] = progress;
+      this.vertices[offset + 3] = age;
     }
   }
 }
