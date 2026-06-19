@@ -8,7 +8,7 @@ export function orbitsCompleted(elapsedDays) {
 export function currentAge(elapsedDays) {
   const years = Math.floor(elapsedDays / DAYS_PER_ORBIT);
   const remainingDays = Math.floor(elapsedDays - years * DAYS_PER_ORBIT);
-  return `${years}y ${remainingDays}d`;
+  return `${years}y ${String(remainingDays).padStart(3, "0")}d`;
 }
 
 export function distanceTraveledKm(elapsedDays) {

@@ -25,7 +25,7 @@ export class OrbitalTrailEntity {
     this.radiusX = radiusX;
     this.radiusY = radiusY;
     this.color = color;
-    this.maxSamples = clamp(Math.floor(maxSamples), 2, 16384);
+    this.maxSamples = clamp(Math.floor(maxSamples), 2, 65536);
     this.historyDays = Math.max(0, Number(historyDays) || 0);
     this.minSampleDistance = Math.max(0, Number(minSampleDistance) || 0);
     this.minDayDelta = Math.max(0, Number(minDayDelta) || 0);

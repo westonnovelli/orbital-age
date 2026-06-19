@@ -2,6 +2,7 @@ import { validateBirthday } from "./date.js";
 import { SUPPORTED_DATE_RANGE, normalizeToUtcMidnight, parseIsoDateUtc } from "./orbital-time.js";
 import { Scene } from "./webgl/scene.js";
 import { WebGLRenderer } from "./webgl/renderer.js";
+import { OrthoCamera2D } from "./webgl/camera.js";
 import { SunEntity } from "./webgl/entities/sun.js";
 import { EarthMarkerEntity } from "./webgl/entities/earth-marker.js";
 import { OrbitalTrailEntity } from "./webgl/entities/orbital-trail.js";
@@ -79,7 +80,7 @@ export class OrbitalApp {
     this.hudAge = hudAge;
     this.hudDistance = hudDistance;
 
-    this.renderer = new WebGLRenderer(canvas);
+    this.renderer = new WebGLRenderer(canvas, { camera: new OrthoCamera2D({ halfHeight: 2.2 }) });
     this.timelineController = null;
   }
 
@@ -109,15 +110,15 @@ export class OrbitalApp {
     }
 
     this.validationMessage.textContent = "";
-    const earthMarker = new EarthMarkerEntity({ radiusX: 1, radiusY: 0.998 });
+    const earthMarker = new EarthMarkerEntity({ radiusX: 1, radiusY: 1 });
     const earthTrail = new OrbitalTrailEntity({
       radiusX: 1,
-      radiusY: 0.998,
+      radiusY: 1,
       color: [0.2, 0.78, 0.96, 0.92],
-      maxSamples: 8192,
+      maxSamples: 44000,
       historyDays: 0,
-      minDayDelta: 0.2,
-      minSampleDistance: 0.0025
+      minDayDelta: 1.0,
+      minSampleDistance: 0
     });
     const todayUtc = normalizeToUtcMidnight(new Date());
     const datasetMaxUtc = parseIsoDateUtc(SUPPORTED_DATE_RANGE.max);
@@ -125,7 +126,7 @@ export class OrbitalApp {
     const birthdayMarkers = new BirthdayMarkerEntity({
       birthday: validation.date,
       radiusX: 1,
-      radiusY: 0.998
+      radiusY: 1
     });
     const timelineController = new TimelineControllerEntity({
       birthday: validation.date,
