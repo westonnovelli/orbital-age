@@ -13,12 +13,12 @@
   },
   "window": {
     "startUtc": "1926-01-01T00:00:00Z",
-    "endUtc": "2025-12-31T00:00:00Z",
-    "days": 36525
+    "endUtc": "2026-06-20T00:00:00Z",
+    "days": 36696
   },
   "cadence": {
     "step": "P1D",
-    "samplesPerBody": 36525
+    "samplesPerBody": 36696
   },
   "targets": [
     {
