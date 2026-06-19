@@ -3,10 +3,10 @@
   "ephemerisSource": {
     "provider": "JPL NAIF / JPL Horizons",
     "kernel": "de442s.bsp",
-    "retrievedOn": "2026-03-07"
+    "retrievedOn": "2026-06-19"
   },
   "frame": "ECLIPJ2000",
-  "origin": "SUN",
+  "origin": "SSB",
   "units": {
     "position": "AU",
     "time": "UTC"

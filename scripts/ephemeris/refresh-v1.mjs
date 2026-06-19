@@ -45,7 +45,7 @@ function horizonsParams({ naifId, startDate, stopDate }) {
     OBJ_DATA: "NO",
     MAKE_EPHEM: "YES",
     EPHEM_TYPE: "VECTORS",
-    CENTER: "500@10",
+    CENTER: "500@0",
     REF_PLANE: "ECLIPTIC",
     REF_SYSTEM: "J2000",
     OUT_UNITS: "AU-D",
@@ -60,8 +60,15 @@ function horizonsParams({ naifId, startDate, stopDate }) {
 }
 
 function buildUrl(params) {
-  const search = new URLSearchParams(params);
-  return `${HORIZONS_API_URL}?${search.toString()}`;
+  // Horizons requires parameter values to be wrapped in single quotes (except the
+  // meta `format` selector). URLSearchParams also encodes spaces as `+`, which the
+  // Horizons parser rejects, so emit %20 instead.
+  const parts = [];
+  for (const [key, value] of Object.entries(params)) {
+    const raw = key === "format" ? String(value) : `'${value}'`;
+    parts.push(`${key}=${encodeURIComponent(raw)}`);
+  }
+  return `${HORIZONS_API_URL}?${parts.join("&")}`;
 }
 
 function parseHorizonsCsvRows(resultText, target) {
@@ -103,7 +110,7 @@ function parseHorizonsCsvRows(resultText, target) {
       naifId: target.naifId,
       body: target.key,
       frame: "ECLIPJ2000",
-      origin: "SUN",
+      origin: "SSB",
       xAu,
       yAu,
       zAu
@@ -118,7 +125,7 @@ function buildSunRows(epochs, target) {
     naifId: target.naifId,
     body: target.key,
     frame: "ECLIPJ2000",
-    origin: "SUN",
+    origin: "SSB",
     xAu: 0,
     yAu: 0,
     zAu: 0
