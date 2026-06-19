@@ -5,23 +5,38 @@ import {
   computeAnniversaryDates,
   BirthdayMarkerEntity
 } from "../src/webgl/entities/birthday-markers.js";
+import { SUPPORTED_DATE_RANGE } from "../src/orbital-time.js";
 
-test("computeAnniversaryDates returns correct count for known birthday", () => {
-  // Birthday 1990-06-15 → anniversaries from 1991 through 2025 = 35
+// The ephemeris window advances over time (the scheduled refresh job extends it
+// to "today"), so anniversary counts are derived from the live supported range
+// rather than hardcoded against a fixed end year.
+const RANGE_START = new Date(SUPPORTED_DATE_RANGE.min + "T00:00:00Z");
+const RANGE_END = new Date(SUPPORTED_DATE_RANGE.max + "T00:00:00Z");
+
+test("computeAnniversaryDates spans from first anniversary through range end", () => {
   const dates = computeAnniversaryDates("1990-06-15");
-  assert.equal(dates.length, 35);
-  // First anniversary
+  // First anniversary is the year after birth (1990 sits well inside the range).
   assert.equal(dates[0].getUTCFullYear(), 1991);
   assert.equal(dates[0].getUTCMonth(), 5); // June = 5
   assert.equal(dates[0].getUTCDate(), 15);
-  // Last anniversary
-  assert.equal(dates[dates.length - 1].getUTCFullYear(), 2025);
+
+  // Consecutive years, no gaps.
+  for (let i = 1; i < dates.length; i++) {
+    assert.equal(dates[i].getUTCFullYear(), dates[i - 1].getUTCFullYear() + 1);
+  }
+
+  // The series extends exactly to the supported range end: the last anniversary
+  // is within range, and one more year would fall past it.
+  const last = dates[dates.length - 1];
+  assert.ok(last <= RANGE_END);
+  const next = new Date(Date.UTC(last.getUTCFullYear() + 1, 5, 15));
+  assert.ok(next > RANGE_END);
+  // Count follows from the first year and the range end (not a fixed constant).
+  assert.equal(dates.length, last.getUTCFullYear() - 1991 + 1);
 });
 
 test("computeAnniversaryDates handles leap day birthday", () => {
-  // Birthday 2000-02-29 → anniversaries from 2001 through 2025
   const dates = computeAnniversaryDates("2000-02-29");
-  assert.equal(dates.length, 25);
 
   // Non-leap year (2001) should fall back to Feb 28
   const d2001 = dates.find((d) => d.getUTCFullYear() === 2001);
@@ -34,37 +49,48 @@ test("computeAnniversaryDates handles leap day birthday", () => {
   assert.ok(d2004);
   assert.equal(d2004.getUTCMonth(), 1);
   assert.equal(d2004.getUTCDate(), 29);
+
+  // First anniversary is the year after birth; series runs to the range end.
+  assert.equal(dates[0].getUTCFullYear(), 2001);
+  assert.ok(dates[dates.length - 1] <= RANGE_END);
 });
 
-test("computeAnniversaryDates clamps to ephemeris range", () => {
-  // Birthday before ephemeris start — only anniversaries within 1926-2025
+test("computeAnniversaryDates clamps to ephemeris range start", () => {
+  // Birthday before ephemeris start — anniversaries before the range start are
+  // dropped, so the first kept anniversary is the first one at/after range start.
   const dates = computeAnniversaryDates("1920-07-01");
-  // Anniversaries: 1921–1925 are before range start (1926-01-01), so skipped
-  // 1926 onward: 1926-07-01 through 2025-07-01 = 100 anniversaries
-  assert.equal(dates.length, 100);
-  assert.equal(dates[0].getUTCFullYear(), 1926);
+  assert.ok(dates[0] >= RANGE_START);
+  assert.equal(dates[0].getUTCMonth(), 6); // July = 6
+  assert.equal(dates[0].getUTCDate(), 1);
+  // The anniversary one year earlier would precede the range start.
+  const prev = new Date(Date.UTC(dates[0].getUTCFullYear() - 1, 6, 1));
+  assert.ok(prev < RANGE_START);
 });
 
 test("computeAnniversaryDates returns empty for birthday after ephemeris end", () => {
-  const dates = computeAnniversaryDates("2026-01-01");
+  // A birthday on the range's final day has its first anniversary a full year
+  // later, always past the range end.
+  const dates = computeAnniversaryDates(SUPPORTED_DATE_RANGE.max);
   assert.equal(dates.length, 0);
 });
 
 test("computeAnniversaryDates handles birthday at ephemeris start boundary", () => {
-  // Birthday 1926-01-01 → anniversaries 1927 through 2025 = 99
-  const dates = computeAnniversaryDates("1926-01-01");
-  assert.equal(dates.length, 99);
-  assert.equal(dates[0].getUTCFullYear(), 1927);
+  // Birthday on the range start date → first anniversary is the next year.
+  const dates = computeAnniversaryDates(SUPPORTED_DATE_RANGE.min);
+  assert.equal(dates[0].getUTCFullYear(), RANGE_START.getUTCFullYear() + 1);
+  const last = dates[dates.length - 1];
+  assert.equal(dates.length, last.getUTCFullYear() - dates[0].getUTCFullYear() + 1);
 });
 
 test("BirthdayMarkerEntity computes positions with correct buffer length", () => {
+  const expected = computeAnniversaryDates("1990-06-15").length;
   const entity = new BirthdayMarkerEntity({
     birthday: "1990-06-15",
     radiusX: 1,
-    radiusY: 0.998
+    radiusY: 1
   });
-  assert.equal(entity.markerCount, 35);
-  assert.equal(entity.positionData.length, 70); // 35 * 2
+  assert.equal(entity.markerCount, expected);
+  assert.equal(entity.positionData.length, expected * 2); // markerCount * 2
 });
 
 test("BirthdayMarkerEntity applies radiusX/radiusY scaling", () => {
