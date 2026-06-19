@@ -16,6 +16,8 @@ export class OrbitalTrailEntity {
     radiusX = 1,
     radiusY = 1,
     color = [0.25, 0.74, 0.96, 0.95],
+    colorOld = null,
+    colorRecent = null,
     maxSamples = 720,
     historyDays = 540,
     minSampleDistance = 0.002,
@@ -25,6 +27,11 @@ export class OrbitalTrailEntity {
     this.radiusX = radiusX;
     this.radiusY = radiusY;
     this.color = color;
+    // The age gradient defaults to the trail's single color so existing callers
+    // that only pass `color` render exactly as before (old === recent === color).
+    const baseRgb = [color[0], color[1], color[2]];
+    this.colorOld = colorOld ?? baseRgb;
+    this.colorRecent = colorRecent ?? baseRgb;
     this.maxSamples = clamp(Math.floor(maxSamples), 2, 65536);
     this.historyDays = Math.max(0, Number(historyDays) || 0);
     this.minSampleDistance = Math.max(0, Number(minSampleDistance) || 0);
@@ -34,7 +41,7 @@ export class OrbitalTrailEntity {
     this.samples = [];
     this.cursorIndex = 0;
     this.precomputed = false;
-    this.vertices = new Float32Array(this.maxSamples * 3);
+    this.vertices = new Float32Array(this.maxSamples * 4);
     this.dirty = false;
     this.primitive = null;
     this.buffer = null;
@@ -161,20 +168,30 @@ export class OrbitalTrailEntity {
     if (this.dirty) {
       this.#syncVertices();
       gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices.subarray(0, this.samples.length * 3));
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices.subarray(0, this.samples.length * 4));
       this.dirty = false;
     }
 
     gl.useProgram(this.primitive.program);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
     gl.enableVertexAttribArray(this.primitive.attributes.position);
-    gl.vertexAttribPointer(this.primitive.attributes.position, 2, gl.FLOAT, false, 12, 0);
+    gl.vertexAttribPointer(this.primitive.attributes.position, 2, gl.FLOAT, false, 16, 0);
     gl.enableVertexAttribArray(this.primitive.attributes.fade);
-    gl.vertexAttribPointer(this.primitive.attributes.fade, 1, gl.FLOAT, false, 12, 8);
+    gl.vertexAttribPointer(this.primitive.attributes.fade, 1, gl.FLOAT, false, 16, 8);
+    gl.enableVertexAttribArray(this.primitive.attributes.age);
+    gl.vertexAttribPointer(this.primitive.attributes.age, 1, gl.FLOAT, false, 16, 12);
     gl.uniformMatrix3fv(this.primitive.uniforms.projection, false, camera.matrix);
     gl.uniform4fv(this.primitive.uniforms.color, this.color);
+    gl.uniform3fv(this.primitive.uniforms.colorOld, this.colorOld);
+    gl.uniform3fv(this.primitive.uniforms.colorRecent, this.colorRecent);
     gl.uniform1f(this.primitive.uniforms.scale, 1.0);
+
+    // Additive blending so brightness accumulates where revolutions overlap,
+    // visualizing orbit density. Restore the renderer's global default afterward
+    // (see renderer.js) so the sun/starfield/markers are unaffected.
+    gl.blendFunc(gl.ONE, gl.ONE);
     gl.drawArrays(gl.LINE_STRIP, 0, drawCount);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   }
 
   dispose(gl) {
@@ -208,10 +225,13 @@ export class OrbitalTrailEntity {
     const count = this.samples.length;
     for (let i = 0; i < count; i += 1) {
       const sample = this.samples[i];
-      const offset = i * 3;
+      const offset = i * 4;
+      const progress = count === 1 ? 1.0 : i / (count - 1);
       this.vertices[offset] = sample.x;
       this.vertices[offset + 1] = sample.y;
-      this.vertices[offset + 2] = count === 1 ? 1.0 : this.minFade + (1.0 - this.minFade) * (i / (count - 1));
+      this.vertices[offset + 2] = count === 1 ? 1.0 : this.minFade + (1.0 - this.minFade) * progress;
+      // Age 0 = oldest sample, 1 = most recent; drives the recency color gradient.
+      this.vertices[offset + 3] = progress;
     }
   }
 }
