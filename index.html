@@ -4,39 +4,133 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Orbital Age</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./src/styles.css" />
   </head>
   <body>
-    <main class="app">
-      <header class="app__header">
-        <h1>Orbital Age Map</h1>
-        <p>Enter your birthday to initialize the orbital scene.</p>
+    <div class="frame">
+      <div class="frame__edge frame__edge--top" aria-hidden="true"></div>
+      <div class="frame__edge frame__edge--bottom" aria-hidden="true"></div>
+      <div class="frame__vignette" aria-hidden="true"></div>
+
+      <!-- Top app bar -->
+      <header class="topbar">
+        <div class="topbar__brand">
+          <span class="topbar__sigil" aria-hidden="true"></span>
+          <span class="topbar__brandtext">
+            <span class="topbar__title">Orbital Age</span>
+            <span class="topbar__subtitle">Heliocentric Observatory · v1.0</span>
+          </span>
+        </div>
+        <nav class="topbar__nav" aria-label="Sections">
+          <a class="topbar__link topbar__link--active" href="#">Simulate</a>
+          <a class="topbar__link" href="#">Trajectory</a>
+          <a class="topbar__link" href="#">Telemetry</a>
+          <a class="topbar__link" href="#">Archive</a>
+        </nav>
+        <div class="topbar__status">
+          <span class="topbar__status-label">Simulation Clock</span>
+          <span class="topbar__status-value">Live · real-time</span>
+        </div>
       </header>
 
-      <section class="controls" aria-label="Birthday controls">
-        <form id="birthday-form" novalidate>
-          <label for="birthday">Birthday</label>
-          <input id="birthday" name="birthday" type="date" required min="1900-01-01" max="2100-12-31" />
-          <button type="submit">Render Orbit</button>
-        </form>
-        <p id="validation-message" class="message" aria-live="polite"></p>
+      <main class="stage">
+        <!-- The orrery itself is rendered to the canvas -->
+        <section class="viewport" aria-label="Orbital map viewport">
+          <canvas id="orbit-canvas" aria-label="Orbital map"></canvas>
+          <div class="viewport__accents" aria-hidden="true">
+            <span class="scanline"></span>
+            <span class="bracket bracket--tl"></span>
+            <span class="bracket bracket--tr"></span>
+            <span class="bracket bracket--bl"></span>
+            <span class="bracket bracket--br"></span>
+          </div>
+          <p id="webgl-message" class="message message--hidden" aria-live="polite"></p>
+        </section>
+
+        <!-- Central metrics HUD (revealed after a birthday is rendered) -->
+        <div id="stats-hud" class="hud hud--hidden" aria-live="polite" aria-atomic="true">
+          <div class="hud__eyebrow">
+            <span class="hud__rule"></span>
+            <span class="hud__eyebrow-text">Distance Accumulation Metric</span>
+            <span class="hud__rule"></span>
+          </div>
+          <span class="hud__primary" id="hud-distance">DIST --</span>
+          <div class="hud__metrics">
+            <span class="hud__item hud__item--secondary" id="hud-orbits">ORBITS --</span>
+            <span class="hud__item hud__item--primary" id="hud-age">AGE --</span>
+          </div>
+        </div>
+
+        <!-- Calibration / entry panel -->
+        <section class="panel panel--entry" aria-label="Birthday controls">
+          <div class="panel__eyebrow">Chronos Alignment</div>
+          <p class="panel__lead">
+            Enter your birthday to calibrate Earth's orbital trajectory through time.
+          </p>
+          <form id="birthday-form" novalidate>
+            <div class="field">
+              <label for="birthday">Birthday</label>
+              <input id="birthday" name="birthday" type="date" required min="1900-01-01" max="2100-12-31" />
+            </div>
+            <button type="submit" class="btn btn--primary">Begin Your Journey</button>
+          </form>
+          <p id="validation-message" class="message" aria-live="polite"></p>
+          <div class="panel__meta">
+            <span class="panel__meta-dot" aria-hidden="true"></span>
+            <span>Orbital Sync · Active</span>
+            <span class="panel__meta-spacer"></span>
+            <span>Ephemeris v1</span>
+          </div>
+        </section>
+
+        <!-- Telemetry side panel -->
+        <aside class="panel panel--telemetry" aria-label="Orbital telemetry">
+          <h2 class="telemetry__heading">
+            <span class="telemetry__pulse" aria-hidden="true"></span>
+            Orbital Mechanics
+          </h2>
+          <p class="telemetry__body">
+            Earth orbits the Sun at an average distance of ~150M km, completing one
+            revolution each year. This visualization replays that journey across your lifetime.
+          </p>
+          <dl class="telemetry__grid">
+            <div class="telemetry__cell">
+              <dt>Path</dt>
+              <dd>Elliptical</dd>
+            </div>
+            <div class="telemetry__cell">
+              <dt>Mean Velocity</dt>
+              <dd>29.78 km/s</dd>
+            </div>
+          </dl>
+        </aside>
+
+        <!-- Bottom control dock -->
         <fieldset id="timeline-controls" class="timeline" disabled>
           <legend>Timeline controls</legend>
-          <div class="timeline__row">
-            <button id="play-pause" type="button" aria-label="Play timeline">Play</button>
-            <button id="reset-timeline" type="button">Reset</button>
-            <label for="playback-speed">Speed</label>
-            <select id="playback-speed" name="playback-speed">
-              <option value="1">1x</option>
-              <option value="10">10x</option>
-              <option value="30">30x</option>
-              <option value="120" selected>120x</option>
-              <option value="365">365x (1 yr/sec)</option>
-            </select>
-            <button id="ramp-toggle" type="button" aria-label="Enable adaptive ramp" aria-pressed="false">Ramp</button>
+          <div class="timeline__transport">
+            <button id="play-pause" type="button" class="btn btn--transport" aria-label="Play timeline">Play</button>
+            <button id="reset-timeline" type="button" class="btn btn--ghost">Reset</button>
+            <button id="ramp-toggle" type="button" class="btn btn--ghost" aria-label="Enable adaptive ramp" aria-pressed="false">Ramp</button>
+            <div class="timeline__speed">
+              <label for="playback-speed">Speed</label>
+              <select id="playback-speed" name="playback-speed">
+                <option value="1">1x</option>
+                <option value="10">10x</option>
+                <option value="30">30x</option>
+                <option value="120" selected>120x</option>
+                <option value="365">365x (1 yr/sec)</option>
+              </select>
+            </div>
           </div>
-          <div class="timeline__row timeline__row--stack">
-            <label for="date-scrubber">Date scrubber</label>
+          <div class="timeline__scrub">
+            <label for="date-scrubber" class="timeline__scrub-label">Date scrubber</label>
             <input
               id="date-scrubber"
               name="date-scrubber"
@@ -47,22 +141,14 @@
               step="1"
               aria-label="Timeline date scrubber"
             />
-            <p id="timeline-status" class="message message--info" aria-live="polite">Enter a birthday to enable timeline controls.</p>
-            <output id="timeline-date" for="date-scrubber">--</output>
+            <div class="timeline__readout">
+              <output id="timeline-date" for="date-scrubber">--</output>
+              <p id="timeline-status" class="message message--info" aria-live="polite">Enter a birthday to enable timeline controls.</p>
+            </div>
           </div>
         </fieldset>
-      </section>
-
-      <section class="viewport">
-        <canvas id="orbit-canvas" aria-label="Orbital map"></canvas>
-        <p id="webgl-message" class="message message--hidden" aria-live="polite"></p>
-        <div id="stats-hud" class="hud hud--hidden" aria-live="polite" aria-atomic="true">
-          <span class="hud__item" id="hud-orbits">ORBITS --</span>
-          <span class="hud__item" id="hud-age">AGE --</span>
-          <span class="hud__item" id="hud-distance">DIST --</span>
-        </div>
-      </section>
-    </main>
+      </main>
+    </div>
 
     <script type="module" src="./src/main.js"></script>
   </body>
