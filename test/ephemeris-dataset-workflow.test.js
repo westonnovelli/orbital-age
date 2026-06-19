@@ -51,7 +51,7 @@ test("rebuild and verify scripts run end-to-end against a fixture dataset", () =
       retrievedOn: "2026-03-07"
     },
     frame: "ECLIPJ2000",
-    origin: "SUN",
+    origin: "SSB",
     window: {
       startUtc: "1970-01-01T00:00:00Z",
       endUtc: "1970-01-02T00:00:00Z",
@@ -72,10 +72,10 @@ test("rebuild and verify scripts run end-to-end against a fixture dataset", () =
   };
 
   const fixtureRows = [
-    { epochUtc: "1970-01-01T00:00:00Z", epochUnixS: 0, naifId: 10, body: "sun", frame: "ECLIPJ2000", origin: "SUN", xAu: 0, yAu: 0, zAu: 0 },
-    { epochUtc: "1970-01-01T00:00:00Z", epochUnixS: 0, naifId: 399, body: "earth", frame: "ECLIPJ2000", origin: "SUN", xAu: 1, yAu: 2, zAu: 3 },
-    { epochUtc: "1970-01-02T00:00:00Z", epochUnixS: 86400, naifId: 10, body: "sun", frame: "ECLIPJ2000", origin: "SUN", xAu: 0, yAu: 0, zAu: 0 },
-    { epochUtc: "1970-01-02T00:00:00Z", epochUnixS: 86400, naifId: 399, body: "earth", frame: "ECLIPJ2000", origin: "SUN", xAu: 4, yAu: 5, zAu: 6 }
+    { epochUtc: "1970-01-01T00:00:00Z", epochUnixS: 0, naifId: 10, body: "sun", frame: "ECLIPJ2000", origin: "SSB", xAu: 0, yAu: 0, zAu: 0 },
+    { epochUtc: "1970-01-01T00:00:00Z", epochUnixS: 0, naifId: 399, body: "earth", frame: "ECLIPJ2000", origin: "SSB", xAu: 1, yAu: 2, zAu: 3 },
+    { epochUtc: "1970-01-02T00:00:00Z", epochUnixS: 86400, naifId: 10, body: "sun", frame: "ECLIPJ2000", origin: "SSB", xAu: 0, yAu: 0, zAu: 0 },
+    { epochUtc: "1970-01-02T00:00:00Z", epochUnixS: 86400, naifId: 399, body: "earth", frame: "ECLIPJ2000", origin: "SSB", xAu: 4, yAu: 5, zAu: 6 }
   ];
 
   fs.writeFileSync(path.join(dataDir, "header.json"), `${JSON.stringify(header, null, 2)}\n`);
@@ -117,7 +117,7 @@ test("refresh script rebuilds snapshots from cached Horizons payloads", () => {
       retrievedOn: "2020-01-01"
     },
     frame: "ECLIPJ2000",
-    origin: "SUN",
+    origin: "SSB",
     window: {
       startUtc: "1970-01-01T00:00:00Z",
       endUtc: "1970-01-02T00:00:00Z",
