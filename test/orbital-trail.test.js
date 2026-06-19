@@ -52,20 +52,27 @@ test("orbital trail ignores dense samples under configured thresholds", () => {
   assert.deepEqual(trail.samples.map((sample) => sample.day), [10, 10.2]);
 });
 
+// At the daily cadence the trail now uses, the worst supported life span
+// (~120yr) lands just over the 44000 cap, so the probe is sized to exceed it
+// (exercising the front-splice path once) without the unrealistic overflow the
+// old 0.2-day-cadence config tolerated.
+const FULL_LIFETIME_PROBE_SAMPLES = 45_000;
+
 test("orbital trail probe keeps full-lifetime trail memory bounded", () => {
   const result = runTrailSamplingProbe({
-    sampleCount: 200_000,
+    sampleCount: FULL_LIFETIME_PROBE_SAMPLES,
+    sampleDayStep: 1,
     trailOptions: {
-      maxSamples: 8192,
+      maxSamples: 44000,
       historyDays: 0,
-      minDayDelta: 0.2,
-      minSampleDistance: 0.0025
+      minDayDelta: 1.0,
+      minSampleDistance: 0
     }
   });
 
-  assert.equal(result.maxSamples, 8192);
-  assert.equal(result.vertexBufferBytes, 8192 * 3 * Float32Array.BYTES_PER_ELEMENT);
-  assert.ok(result.retainedSamples <= 8192);
+  assert.equal(result.maxSamples, 44000);
+  assert.equal(result.vertexBufferBytes, 44000 * 3 * Float32Array.BYTES_PER_ELEMENT);
+  assert.ok(result.retainedSamples <= 44000);
   assert.ok(result.retainedSamples > 0);
   // historyDays: 0 means no time-based pruning occurred
   assert.equal(result.historyDays, 0);
@@ -73,12 +80,13 @@ test("orbital trail probe keeps full-lifetime trail memory bounded", () => {
 
 test("orbital trail probe runtime stays within budget for long timelines", () => {
   const result = runTrailSamplingProbe({
-    sampleCount: 200_000,
+    sampleCount: FULL_LIFETIME_PROBE_SAMPLES,
+    sampleDayStep: 1,
     trailOptions: {
-      maxSamples: 8192,
+      maxSamples: 44000,
       historyDays: 0,
-      minDayDelta: 0.2,
-      minSampleDistance: 0.0025
+      minDayDelta: 1.0,
+      minSampleDistance: 0
     }
   });
 
@@ -89,33 +97,55 @@ test("orbital trail probe runtime stays within budget for long timelines", () =>
   assert.ok(result.elapsedMs < 6000, `expected <6000ms, got ${result.elapsedMs}ms`);
 });
 
-test("orbital trail works with full-lifetime config (maxSamples=16384, historyDays=0)", () => {
+test("orbital trail works with full-lifetime config (maxSamples=44000, historyDays=0)", () => {
   const trail = new OrbitalTrailEntity({
-    maxSamples: 16384,
+    maxSamples: 44000,
     historyDays: 0,
-    minDayDelta: 0.2,
-    minSampleDistance: 0.0025
+    minDayDelta: 1.0,
+    minSampleDistance: 0
   });
 
-  assert.equal(trail.maxSamples, 16384);
+  assert.equal(trail.maxSamples, 44000);
   assert.equal(trail.historyDays, 0);
-  assert.equal(trail.vertices.byteLength, 16384 * 3 * Float32Array.BYTES_PER_ELEMENT);
+  assert.equal(trail.vertices.byteLength, 44000 * 3 * Float32Array.BYTES_PER_ELEMENT);
+});
+
+test("orbital trail retains a full ~120yr lifespan without front-splicing", () => {
+  // ~120 years at 1 sample/day ≈ 43830 samples, all of which must be kept.
+  const totalDays = Math.ceil(365.25 * 120);
+  const result = runTrailSamplingProbe({
+    sampleCount: totalDays + 1,
+    sampleDayStep: 1,
+    trailOptions: {
+      maxSamples: 44000,
+      historyDays: 0,
+      minDayDelta: 1.0,
+      minSampleDistance: 0
+    }
+  });
+
+  assert.equal(result.maxSamples, 44000);
+  // No front-splice: every daily sample of the full lifespan is retained.
+  assert.equal(result.retainedSamples, totalDays + 1);
+  assert.ok(result.retainedSamples <= 44000, "full lifespan fits within the cap");
+  assert.equal(result.historyDays, 0);
 });
 
 test("orbital trail probe stays bounded with full-lifetime trail config", () => {
   const result = runTrailSamplingProbe({
-    sampleCount: 200_000,
+    sampleCount: FULL_LIFETIME_PROBE_SAMPLES,
+    sampleDayStep: 1,
     trailOptions: {
-      maxSamples: 16384,
+      maxSamples: 44000,
       historyDays: 0,
-      minDayDelta: 0.2,
-      minSampleDistance: 0.0025
+      minDayDelta: 1.0,
+      minSampleDistance: 0
     }
   });
 
-  assert.equal(result.maxSamples, 16384);
-  assert.equal(result.vertexBufferBytes, 16384 * 3 * Float32Array.BYTES_PER_ELEMENT);
-  assert.ok(result.retainedSamples <= 16384);
+  assert.equal(result.maxSamples, 44000);
+  assert.equal(result.vertexBufferBytes, 44000 * 3 * Float32Array.BYTES_PER_ELEMENT);
+  assert.ok(result.retainedSamples <= 44000);
   assert.ok(result.retainedSamples > 0);
   assert.equal(result.historyDays, 0);
   // Wall-clock guard against algorithmic blowup (e.g. O(n^2) sampling), not a
