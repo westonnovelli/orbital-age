@@ -52,8 +52,10 @@ export class OrbitalApp {
     statsHud,
     hudOrbits,
     hudAge,
-    hudDistance
+    hudDistance,
+    root
   }) {
+    this.root = root;
     this.form = form;
     this.dateInput = dateInput;
     this.validationMessage = validationMessage;
@@ -150,6 +152,7 @@ export class OrbitalApp {
     this.#setTimelineEnabled(true);
     this.statsHud?.classList.remove("hud--hidden");
     this.#updateTimelineUi(this.timelineController.getState());
+    this.root?.classList.add("journey-active");
   }
 
   #bindTimelineControls() {
