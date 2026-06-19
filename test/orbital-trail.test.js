@@ -52,20 +52,27 @@ test("orbital trail ignores dense samples under configured thresholds", () => {
   assert.deepEqual(trail.samples.map((sample) => sample.day), [10, 10.2]);
 });
 
+// At the daily cadence the trail now uses, the worst supported life span
+// (~120yr) lands just over the 44000 cap, so the probe is sized to exceed it
+// (exercising the front-splice path once) without the unrealistic overflow the
+// old 0.2-day-cadence config tolerated.
+const FULL_LIFETIME_PROBE_SAMPLES = 45_000;
+
 test("orbital trail probe keeps full-lifetime trail memory bounded", () => {
   const result = runTrailSamplingProbe({
-    sampleCount: 200_000,
+    sampleCount: FULL_LIFETIME_PROBE_SAMPLES,
+    sampleDayStep: 1,
     trailOptions: {
-      maxSamples: 8192,
+      maxSamples: 44000,
       historyDays: 0,
-      minDayDelta: 0.2,
-      minSampleDistance: 0.0025
+      minDayDelta: 1.0,
+      minSampleDistance: 0
     }
   });
 
-  assert.equal(result.maxSamples, 8192);
-  assert.equal(result.vertexBufferBytes, 8192 * 3 * Float32Array.BYTES_PER_ELEMENT);
-  assert.ok(result.retainedSamples <= 8192);
+  assert.equal(result.maxSamples, 44000);
+  assert.equal(result.vertexBufferBytes, 44000 * 4 * Float32Array.BYTES_PER_ELEMENT);
+  assert.ok(result.retainedSamples <= 44000);
   assert.ok(result.retainedSamples > 0);
   // historyDays: 0 means no time-based pruning occurred
   assert.equal(result.historyDays, 0);
@@ -73,12 +80,13 @@ test("orbital trail probe keeps full-lifetime trail memory bounded", () => {
 
 test("orbital trail probe runtime stays within budget for long timelines", () => {
   const result = runTrailSamplingProbe({
-    sampleCount: 200_000,
+    sampleCount: FULL_LIFETIME_PROBE_SAMPLES,
+    sampleDayStep: 1,
     trailOptions: {
-      maxSamples: 8192,
+      maxSamples: 44000,
       historyDays: 0,
-      minDayDelta: 0.2,
-      minSampleDistance: 0.0025
+      minDayDelta: 1.0,
+      minSampleDistance: 0
     }
   });
 
@@ -89,33 +97,55 @@ test("orbital trail probe runtime stays within budget for long timelines", () =>
   assert.ok(result.elapsedMs < 6000, `expected <6000ms, got ${result.elapsedMs}ms`);
 });
 
-test("orbital trail works with full-lifetime config (maxSamples=16384, historyDays=0)", () => {
+test("orbital trail works with full-lifetime config (maxSamples=44000, historyDays=0)", () => {
   const trail = new OrbitalTrailEntity({
-    maxSamples: 16384,
+    maxSamples: 44000,
     historyDays: 0,
-    minDayDelta: 0.2,
-    minSampleDistance: 0.0025
+    minDayDelta: 1.0,
+    minSampleDistance: 0
   });
 
-  assert.equal(trail.maxSamples, 16384);
+  assert.equal(trail.maxSamples, 44000);
   assert.equal(trail.historyDays, 0);
-  assert.equal(trail.vertices.byteLength, 16384 * 3 * Float32Array.BYTES_PER_ELEMENT);
+  assert.equal(trail.vertices.byteLength, 44000 * 4 * Float32Array.BYTES_PER_ELEMENT);
+});
+
+test("orbital trail retains a full ~120yr lifespan without front-splicing", () => {
+  // ~120 years at 1 sample/day ≈ 43830 samples, all of which must be kept.
+  const totalDays = Math.ceil(365.25 * 120);
+  const result = runTrailSamplingProbe({
+    sampleCount: totalDays + 1,
+    sampleDayStep: 1,
+    trailOptions: {
+      maxSamples: 44000,
+      historyDays: 0,
+      minDayDelta: 1.0,
+      minSampleDistance: 0
+    }
+  });
+
+  assert.equal(result.maxSamples, 44000);
+  // No front-splice: every daily sample of the full lifespan is retained.
+  assert.equal(result.retainedSamples, totalDays + 1);
+  assert.ok(result.retainedSamples <= 44000, "full lifespan fits within the cap");
+  assert.equal(result.historyDays, 0);
 });
 
 test("orbital trail probe stays bounded with full-lifetime trail config", () => {
   const result = runTrailSamplingProbe({
-    sampleCount: 200_000,
+    sampleCount: FULL_LIFETIME_PROBE_SAMPLES,
+    sampleDayStep: 1,
     trailOptions: {
-      maxSamples: 16384,
+      maxSamples: 44000,
       historyDays: 0,
-      minDayDelta: 0.2,
-      minSampleDistance: 0.0025
+      minDayDelta: 1.0,
+      minSampleDistance: 0
     }
   });
 
-  assert.equal(result.maxSamples, 16384);
-  assert.equal(result.vertexBufferBytes, 16384 * 3 * Float32Array.BYTES_PER_ELEMENT);
-  assert.ok(result.retainedSamples <= 16384);
+  assert.equal(result.maxSamples, 44000);
+  assert.equal(result.vertexBufferBytes, 44000 * 4 * Float32Array.BYTES_PER_ELEMENT);
+  assert.ok(result.retainedSamples <= 44000);
   assert.ok(result.retainedSamples > 0);
   assert.equal(result.historyDays, 0);
   // Wall-clock guard against algorithmic blowup (e.g. O(n^2) sampling), not a
@@ -256,6 +286,183 @@ test("setCursorForDay binary-searches to the correct position", () => {
   // Seek before start
   trail.setCursorForDay(-1);
   assert.equal(trail.cursorIndex, 0);
+});
+
+function makeStubGL() {
+  const calls = [];
+  let attribIndex = 0;
+  let uniformIndex = 0;
+  return {
+    VERTEX_SHADER: 0x8B31,
+    FRAGMENT_SHADER: 0x8B30,
+    COMPILE_STATUS: 0x8B81,
+    LINK_STATUS: 0x8B82,
+    ARRAY_BUFFER: 0x8892,
+    DYNAMIC_DRAW: 0x88E8,
+    FLOAT: 0x1406,
+    LINE_STRIP: 0x0003,
+    ONE: 1,
+    SRC_ALPHA: 0x0302,
+    ONE_MINUS_SRC_ALPHA: 0x0303,
+    createShader(type) { return { type }; },
+    shaderSource() {},
+    compileShader() {},
+    getShaderParameter() { return true; },
+    getShaderInfoLog() { return ""; },
+    deleteShader() {},
+    createProgram() { return { id: 0 }; },
+    attachShader() {},
+    linkProgram() {},
+    getProgramParameter() { return true; },
+    getProgramInfoLog() { return ""; },
+    getAttribLocation() { return attribIndex++; },
+    getUniformLocation(_prog, name) { return { name, index: uniformIndex++ }; },
+    createBuffer() { return { id: 0 }; },
+    bindBuffer() {},
+    bufferData() {},
+    bufferSubData() {},
+    useProgram() {},
+    enableVertexAttribArray() {},
+    vertexAttribPointer(loc, size, type, normalized, stride, offset) {
+      calls.push({ fn: "vertexAttribPointer", loc, size, stride, offset });
+    },
+    uniformMatrix3fv() {},
+    uniform4fv() {},
+    uniform3fv() {},
+    uniform1f() {},
+    blendFunc(sfactor, dfactor) {
+      calls.push({ fn: "blendFunc", sfactor, dfactor });
+    },
+    drawArrays(mode, first, count) {
+      calls.push({ fn: "drawArrays", mode, first, count });
+    },
+    _calls: calls
+  };
+}
+
+test("syncVertices writes a 0->1 age in the 4th lane", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 10,
+    historyDays: 0,
+    minDayDelta: 0,
+    minSampleDistance: 0,
+    minFade: 0
+  });
+
+  trail.addSample(0, 0, 0);
+  trail.addSample(1, 1, 0);
+  trail.addSample(2, 2, 0);
+  trail.addSample(3, 3, 0);
+
+  // Force vertex sync via render with a stub GL.
+  const gl = makeStubGL();
+  trail.init(gl);
+  trail.render({ gl, camera: { matrix: new Float32Array(9) } });
+
+  const count = trail.samples.length;
+  // 4th lane (offset+3) holds age: oldest=0, newest=1, linear in between.
+  for (let i = 0; i < count; i += 1) {
+    const expected = i / (count - 1);
+    assert.ok(
+      Math.abs(trail.vertices[i * 4 + 3] - expected) < 1e-6,
+      `age lane at ${i} should be ${expected}, got ${trail.vertices[i * 4 + 3]}`
+    );
+  }
+});
+
+test("render uses a 4-float (16-byte) interleaved stride with age lane", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 10,
+    historyDays: 0,
+    minDayDelta: 0,
+    minSampleDistance: 0
+  });
+  trail.addSample(0, 0, 0);
+  trail.addSample(1, 1, 0);
+
+  const gl = makeStubGL();
+  trail.init(gl);
+  trail.render({ gl, camera: { matrix: new Float32Array(9) } });
+
+  const pointers = gl._calls.filter((c) => c.fn === "vertexAttribPointer");
+  // position, fade, age — all stride 16, offsets 0/8/12.
+  assert.equal(pointers.length, 3);
+  for (const p of pointers) {
+    assert.equal(p.stride, 16, "stride should be 16 bytes (4 floats)");
+  }
+  const offsets = pointers.map((p) => p.offset).sort((a, b) => a - b);
+  assert.deepEqual(offsets, [0, 8, 12]);
+});
+
+test("render sets additive blend then restores the renderer default", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 10,
+    historyDays: 0,
+    minDayDelta: 0,
+    minSampleDistance: 0
+  });
+  trail.addSample(0, 0, 0);
+  trail.addSample(1, 1, 0);
+
+  const gl = makeStubGL();
+  trail.init(gl);
+  trail.render({ gl, camera: { matrix: new Float32Array(9) } });
+
+  const sequence = gl._calls.filter((c) => c.fn === "blendFunc" || c.fn === "drawArrays");
+  // Additive blend before the draw, default restored after.
+  assert.equal(sequence.length, 3);
+  assert.deepEqual(sequence[0], { fn: "blendFunc", sfactor: gl.ONE, dfactor: gl.ONE });
+  assert.equal(sequence[1].fn, "drawArrays");
+  assert.deepEqual(sequence[2], {
+    fn: "blendFunc",
+    sfactor: gl.SRC_ALPHA,
+    dfactor: gl.ONE_MINUS_SRC_ALPHA
+  });
+});
+
+test("hue cycle is off by default (solid color) and configurable", () => {
+  const solid = new OrbitalTrailEntity({ color: [0.2, 0.4, 0.6, 0.9] });
+  assert.equal(solid.hueSpan, 0, "hueSpan defaults to 0 (solid color)");
+
+  const rainbow = new OrbitalTrailEntity({ hueStart: 0.5, hueSpan: 3, saturation: 0.85 });
+  assert.equal(rainbow.hueStart, 0.5);
+  assert.equal(rainbow.hueSpan, 3);
+  assert.equal(rainbow.saturation, 0.85);
+});
+
+test("hueSpan and saturation are clamped to non-negative / [0,1]", () => {
+  const trail = new OrbitalTrailEntity({ hueSpan: -2, saturation: 5 });
+  assert.equal(trail.hueSpan, 0);
+  assert.equal(trail.saturation, 1);
+});
+
+test("huePeriodDays derives hueSpan from the trail's real-time span", () => {
+  // One cycle per 100 days. A 300-day span -> 3 cycles; a 900-day span -> 9.
+  const short = new OrbitalTrailEntity({
+    huePeriodDays: 100,
+    maxSamples: 2000,
+    minDayDelta: 1,
+    minSampleDistance: 0
+  });
+  short.precomputeTrail(300, () => ({ x: 0, y: 0 }));
+  assert.ok(Math.abs(short.effectiveHueSpan() - 3) < 1e-9);
+
+  const long = new OrbitalTrailEntity({
+    huePeriodDays: 100,
+    maxSamples: 2000,
+    minDayDelta: 1,
+    minSampleDistance: 0
+  });
+  long.precomputeTrail(900, () => ({ x: 0, y: 0 }));
+  assert.ok(Math.abs(long.effectiveHueSpan() - 9) < 1e-9);
+});
+
+test("effectiveHueSpan falls back to static hueSpan when huePeriodDays is 0", () => {
+  const trail = new OrbitalTrailEntity({ hueSpan: 3 });
+  assert.equal(trail.effectiveHueSpan(), 3);
+
+  const empty = new OrbitalTrailEntity({ huePeriodDays: 100 });
+  assert.equal(empty.effectiveHueSpan(), 0, "no samples -> no sweep");
 });
 
 test("setCursorForDay on empty samples sets cursor to 0", () => {

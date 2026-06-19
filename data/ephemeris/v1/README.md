@@ -9,7 +9,7 @@ runtime model in `src/ephemeris/generated-v1.js`.
 - Producer: JPL NAIF / Solar System Dynamics
 - Kernel family: DE442s (`de442s.bsp`)
 - Frame: `ECLIPJ2000`
-- Origin: `SUN`
+- Origin: `SSB` (Solar System Barycenter, Horizons `CENTER=500@0`)
 - Window: `1926-01-01T00:00:00Z` to `2025-12-31T00:00:00Z`
 - Cadence: `P1D` (1 sample per day)
 - Bodies: Sun + 8 planets (`naifId` 10, 199, 299, 399, 499, 599, 699, 799, 899)

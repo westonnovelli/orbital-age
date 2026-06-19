@@ -30,12 +30,45 @@ function parseArgs(argv) {
     yes: flags.has("--yes"),
     printPlan: flags.has("--print-plan"),
     retrievedOn: values.get("--retrieved-on") ?? null,
+    endUtc: values.get("--end-utc") ?? null,
     dataDir: values.get("--data-dir") ?? process.env.EPHEMERIS_DATA_DIR ?? DEFAULT_DATA_DIR
   };
 }
 
 function utcDateFromIso(iso) {
   return new Date(iso).toISOString().slice(0, 10);
+}
+
+const MS_PER_DAY = 86400000;
+
+function utcMidnightIso(date) {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())).toISOString().replace(".000Z", "Z");
+}
+
+// The interpolation ceiling at runtime is endUtc - stepSeconds (see runtime.js), so
+// extending the window through "today + 1 day" is what makes *today* interpolable.
+function targetEndUtcIso(options) {
+  if (options.endUtc) {
+    return utcMidnightIso(new Date(options.endUtc));
+  }
+  const tomorrow = new Date(Date.now() + MS_PER_DAY);
+  return utcMidnightIso(tomorrow);
+}
+
+// Recompute the daily-cadence window so it spans [startUtc, desiredEndUtc] inclusive.
+// `days` and `samplesPerBody` both track the inclusive daily sample count. The window
+// is only ever extended forward, never shrunk.
+function extendWindowToEnd(header, desiredEndUtcIso) {
+  const startMs = Date.parse(header.window.startUtc);
+  const currentEndMs = Date.parse(header.window.endUtc);
+  const desiredEndMs = Date.parse(desiredEndUtcIso);
+  const endMs = Math.max(currentEndMs, desiredEndMs);
+  const inclusiveSamples = Math.round((endMs - startMs) / MS_PER_DAY) + 1;
+
+  header.window.endUtc = new Date(endMs).toISOString().replace(".000Z", "Z");
+  header.window.days = inclusiveSamples;
+  header.cadence.samplesPerBody = inclusiveSamples;
+  return header;
 }
 
 function horizonsParams({ naifId, startDate, stopDate }) {
@@ -45,7 +78,7 @@ function horizonsParams({ naifId, startDate, stopDate }) {
     OBJ_DATA: "NO",
     MAKE_EPHEM: "YES",
     EPHEM_TYPE: "VECTORS",
-    CENTER: "500@10",
+    CENTER: "500@0",
     REF_PLANE: "ECLIPTIC",
     REF_SYSTEM: "J2000",
     OUT_UNITS: "AU-D",
@@ -60,8 +93,15 @@ function horizonsParams({ naifId, startDate, stopDate }) {
 }
 
 function buildUrl(params) {
-  const search = new URLSearchParams(params);
-  return `${HORIZONS_API_URL}?${search.toString()}`;
+  // Horizons requires parameter values to be wrapped in single quotes (except the
+  // meta `format` selector). URLSearchParams also encodes spaces as `+`, which the
+  // Horizons parser rejects, so emit %20 instead.
+  const parts = [];
+  for (const [key, value] of Object.entries(params)) {
+    const raw = key === "format" ? String(value) : `'${value}'`;
+    parts.push(`${key}=${encodeURIComponent(raw)}`);
+  }
+  return `${HORIZONS_API_URL}?${parts.join("&")}`;
 }
 
 function parseHorizonsCsvRows(resultText, target) {
@@ -103,7 +143,7 @@ function parseHorizonsCsvRows(resultText, target) {
       naifId: target.naifId,
       body: target.key,
       frame: "ECLIPJ2000",
-      origin: "SUN",
+      origin: "SSB",
       xAu,
       yAu,
       zAu
@@ -118,7 +158,7 @@ function buildSunRows(epochs, target) {
     naifId: target.naifId,
     body: target.key,
     frame: "ECLIPJ2000",
-    origin: "SUN",
+    origin: "SSB",
     xAu: 0,
     yAu: 0,
     zAu: 0
@@ -157,6 +197,13 @@ async function main() {
   const rawDir = path.join(dataDir, RAW_DIR_NAME);
 
   const header = JSON.parse(fs.readFileSync(headerPath, "utf8"));
+
+  // Only extend the window during a live fetch. Cached-raw rebuilds (no --fetch) keep
+  // the existing window so their fixed-size raw payloads still line up.
+  if (options.fetch) {
+    extendWindowToEnd(header, targetEndUtcIso(options));
+  }
+
   const startDate = utcDateFromIso(header.window.startUtc);
   const stopDate = utcDateFromIso(header.window.endUtc);
 

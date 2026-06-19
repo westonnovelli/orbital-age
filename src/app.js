@@ -2,6 +2,7 @@ import { validateBirthday } from "./date.js";
 import { SUPPORTED_DATE_RANGE, normalizeToUtcMidnight, parseIsoDateUtc } from "./orbital-time.js";
 import { Scene } from "./webgl/scene.js";
 import { WebGLRenderer } from "./webgl/renderer.js";
+import { OrthoCamera2D } from "./webgl/camera.js";
 import { SunEntity } from "./webgl/entities/sun.js";
 import { EarthMarkerEntity } from "./webgl/entities/earth-marker.js";
 import { OrbitalTrailEntity } from "./webgl/entities/orbital-trail.js";
@@ -52,8 +53,10 @@ export class OrbitalApp {
     statsHud,
     hudOrbits,
     hudAge,
-    hudDistance
+    hudDistance,
+    root
   }) {
+    this.root = root;
     this.form = form;
     this.dateInput = dateInput;
     this.validationMessage = validationMessage;
@@ -77,7 +80,7 @@ export class OrbitalApp {
     this.hudAge = hudAge;
     this.hudDistance = hudDistance;
 
-    this.renderer = new WebGLRenderer(canvas);
+    this.renderer = new WebGLRenderer(canvas, { camera: new OrthoCamera2D({ halfHeight: 2.2 }) });
     this.timelineController = null;
   }
 
@@ -107,15 +110,36 @@ export class OrbitalApp {
     }
 
     this.validationMessage.textContent = "";
-    const earthMarker = new EarthMarkerEntity({ radiusX: 1, radiusY: 0.998 });
+    const earthMarker = new EarthMarkerEntity({ radiusX: 1, radiusY: 1 });
     const earthTrail = new OrbitalTrailEntity({
       radiusX: 1,
-      radiusY: 0.998,
-      color: [0.2, 0.78, 0.96, 0.92],
-      maxSamples: 8192,
+      radiusY: 1,
+      // TUNING KNOBS — trail look. The trail renders with additive blending
+      // (blendFunc(ONE, ONE) in OrbitalTrailEntity.render), so brightness
+      // accumulates wherever revolutions overlap.
+      //
+      // 1. Alpha (the 4th `color` component, currently 0.06): the per-vertex
+      //    build-up headroom.
+      //      - Raise it -> overlaps brighten/saturate sooner (denser look).
+      //      - Lower it -> sparse laps dim, core takes more overlap to glow.
+      // 2. huePeriodDays (currently 3652.5 = one decade): the real-time duration
+      //    of one full turn of the color wheel. Tying the period to time rather
+      //    than to trail length keeps the per-year color rate identical across
+      //    lifespans — a 90yr orbit shows ~9 cycles, a 30yr orbit ~3 — so dense
+      //    overlap reads as a moving spectrum instead of washing out to white.
+      //      - Lower it -> tighter rainbow bands, more per-lap distinction.
+      //      - Raise it -> slower, broader color sweep (use static hueSpan: 0 for solid).
+      // 3. hueStart (0..1) shifts where on the wheel the sweep begins;
+      //    saturation (0..1) controls vividness.
+      // All visual judgment calls — re-tune against real 30yr and 90yr spans.
+      color: [0.2, 0.78, 0.96, 0.06],
+      hueStart: 0.5,
+      huePeriodDays: 3652.5,
+      saturation: 0.85,
+      maxSamples: 44000,
       historyDays: 0,
-      minDayDelta: 0.2,
-      minSampleDistance: 0.0025
+      minDayDelta: 1.0,
+      minSampleDistance: 0
     });
     const todayUtc = normalizeToUtcMidnight(new Date());
     const datasetMaxUtc = parseIsoDateUtc(SUPPORTED_DATE_RANGE.max);
@@ -123,7 +147,7 @@ export class OrbitalApp {
     const birthdayMarkers = new BirthdayMarkerEntity({
       birthday: validation.date,
       radiusX: 1,
-      radiusY: 0.998
+      radiusY: 1
     });
     const timelineController = new TimelineControllerEntity({
       birthday: validation.date,
@@ -150,6 +174,7 @@ export class OrbitalApp {
     this.#setTimelineEnabled(true);
     this.statsHud?.classList.remove("hud--hidden");
     this.#updateTimelineUi(this.timelineController.getState());
+    this.root?.classList.add("journey-active");
   }
 
   #bindTimelineControls() {
