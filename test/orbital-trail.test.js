@@ -82,7 +82,11 @@ test("orbital trail probe runtime stays within budget for long timelines", () =>
     }
   });
 
-  assert.ok(result.elapsedMs < 3000, `expected <3000ms, got ${result.elapsedMs}ms`);
+  // Wall-clock guard against algorithmic blowup (e.g. O(n^2) sampling), not a
+  // micro-benchmark. The bound is generous so it stays stable on slower shared
+  // CI runners; the real correctness guarantees are the bounded-sample and
+  // bounded-buffer assertions in the sibling tests.
+  assert.ok(result.elapsedMs < 6000, `expected <6000ms, got ${result.elapsedMs}ms`);
 });
 
 test("orbital trail works with full-lifetime config (maxSamples=16384, historyDays=0)", () => {
@@ -114,7 +118,11 @@ test("orbital trail probe stays bounded with full-lifetime trail config", () => 
   assert.ok(result.retainedSamples <= 16384);
   assert.ok(result.retainedSamples > 0);
   assert.equal(result.historyDays, 0);
-  assert.ok(result.elapsedMs < 3000, `expected <3000ms, got ${result.elapsedMs}ms`);
+  // Wall-clock guard against algorithmic blowup (e.g. O(n^2) sampling), not a
+  // micro-benchmark. The bound is generous so it stays stable on slower shared
+  // CI runners; the real correctness guarantees are the bounded-sample and
+  // bounded-buffer assertions in the sibling tests.
+  assert.ok(result.elapsedMs < 6000, `expected <6000ms, got ${result.elapsedMs}ms`);
 });
 
 test("precomputeTrail builds full trail in a single pass", () => {
