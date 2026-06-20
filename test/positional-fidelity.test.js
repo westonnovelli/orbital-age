@@ -125,7 +125,7 @@ test("timeline controller feeds rendered marker positions from the same model ou
   const controller = new TimelineControllerEntity({
     birthday: "2024-02-29",
     maxTimelineDate: "2024-02-29",
-    earthMarker: marker
+    bodies: [{ key: "earth", marker, trail: null }]
   });
 
   controller.init();

@@ -21,14 +21,19 @@ function trailStub() {
   };
 }
 
+// Build a single-earth-body list with an optional trail, matching the new
+// `bodies[]` constructor shape.
+function earthBodies(marker, trail) {
+  return [{ key: "earth", marker, trail: trail ?? null }];
+}
+
 test("timeline controller initializes from birthday and updates marker", () => {
   const marker = markerStub();
   const trail = trailStub();
   const controller = new TimelineControllerEntity({
     birthday: "2000-01-01",
     maxTimelineDate: "2000-01-11",
-    earthMarker: marker,
-    motionTrails: [trail]
+    bodies: earthBodies(marker, trail)
   });
 
   controller.init();
@@ -42,12 +47,39 @@ test("timeline controller initializes from birthday and updates marker", () => {
   assert.equal(trail.cursorDays[0], 0);
 });
 
+test("timeline controller drives multiple bodies to distinct positions", () => {
+  const earthMarker = markerStub();
+  const venusMarker = markerStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    bodies: [
+      { key: "earth", marker: earthMarker, trail: null },
+      { key: "venus", marker: venusMarker, trail: null }
+    ]
+  });
+
+  controller.init();
+
+  assert.equal(earthMarker.positions.length, 1);
+  assert.equal(venusMarker.positions.length, 1);
+
+  const earthPos = earthMarker.positions[0];
+  const venusPos = venusMarker.positions[0];
+
+  // The two bodies occupy genuinely different positions in the same frame.
+  assert.ok(
+    earthPos.x !== venusPos.x || earthPos.y !== venusPos.y,
+    "earth and venus should resolve to distinct positions"
+  );
+});
+
 test("timeline controller supports stepping and normalized scrubbing with bounds", () => {
   const marker = markerStub();
   const controller = new TimelineControllerEntity({
     birthday: "2000-01-01",
     maxTimelineDate: "2000-01-11",
-    earthMarker: marker
+    bodies: earthBodies(marker)
   });
 
   controller.init();
@@ -69,7 +101,7 @@ test("timeline controller steps by calendar day from fractional timeline positio
   const controller = new TimelineControllerEntity({
     birthday: "2000-01-01",
     maxTimelineDate: "2000-01-11",
-    earthMarker: marker
+    bodies: earthBodies(marker)
   });
 
   controller.init();
@@ -97,7 +129,7 @@ test("timeline controller advances during render while playing and pauses at end
     birthday: "2000-01-01",
     maxTimelineDate: "2000-01-03",
     speedDaysPerSecond: 1,
-    earthMarker: marker
+    bodies: earthBodies(marker)
   });
 
   controller.init();
@@ -122,7 +154,7 @@ test("timeline controller emits state changes for fractional timeline progress",
     birthday: "2000-01-01",
     maxTimelineDate: "2000-01-10",
     speedDaysPerSecond: 0.25,
-    earthMarker: marker,
+    bodies: earthBodies(marker),
     onStateChange: (state) => emittedStates.push(state)
   });
 
@@ -140,7 +172,7 @@ test("timeline controller does not resume playing when already at the end", () =
   const controller = new TimelineControllerEntity({
     birthday: "2000-01-01",
     maxTimelineDate: "2000-01-02",
-    earthMarker: marker
+    bodies: earthBodies(marker)
   });
 
   controller.init();
@@ -160,7 +192,7 @@ test("timeline controller handles invalid normalized progress values safely", ()
   const controller = new TimelineControllerEntity({
     birthday: "2000-01-01",
     maxTimelineDate: "2000-01-11",
-    earthMarker: marker
+    bodies: earthBodies(marker)
   });
 
   controller.init();
@@ -171,14 +203,13 @@ test("timeline controller handles invalid normalized progress values safely", ()
   assert.equal(state.timelineDateIso, "2000-01-01");
 });
 
-test("timeline controller sets cursor on motion trails during scrubbing", () => {
+test("timeline controller sets cursor on body trails during scrubbing", () => {
   const marker = markerStub();
   const trail = trailStub();
   const controller = new TimelineControllerEntity({
     birthday: "2000-01-01",
     maxTimelineDate: "2000-01-11",
-    earthMarker: marker,
-    motionTrails: [trail]
+    bodies: earthBodies(marker, trail)
   });
 
   controller.init();
@@ -193,7 +224,7 @@ test("timeline controller exposes rampActive state via enableRamp/disableRamp", 
   const controller = new TimelineControllerEntity({
     birthday: "2000-01-01",
     maxTimelineDate: "2000-01-11",
-    earthMarker: marker
+    bodies: earthBodies(marker)
   });
 
   controller.init();
@@ -212,7 +243,7 @@ test("timeline controller emits state change on ramp toggle", () => {
   const controller = new TimelineControllerEntity({
     birthday: "2000-01-01",
     maxTimelineDate: "2000-01-11",
-    earthMarker: marker,
+    bodies: earthBodies(marker),
     onStateChange: (state) => emittedStates.push(state)
   });
 
@@ -233,7 +264,7 @@ test("manual speed change cancels ramp", () => {
   const controller = new TimelineControllerEntity({
     birthday: "2000-01-01",
     maxTimelineDate: "2000-01-11",
-    earthMarker: marker
+    bodies: earthBodies(marker)
   });
 
   controller.init();
@@ -253,7 +284,7 @@ test("high-speed playback (365 days/sec) does not overshoot totalDays", () => {
     birthday: "2000-01-01",
     maxTimelineDate: "2000-04-10",  // 100 days total
     speedDaysPerSecond: 365,
-    earthMarker: marker
+    bodies: earthBodies(marker)
   });
 
   controller.init();
@@ -275,7 +306,7 @@ test("high-speed playback clamps to totalDays in a single large frame", () => {
     birthday: "2000-01-01",
     maxTimelineDate: "2000-02-10",  // 40 days total
     speedDaysPerSecond: 365,
-    earthMarker: marker
+    bodies: earthBodies(marker)
   });
 
   controller.init();
@@ -293,7 +324,7 @@ test("all supported speeds advance timeline correctly", () => {
       birthday: "2000-01-01",
       maxTimelineDate: "2025-12-30",  // large range so we don't hit the end
       speedDaysPerSecond: speed,
-      earthMarker: marker
+      bodies: earthBodies(marker)
     });
 
     controller.init();

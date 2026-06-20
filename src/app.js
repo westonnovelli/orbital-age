@@ -4,7 +4,7 @@ import { Scene } from "./webgl/scene.js";
 import { WebGLRenderer } from "./webgl/renderer.js";
 import { OrthoCamera2D } from "./webgl/camera.js";
 import { SunEntity } from "./webgl/entities/sun.js";
-import { EarthMarkerEntity } from "./webgl/entities/earth-marker.js";
+import { BodyMarkerEntity } from "./webgl/entities/body-marker.js";
 import { OrbitalTrailEntity } from "./webgl/entities/orbital-trail.js";
 import { TimelineControllerEntity } from "./webgl/entities/timeline-controller.js";
 import { BirthdayMarkerEntity } from "./webgl/entities/birthday-markers.js";
@@ -12,6 +12,50 @@ import { StarfieldEntity } from "./webgl/entities/starfield.js";
 import { orbitsCompleted, currentAge, distanceTraveledKm } from "./stats.js";
 
 const DEFAULT_SPEED_DAYS_PER_SECOND = 120;
+
+// Declarative registry of rendered bodies. Each entry builds one marker and,
+// when `trail` is provided, one orbital trail. Earth's color reproduces the
+// previous baked-in teal so its appearance is unchanged.
+//
+// Shared trail tuning: daily cadence (minDayDelta 1.0) with a 44000-sample cap
+// keeps the full lifespan within the buffer without front-splicing — so the
+// trail spans the whole timeline instead of only the most recent years. See the
+// TUNING KNOBS notes in OrbitalTrailEntity for alpha/hue behavior.
+const BASE_TRAIL = {
+  maxSamples: 44000,
+  historyDays: 0,
+  minDayDelta: 1.0,
+  minSampleDistance: 0,
+  huePeriodDays: 3652.5,
+  saturation: 0.85
+};
+
+const RENDERED_BODIES = [
+  {
+    key: "venus",
+    color: [0.98, 0.82, 0.45],
+    size: 0.05,
+    trail: {
+      ...BASE_TRAIL,
+      color: [0.98, 0.82, 0.45, 0.06],
+      hueStart: 0.12
+    }
+  },
+  {
+    key: "earth",
+    color: [0.18, 0.92, 0.64],
+    size: 0.06,
+    trail: {
+      ...BASE_TRAIL,
+      color: [0.2, 0.78, 0.96, 0.06],
+      hueStart: 0.5
+    }
+  }
+];
+
+// Marker/trail orbital-ellipse radii. Origin uses a unit circle (radiusY 1).
+const BODY_RADIUS_X = 1;
+const BODY_RADIUS_Y = 1;
 
 export function addUtcDays(date, daysToAdd) {
   const msPerDay = 24 * 60 * 60 * 1000;
@@ -110,62 +154,58 @@ export class OrbitalApp {
     }
 
     this.validationMessage.textContent = "";
-    const earthMarker = new EarthMarkerEntity({ radiusX: 1, radiusY: 1 });
-    const earthTrail = new OrbitalTrailEntity({
-      radiusX: 1,
-      radiusY: 1,
-      // TUNING KNOBS — trail look. The trail renders with additive blending
-      // (blendFunc(ONE, ONE) in OrbitalTrailEntity.render), so brightness
-      // accumulates wherever revolutions overlap.
-      //
-      // 1. Alpha (the 4th `color` component, currently 0.06): the per-vertex
-      //    build-up headroom.
-      //      - Raise it -> overlaps brighten/saturate sooner (denser look).
-      //      - Lower it -> sparse laps dim, core takes more overlap to glow.
-      // 2. huePeriodDays (currently 3652.5 = one decade): the real-time duration
-      //    of one full turn of the color wheel. Tying the period to time rather
-      //    than to trail length keeps the per-year color rate identical across
-      //    lifespans — a 90yr orbit shows ~9 cycles, a 30yr orbit ~3 — so dense
-      //    overlap reads as a moving spectrum instead of washing out to white.
-      //      - Lower it -> tighter rainbow bands, more per-lap distinction.
-      //      - Raise it -> slower, broader color sweep (use static hueSpan: 0 for solid).
-      // 3. hueStart (0..1) shifts where on the wheel the sweep begins;
-      //    saturation (0..1) controls vividness.
-      // All visual judgment calls — re-tune against real 30yr and 90yr spans.
-      color: [0.2, 0.78, 0.96, 0.06],
-      hueStart: 0.5,
-      huePeriodDays: 3652.5,
-      saturation: 0.85,
-      maxSamples: 44000,
-      historyDays: 0,
-      minDayDelta: 1.0,
-      minSampleDistance: 0
-    });
+
+    // Build one marker (+ optional trail) per registered body.
+    const bodies = [];
+    const trails = [];
+    for (const config of RENDERED_BODIES) {
+      const marker = new BodyMarkerEntity({
+        radiusX: BODY_RADIUS_X,
+        radiusY: BODY_RADIUS_Y,
+        color: config.color,
+        size: config.size
+      });
+      let trail = null;
+      if (config.trail) {
+        trail = new OrbitalTrailEntity({
+          radiusX: BODY_RADIUS_X,
+          radiusY: BODY_RADIUS_Y,
+          ...config.trail
+        });
+        trails.push(trail);
+      }
+      bodies.push({ key: config.key, marker, trail });
+    }
+
     const todayUtc = normalizeToUtcMidnight(new Date());
     const datasetMaxUtc = parseIsoDateUtc(SUPPORTED_DATE_RANGE.max);
     const maxTimelineDate = todayUtc < datasetMaxUtc ? todayUtc : datasetMaxUtc;
     const birthdayMarkers = new BirthdayMarkerEntity({
       birthday: validation.date,
-      radiusX: 1,
-      radiusY: 1
+      radiusX: BODY_RADIUS_X,
+      radiusY: BODY_RADIUS_Y
     });
     const timelineController = new TimelineControllerEntity({
       birthday: validation.date,
       maxTimelineDate,
       initialTimelineDate: validation.date,
       speedDaysPerSecond: parseSpeedValue(this.speedSelect?.value),
-      earthMarker,
-      motionTrails: [earthTrail],
+      bodies,
       onStateChange: (state) => this.#updateTimelineUi(state)
     });
 
     const scene = new Scene()
       .add(new StarfieldEntity())
-      .add(new SunEntity())
-      .add(earthTrail)
+      .add(new SunEntity());
+    for (const trail of trails) {
+      scene.add(trail);
+    }
+    scene
       .add(birthdayMarkers)
-      .add(timelineController)
-      .add(earthMarker);
+      .add(timelineController);
+    for (const body of bodies) {
+      scene.add(body.marker);
+    }
 
     this.timelineController = timelineController;
     this.renderer.setScene(scene);

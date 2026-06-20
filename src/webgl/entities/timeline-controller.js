@@ -1,6 +1,6 @@
 import {
   assertDateInSupportedRange,
-  earthHeliocentricPositionAuAtInstant,
+  bodyHeliocentricPositionAuAtInstant,
   daysBetweenUtc,
   normalizeToUtcMidnight
 } from "../../orbital-time.js";
@@ -24,19 +24,21 @@ export class TimelineControllerEntity {
     maxTimelineDate = new Date(),
     initialTimelineDate,
     speedDaysPerSecond = 12,
+    bodies,
     earthMarker,
     motionTrails = [],
     onStateChange
   }) {
-    if (!earthMarker) {
-      throw new Error("TimelineControllerEntity requires an earthMarker.");
+    this.bodies = normalizeBodies({ bodies, earthMarker, motionTrails });
+    if (this.bodies.length === 0) {
+      throw new Error("TimelineControllerEntity requires at least one body.");
     }
 
-    this.earthMarker = earthMarker;
+    // Back-compat accessor for callers/tests that still expect a single marker.
+    this.earthMarker = earthMarker ?? this.bodies[0].marker;
     this.birthdayUtc = assertDateInSupportedRange(birthday);
     this.maxTimelineUtc = assertDateInSupportedRange(maxTimelineDate);
     this.speedDaysPerSecond = speedDaysPerSecond;
-    this.motionTrails = Array.isArray(motionTrails) ? motionTrails : [];
     this.onStateChange = onStateChange;
     this.playing = true;
     this.rampActive = false;
@@ -63,19 +65,20 @@ export class TimelineControllerEntity {
 
   init() {
     this.#precomputeTrails();
-    this.#applyToEarthMarker();
+    this.#applyToBodies();
     this.#emitState();
   }
 
   #precomputeTrails() {
     const birthdayMs = this.birthdayUtc.getTime();
-    for (const trail of this.motionTrails) {
-      if (typeof trail.precomputeTrail !== "function") {
+    for (const body of this.bodies) {
+      const trail = body.trail;
+      if (!trail || typeof trail.precomputeTrail !== "function") {
         continue;
       }
       trail.precomputeTrail(this.totalDays, (day) => {
         const instant = new Date(birthdayMs + day * MS_PER_DAY);
-        const position = earthHeliocentricPositionAuAtInstant(instant);
+        const position = bodyHeliocentricPositionAuAtInstant(body.key, instant);
         return { x: position.xAu, y: position.yAu };
       });
     }
@@ -99,7 +102,7 @@ export class TimelineControllerEntity {
 
     this.timelineDays = nextDays;
     this.#syncPlaybackForBounds();
-    this.#applyToEarthMarker();
+    this.#applyToBodies();
     this.#emitState();
   }
 
@@ -134,7 +137,7 @@ export class TimelineControllerEntity {
 
     this.timelineDays = daysBetweenUtc(this.birthdayUtc, date);
     this.#syncPlaybackForBounds();
-    this.#applyToEarthMarker();
+    this.#applyToBodies();
     this.#emitState(true);
   }
 
@@ -145,7 +148,7 @@ export class TimelineControllerEntity {
     const candidate = currentDayIndex + dayStep;
     this.timelineDays = clamp(candidate, 0, this.totalDays);
     this.#syncPlaybackForBounds();
-    this.#applyToEarthMarker();
+    this.#applyToBodies();
     this.#emitState(true);
   }
 
@@ -154,7 +157,7 @@ export class TimelineControllerEntity {
     const normalized = Number.isFinite(parsed) ? clamp(parsed, 0, 1) : 0;
     this.timelineDays = this.totalDays * normalized;
     this.#syncPlaybackForBounds();
-    this.#applyToEarthMarker();
+    this.#applyToBodies();
     this.#emitState(true);
   }
 
@@ -175,12 +178,12 @@ export class TimelineControllerEntity {
     return new Date(this.birthdayUtc.getTime() + this.timelineDays * MS_PER_DAY);
   }
 
-  #applyToEarthMarker() {
+  #applyToBodies() {
     const instant = this.#instantFromTimelineDays();
-    const position = earthHeliocentricPositionAuAtInstant(instant);
-    this.earthMarker.setPosition(position.xAu, position.yAu);
-    for (const trail of this.motionTrails) {
-      trail.setCursorForDay?.(this.timelineDays);
+    for (const body of this.bodies) {
+      const position = bodyHeliocentricPositionAuAtInstant(body.key, instant);
+      body.marker.setPosition(position.xAu, position.yAu);
+      body.trail?.setCursorForDay?.(this.timelineDays);
     }
   }
 
@@ -197,4 +200,35 @@ export class TimelineControllerEntity {
 
     this.onStateChange(this.getState(), { force });
   }
+}
+
+/**
+ * Resolve the constructor inputs into a uniform `bodies` list of
+ * `{ key, marker, trail }`. Supports the new `bodies` array shape and the
+ * legacy `{ earthMarker, motionTrails }` shape (wrapped into earth-keyed
+ * entries: the marker plus one entry per motion trail, all tracking earth).
+ */
+function normalizeBodies({ bodies, earthMarker, motionTrails }) {
+  if (Array.isArray(bodies) && bodies.length > 0) {
+    return bodies.map((body) => {
+      if (!body || !body.key) {
+        throw new Error("Each body requires a key.");
+      }
+      if (!body.marker || typeof body.marker.setPosition !== "function") {
+        throw new Error(`Body "${body.key}" requires a marker with setPosition.`);
+      }
+      return { key: body.key, marker: body.marker, trail: body.trail ?? null };
+    });
+  }
+
+  if (earthMarker) {
+    const trails = Array.isArray(motionTrails) ? motionTrails : [];
+    return [
+      { key: "earth", marker: earthMarker, trail: trails[0] ?? null },
+      // Any extra legacy trails also tracked earth; keep them, marker-less.
+      ...trails.slice(1).map((trail) => ({ key: "earth", marker: earthMarker, trail }))
+    ];
+  }
+
+  return [];
 }

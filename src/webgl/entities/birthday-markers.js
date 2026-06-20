@@ -1,6 +1,6 @@
 import { createPrimitiveProgram } from "./primitives.js";
 import {
-  earthHeliocentricPositionAuAtInstant,
+  bodyHeliocentricPositionAuAtInstant,
   SUPPORTED_DATE_RANGE
 } from "../../orbital-time.js";
 
@@ -70,7 +70,7 @@ export class BirthdayMarkerEntity {
     this.positionData = new Float32Array(this.markerCount * 2);
 
     for (let i = 0; i < dates.length; i++) {
-      const pos = earthHeliocentricPositionAuAtInstant(dates[i]);
+      const pos = bodyHeliocentricPositionAuAtInstant("earth", dates[i]);
       this.positionData[i * 2] = pos.xAu * this.radiusX;
       this.positionData[i * 2 + 1] = pos.yAu * this.radiusY;
     }
