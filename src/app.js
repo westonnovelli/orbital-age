@@ -9,6 +9,7 @@ import { OrbitalTrailEntity } from "./webgl/entities/orbital-trail.js";
 import { TimelineControllerEntity } from "./webgl/entities/timeline-controller.js";
 import { BirthdayMarkerEntity } from "./webgl/entities/birthday-markers.js";
 import { StarfieldEntity } from "./webgl/entities/starfield.js";
+import { autoFitHalfHeight, starfieldSpread } from "./webgl/scale.js";
 import { orbitsCompleted, currentAge, distanceTraveledKm } from "./stats.js";
 
 const DEFAULT_SPEED_DAYS_PER_SECOND = 120;
@@ -26,15 +27,37 @@ const BASE_TRAIL = {
   historyDays: 0,
   minDayDelta: 1.0,
   minSampleDistance: 0,
-  huePeriodDays: 3652.5,
   saturation: 0.85
 };
 
+// Hue gradient period as a multiple of orbit circumference: 1 = one full color
+// cycle per orbit. Keying the period to path length travelled (rather than to
+// real time) keeps slow outer planets — which trace only a fraction of an orbit
+// per lifespan — from rendering as a full rainbow, while inner planets' many
+// laps still overlap into a blended band.
+const HUE_CYCLES_PER_ORBIT = 1;
+
+// `orbitRadiusAu` is the body's approximate maximum heliocentric distance
+// (aphelion, in AU). It is used only to derive the Auto-fit camera framing so
+// the outermost orbit (Neptune ~30 AU) is on screen; it does not affect where a
+// body is actually drawn (positions come from the ephemeris each frame).
 const RENDERED_BODIES = [
+  {
+    key: "mercury",
+    color: [0.78, 0.72, 0.66],
+    size: 0.04,
+    orbitRadiusAu: 0.47,
+    trail: {
+      ...BASE_TRAIL,
+      color: [0.78, 0.72, 0.66, 0.06],
+      hueStart: 0.08
+    }
+  },
   {
     key: "venus",
     color: [0.98, 0.82, 0.45],
     size: 0.05,
+    orbitRadiusAu: 0.73,
     trail: {
       ...BASE_TRAIL,
       color: [0.98, 0.82, 0.45, 0.06],
@@ -45,13 +68,75 @@ const RENDERED_BODIES = [
     key: "earth",
     color: [0.18, 0.92, 0.64],
     size: 0.06,
+    orbitRadiusAu: 1.02,
     trail: {
       ...BASE_TRAIL,
       color: [0.2, 0.78, 0.96, 0.06],
       hueStart: 0.5
     }
+  },
+  {
+    key: "mars",
+    color: [0.86, 0.42, 0.28],
+    size: 0.05,
+    orbitRadiusAu: 1.67,
+    trail: {
+      ...BASE_TRAIL,
+      color: [0.86, 0.42, 0.28, 0.06],
+      hueStart: 0.02
+    }
+  },
+  {
+    key: "jupiter",
+    color: [0.85, 0.7, 0.5],
+    size: 0.09,
+    orbitRadiusAu: 5.46,
+    trail: {
+      ...BASE_TRAIL,
+      color: [0.85, 0.7, 0.5, 0.06],
+      hueStart: 0.1
+    }
+  },
+  {
+    key: "saturn",
+    color: [0.9, 0.82, 0.6],
+    size: 0.08,
+    orbitRadiusAu: 10.12,
+    trail: {
+      ...BASE_TRAIL,
+      color: [0.9, 0.82, 0.6, 0.06],
+      hueStart: 0.14
+    }
+  },
+  {
+    key: "uranus",
+    color: [0.6, 0.86, 0.9],
+    size: 0.07,
+    orbitRadiusAu: 20.1,
+    trail: {
+      ...BASE_TRAIL,
+      color: [0.6, 0.86, 0.9, 0.06],
+      hueStart: 0.5
+    }
+  },
+  {
+    key: "neptune",
+    color: [0.35, 0.5, 0.92],
+    size: 0.07,
+    orbitRadiusAu: 30.33,
+    trail: {
+      ...BASE_TRAIL,
+      color: [0.35, 0.5, 0.92, 0.06],
+      hueStart: 0.62
+    }
   }
 ];
+
+// Auto-fit framing: the camera halfHeight is derived from the outermost tracked
+// orbit (Neptune ~30 AU) rather than the old hardcoded 2.2 tuned for Earth.
+const MAX_ORBIT_RADIUS_AU = Math.max(...RENDERED_BODIES.map((b) => b.orbitRadiusAu ?? 0));
+const AUTO_FIT_HALF_HEIGHT = autoFitHalfHeight(MAX_ORBIT_RADIUS_AU);
+const STARFIELD_SPREAD = starfieldSpread(AUTO_FIT_HALF_HEIGHT);
 
 // Marker/trail orbital-ellipse radii. Origin uses a unit circle (radiusY 1).
 const BODY_RADIUS_X = 1;
@@ -124,7 +209,9 @@ export class OrbitalApp {
     this.hudAge = hudAge;
     this.hudDistance = hudDistance;
 
-    this.renderer = new WebGLRenderer(canvas, { camera: new OrthoCamera2D({ halfHeight: 2.2 }) });
+    this.renderer = new WebGLRenderer(canvas, {
+      camera: new OrthoCamera2D({ halfHeight: AUTO_FIT_HALF_HEIGHT })
+    });
     this.timelineController = null;
   }
 
@@ -167,9 +254,12 @@ export class OrbitalApp {
       });
       let trail = null;
       if (config.trail) {
+        // One hue cycle per orbit: period = orbit circumference in scene units.
+        const orbitCircumference = 2 * Math.PI * (config.orbitRadiusAu ?? 1) * BODY_RADIUS_X;
         trail = new OrbitalTrailEntity({
           radiusX: BODY_RADIUS_X,
           radiusY: BODY_RADIUS_Y,
+          huePeriodLength: orbitCircumference / HUE_CYCLES_PER_ORBIT,
           ...config.trail
         });
         trails.push(trail);
@@ -195,7 +285,7 @@ export class OrbitalApp {
     });
 
     const scene = new Scene()
-      .add(new StarfieldEntity())
+      .add(new StarfieldEntity({ spread: STARFIELD_SPREAD }))
       .add(new SunEntity());
     for (const trail of trails) {
       scene.add(trail);

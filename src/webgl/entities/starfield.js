@@ -1,4 +1,10 @@
 import { createStarfieldProgram } from "./starfield-program.js";
+import { starfieldSpread, autoFitHalfHeight } from "../scale.js";
+
+// Default spread, derived from the scale layer rather than a hardcoded magic
+// number, so the starfield covers the framed region. Callers (app.js) pass an
+// explicit scale-derived spread; this default is the fallback.
+const DEFAULT_SPREAD = starfieldSpread(autoFitHalfHeight(2.0));
 
 // Mulberry32 seeded PRNG
 function mulberry32(seed) {
@@ -12,7 +18,7 @@ function mulberry32(seed) {
 }
 
 export class StarfieldEntity {
-  constructor({ count = 1000, spread = 3.0, baseColor = [1, 1, 1, 1], seed = 42 } = {}) {
+  constructor({ count = 1000, spread = DEFAULT_SPREAD, baseColor = [1, 1, 1, 1], seed = 42 } = {}) {
     this.count = count;
     this.baseColor = baseColor;
     this.buffer = null;

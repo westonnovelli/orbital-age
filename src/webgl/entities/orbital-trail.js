@@ -19,6 +19,7 @@ export class OrbitalTrailEntity {
     hueStart = 0,
     hueSpan = 0,
     huePeriodDays = 0,
+    huePeriodLength = 0,
     saturation = 1,
     maxSamples = 720,
     historyDays = 540,
@@ -38,9 +39,21 @@ export class OrbitalTrailEntity {
     // days of real time, so the per-year color rate is identical regardless of
     // lifespan (a 90yr orbit simply shows proportionally more cycles than a
     // 30yr one). It overrides the static hueSpan when set.
+    //
+    // huePeriodLength makes the gradient period relative to the distance
+    // travelled (cumulative path length, in scene units) rather than to time:
+    // when > 0 one full color cycle spans exactly that much path. Setting it to
+    // a body's orbit circumference means one cycle == one orbit, so inner
+    // planets (many laps) still overlap into a blended band while slow outer
+    // planets (a fraction of one orbit per lifespan) show only a gentle
+    // gradient instead of a full rainbow. It takes precedence over the other
+    // two modes when set.
     this.hueStart = Number(hueStart) || 0;
     this.hueSpan = Math.max(0, Number(hueSpan) || 0);
     this.huePeriodDays = Math.max(0, Number(huePeriodDays) || 0);
+    this.huePeriodLength = Math.max(0, Number(huePeriodLength) || 0);
+    // Cached total path length (scene units), recomputed on each #syncVertices.
+    this.pathLengthScene = 0;
     this.saturation = Number.isFinite(Number(saturation)) ? clamp(Number(saturation), 0, 1) : 1;
     this.maxSamples = clamp(Math.floor(maxSamples), 2, 65536);
     this.historyDays = Math.max(0, Number(historyDays) || 0);
@@ -212,6 +225,12 @@ export class OrbitalTrailEntity {
    * otherwise the static hueSpan is used.
    */
   effectiveHueSpan() {
+    if (this.huePeriodLength > 0) {
+      // One full turn per huePeriodLength of path travelled. Paired with the
+      // normalized cumulative-path age lane (#syncVertices), so each point's
+      // hue is a function of absolute distance travelled along the orbit.
+      return this.pathLengthScene > 0 ? this.pathLengthScene / this.huePeriodLength : 0;
+    }
     if (this.huePeriodDays > 0) {
       const arr = this.samples;
       if (arr.length > 1) {
@@ -252,21 +271,48 @@ export class OrbitalTrailEntity {
 
   #syncVertices() {
     const count = this.samples.length;
-    // Age is normalized over the trail's real-time span (firstDay..lastDay) so the
-    // color gradient advances at a constant rate per unit time. Combined with
-    // effectiveHueSpan()'s span/huePeriodDays scaling this makes each point's hue
-    // a function of absolute elapsed days, stable as the scrub cursor moves.
+    // The age lane (0 = oldest, 1 = most recent) drives the recency color
+    // gradient. By default it is normalized over the trail's real-time span
+    // (firstDay..lastDay) so the gradient advances at a constant rate per unit
+    // time. In huePeriodLength mode it is instead normalized over the trail's
+    // cumulative path length, so the gradient advances per unit distance
+    // travelled. Either way, combined with effectiveHueSpan()'s scaling, each
+    // point's hue is a stable function of (elapsed days | distance travelled).
+    const usePath = this.huePeriodLength > 0;
     const firstDay = count > 0 ? this.samples[0].day : 0;
     const daySpan = count > 1 ? this.samples[count - 1].day - firstDay : 0;
+
+    // First pass (path mode only): total cumulative path length in scene units.
+    let totalPath = 0;
+    if (usePath) {
+      for (let i = 1; i < count; i += 1) {
+        totalPath += Math.hypot(
+          this.samples[i].x - this.samples[i - 1].x,
+          this.samples[i].y - this.samples[i - 1].y
+        );
+      }
+    }
+    this.pathLengthScene = totalPath;
+
+    let cumPath = 0;
     for (let i = 0; i < count; i += 1) {
       const sample = this.samples[i];
       const offset = i * 4;
       const progress = count === 1 ? 1.0 : i / (count - 1);
-      const age = daySpan > 0 ? (sample.day - firstDay) / daySpan : 1.0;
+
+      let age;
+      if (usePath) {
+        if (i > 0) {
+          cumPath += Math.hypot(sample.x - this.samples[i - 1].x, sample.y - this.samples[i - 1].y);
+        }
+        age = totalPath > 0 ? cumPath / totalPath : 1.0;
+      } else {
+        age = daySpan > 0 ? (sample.day - firstDay) / daySpan : 1.0;
+      }
+
       this.vertices[offset] = sample.x;
       this.vertices[offset + 1] = sample.y;
       this.vertices[offset + 2] = count === 1 ? 1.0 : this.minFade + (1.0 - this.minFade) * progress;
-      // Age 0 = oldest sample, 1 = most recent; drives the recency color gradient.
       this.vertices[offset + 3] = age;
     }
   }

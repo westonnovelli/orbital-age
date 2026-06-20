@@ -370,6 +370,61 @@ test("syncVertices writes a 0->1 age in the 4th lane", () => {
   }
 });
 
+test("huePeriodLength keys the age lane to cumulative path length", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 10,
+    historyDays: 0,
+    minDayDelta: 0,
+    minSampleDistance: 0,
+    minFade: 0,
+    huePeriodLength: 2
+  });
+
+  // Non-uniform time spacing, uniform spatial spacing: 1 unit of path per
+  // segment regardless of the day stamp, so the age lane should track distance
+  // travelled (0, 1/3, 2/3, 1) rather than elapsed time.
+  trail.addSample(0, 0, 0);
+  trail.addSample(10, 1, 0);
+  trail.addSample(11, 2, 0);
+  trail.addSample(100, 3, 0);
+
+  const gl = makeStubGL();
+  trail.init(gl);
+  trail.render({ gl, camera: { matrix: new Float32Array(9) } });
+
+  const expected = [0, 1 / 3, 2 / 3, 1];
+  for (let i = 0; i < expected.length; i += 1) {
+    assert.ok(
+      Math.abs(trail.vertices[i * 4 + 3] - expected[i]) < 1e-6,
+      `path-age lane at ${i} should be ${expected[i]}, got ${trail.vertices[i * 4 + 3]}`
+    );
+  }
+
+  // One cycle per huePeriodLength of path: total path 3 / period 2 = 1.5 turns.
+  assert.ok(Math.abs(trail.effectiveHueSpan() - 1.5) < 1e-6);
+});
+
+test("huePeriodLength takes precedence over huePeriodDays", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 10,
+    historyDays: 0,
+    minDayDelta: 0,
+    minSampleDistance: 0,
+    huePeriodDays: 5,
+    huePeriodLength: 4
+  });
+
+  trail.addSample(0, 0, 0);
+  trail.addSample(10, 2, 0); // path length 2 over 10 days
+
+  const gl = makeStubGL();
+  trail.init(gl);
+  trail.render({ gl, camera: { matrix: new Float32Array(9) } });
+
+  // Path mode wins: 2 / 4 = 0.5 turns, not the time-based 10 / 5 = 2.
+  assert.ok(Math.abs(trail.effectiveHueSpan() - 0.5) < 1e-6);
+});
+
 test("render uses a 4-float (16-byte) interleaved stride with age lane", () => {
   const trail = new OrbitalTrailEntity({
     maxSamples: 10,
