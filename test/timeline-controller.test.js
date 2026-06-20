@@ -299,64 +299,6 @@ test("timeline controller sets cursor on body trails during scrubbing", () => {
   assert.deepEqual(trail.cursorDays, [0, 3, 1]);
 });
 
-test("timeline controller exposes rampActive state via enableRamp/disableRamp", () => {
-  const marker = markerStub();
-  const controller = new TimelineControllerEntity({
-    birthday: "2000-01-01",
-    maxTimelineDate: "2000-01-11",
-    bodies: earthBodies(marker)
-  });
-
-  controller.init();
-  assert.equal(controller.getState().rampActive, false);
-
-  controller.enableRamp();
-  assert.equal(controller.getState().rampActive, true);
-
-  controller.disableRamp();
-  assert.equal(controller.getState().rampActive, false);
-});
-
-test("timeline controller emits state change on ramp toggle", () => {
-  const marker = markerStub();
-  const emittedStates = [];
-  const controller = new TimelineControllerEntity({
-    birthday: "2000-01-01",
-    maxTimelineDate: "2000-01-11",
-    bodies: earthBodies(marker),
-    onStateChange: (state) => emittedStates.push(state)
-  });
-
-  controller.init();
-  const countAfterInit = emittedStates.length;
-
-  controller.enableRamp();
-  assert.equal(emittedStates.length, countAfterInit + 1);
-  assert.equal(emittedStates[emittedStates.length - 1].rampActive, true);
-
-  controller.disableRamp();
-  assert.equal(emittedStates.length, countAfterInit + 2);
-  assert.equal(emittedStates[emittedStates.length - 1].rampActive, false);
-});
-
-test("manual speed change cancels ramp", () => {
-  const marker = markerStub();
-  const controller = new TimelineControllerEntity({
-    birthday: "2000-01-01",
-    maxTimelineDate: "2000-01-11",
-    bodies: earthBodies(marker)
-  });
-
-  controller.init();
-  controller.enableRamp();
-  assert.equal(controller.getState().rampActive, true);
-
-  // Simulate what app.js does on speed change: set speed, then disableRamp
-  controller.speedDaysPerSecond = 365;
-  controller.disableRamp();
-  assert.equal(controller.getState().rampActive, false);
-  assert.equal(controller.speedDaysPerSecond, 365);
-});
 
 test("high-speed playback (365 days/sec) does not overshoot totalDays", () => {
   const marker = markerStub();

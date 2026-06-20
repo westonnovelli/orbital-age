@@ -88,7 +88,6 @@ export class TimelineControllerEntity {
     this.speedDaysPerSecond = speedDaysPerSecond;
     this.onStateChange = onStateChange;
     this.playing = true;
-    this.rampActive = false;
 
     if (this.birthdayUtc > this.maxTimelineUtc) {
       throw new Error("Birthday cannot be after max timeline date.");
@@ -153,16 +152,6 @@ export class TimelineControllerEntity {
     this.#emitState();
   }
 
-  enableRamp() {
-    this.rampActive = true;
-    this.#emitState(true);
-  }
-
-  disableRamp() {
-    this.rampActive = false;
-    this.#emitState(true);
-  }
-
   setPlaying(playing) {
     this.playing = Boolean(playing);
     this.#syncPlaybackForBounds();
@@ -216,8 +205,7 @@ export class TimelineControllerEntity {
       normalizedProgress: this.totalDays === 0 ? 1 : this.timelineDays / this.totalDays,
       elapsedDays: this.timelineDays,
       totalDays: this.totalDays,
-      playing: this.playing,
-      rampActive: this.rampActive
+      playing: this.playing
     };
   }
 

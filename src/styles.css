@@ -835,13 +835,6 @@ select:focus {
   box-shadow: 0 0 16px rgba(199, 153, 255, 0.18);
 }
 
-#ramp-toggle[aria-pressed="true"] {
-  color: #07332e;
-  background: linear-gradient(120deg, var(--secondary), var(--secondary-dim));
-  border-color: transparent;
-  box-shadow: 0 0 20px var(--secondary-glow);
-}
-
 /* ----------------------------------------------------------------------- */
 /* Bottom control dock (timeline controls)                                  */
 /* ----------------------------------------------------------------------- */

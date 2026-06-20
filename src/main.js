@@ -27,7 +27,6 @@ const app = new OrbitalApp({
   playPauseButton: legacyTimelineControls?.querySelector("#play-pause"),
   resetButton: legacyTimelineControls?.querySelector("#reset-timeline"),
   speedSelect: legacyTimelineControls?.querySelector("#playback-speed"),
-  rampToggle: legacyTimelineControls?.querySelector("#ramp-toggle"),
   timelineStatus: legacyTimelineControls?.querySelector("#timeline-status"),
   timelineDateOutput: legacyTimelineControls?.querySelector("output#timeline-date"),
   scrubber: legacyTimelineControls?.querySelector("#date-scrubber"),

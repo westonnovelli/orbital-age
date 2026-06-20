@@ -222,7 +222,6 @@ export class OrbitalApp {
     playPauseButton,
     resetButton,
     speedSelect,
-    rampToggle,
     scrubber,
     timelineStatus,
     timelineDateOutput,
@@ -250,7 +249,6 @@ export class OrbitalApp {
 
     this.resetButton = resetButton;
     this.speedSelect = speedSelect;
-    this.rampToggle = rampToggle;
     this.timelineStatus = timelineStatus;
 
     this.statsHud = statsHud;
@@ -432,23 +430,6 @@ export class OrbitalApp {
         return;
       }
       this.timelineController.speedDaysPerSecond = parseSpeedValue(this.speedSelect.value);
-      if (this.timelineController.rampActive) {
-        this.timelineController.disableRamp();
-        this.#setRampToggleState(false);
-      }
-    });
-
-    this.rampToggle?.addEventListener("click", () => {
-      if (!this.timelineController) {
-        return;
-      }
-      const willBeActive = !this.timelineController.rampActive;
-      if (willBeActive) {
-        this.timelineController.enableRamp();
-      } else {
-        this.timelineController.disableRamp();
-      }
-      this.#setRampToggleState(willBeActive);
     });
   }
 
@@ -506,8 +487,7 @@ export class OrbitalApp {
       this.timelineStepForward,
       this.timelinePlayToggle,
       this.resetButton,
-      this.speedSelect,
-      this.rampToggle
+      this.speedSelect
     ];
 
     for (const control of controls) {
@@ -516,14 +496,6 @@ export class OrbitalApp {
       }
       control.disabled = !enabled;
     }
-  }
-
-  #setRampToggleState(active) {
-    if (!this.rampToggle) {
-      return;
-    }
-    this.rampToggle.setAttribute("aria-pressed", String(active));
-    this.rampToggle.classList.toggle("ramp-toggle--active", active);
   }
 
   #setPlayButtonState(playing) {
@@ -554,7 +526,6 @@ export class OrbitalApp {
     }
 
     this.#setPlayButtonState(state.playing);
-    this.#setRampToggleState(state.rampActive);
 
     if (this.hudOrbits) {
       this.hudOrbits.textContent = `ORBITS ${orbitsCompleted(state.elapsedDays)}`;
