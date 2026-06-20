@@ -3,7 +3,7 @@
   "ephemerisSource": {
     "provider": "JPL NAIF / JPL Horizons",
     "kernel": "de442s.bsp",
-    "retrievedOn": "2026-06-19"
+    "retrievedOn": "2026-06-20"
   },
   "frame": "ECLIPJ2000",
   "origin": "SSB",
@@ -13,12 +13,12 @@
   },
   "window": {
     "startUtc": "1926-01-01T00:00:00Z",
-    "endUtc": "2026-06-20T00:00:00Z",
-    "days": 36696
+    "endUtc": "2026-06-21T00:00:00Z",
+    "days": 36697
   },
   "cadence": {
     "step": "P1D",
-    "samplesPerBody": 36696
+    "samplesPerBody": 36697
   },
   "targets": [
     {
@@ -56,6 +56,10 @@
     {
       "key": "neptune",
       "naifId": 899
+    },
+    {
+      "key": "pluto",
+      "naifId": 999
     }
   ],
   "ordering": {

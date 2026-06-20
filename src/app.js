@@ -129,6 +129,19 @@ const RENDERED_BODIES = [
       color: [0.35, 0.5, 0.92, 0.06],
       hueStart: 0.62
     }
+  },
+  {
+    key: "pluto",
+    color: [0.82, 0.74, 0.68],
+    size: 0.03,
+    // Pluto's eccentric orbit reaches ~49 AU at aphelion; this drives Auto-fit
+    // to expand the frame well beyond Neptune so Pluto stays on screen.
+    orbitRadiusAu: 49.3,
+    trail: {
+      ...BASE_TRAIL,
+      color: [0.82, 0.74, 0.68, 0.06],
+      hueStart: 0.78
+    }
   }
 ];
 

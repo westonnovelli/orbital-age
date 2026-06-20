@@ -71,7 +71,7 @@ npm run data:ephemeris:refresh -- --fetch --yes
 This command:
 
 - Calls `https://ssd.jpl.nasa.gov/api/horizons.api` with fixed query parameters
-  from the header contract (`CENTER=500@10`, `REF_PLANE=ECLIPTIC`,
+  from the header contract (`CENTER=500@0`, `REF_PLANE=ECLIPTIC`,
   `REF_SYSTEM=J2000`, `STEP_SIZE=1 d`, vectors in AU).
 - Writes raw upstream payloads to `data/ephemeris/v1/raw-horizons/<naifId>.json`.
 - Rewrites `data/ephemeris/v1/snapshots.ndjson`.
@@ -123,7 +123,7 @@ What `data:ephemeris:verify` enforces:
 
 1. Keep sampling contract stable unless a separate objective explicitly changes it:
    - frame `ECLIPJ2000`
-   - origin `SUN`
+   - origin `SSB` (Solar System Barycenter; Horizons `CENTER=500@0`)
    - daily cadence (`P1D`)
 2. If contract changes, update tests and docs in the same change.
 3. Rebuild + verify + test before commit.

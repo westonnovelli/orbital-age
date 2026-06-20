@@ -164,8 +164,14 @@ test("bodyHeliocentricPositionAuAtInstant supports multiple planets", () => {
   assert.equal(mars.xAu, -1.175010323524475);
   assert.equal(mars.yAu, -1.0370988845825195);
 
+  const pluto = bodyHeliocentricPositionAuAtInstant("pluto", "1926-01-01T00:00:00Z");
+  assert.equal(pluto.body, "pluto");
+  assert.ok(Number.isFinite(pluto.xAu));
+  assert.ok(Number.isFinite(pluto.yAu));
+  assert.ok(Number.isFinite(pluto.zAu));
+
   assert.throws(
-    () => bodyHeliocentricPositionAuAtInstant("pluto", "1926-01-01T00:00:00Z"),
+    () => bodyHeliocentricPositionAuAtInstant("nibiru", "1926-01-01T00:00:00Z"),
     /Unsupported body/
   );
 });
