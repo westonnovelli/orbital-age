@@ -206,6 +206,46 @@ export function parseSpeedValue(value) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_SPEED_DAYS_PER_SECOND;
 }
 
+// Title-case a body key for display ("earth" -> "Earth").
+export function formatBodyName(key) {
+  const str = String(key ?? "");
+  return str.length === 0 ? str : str[0].toUpperCase() + str.slice(1);
+}
+
+// Format a body's "distance travelled since birthdate" odometer (in km). Values
+// span many orders of magnitude over a lifetime, so scale to million/billion km
+// for legibility. Returns "--" for missing values.
+export function formatTraveledKm(km) {
+  if (!Number.isFinite(km)) {
+    return "--";
+  }
+  const abs = Math.abs(km);
+  if (abs >= 1e9) {
+    return `${(km / 1e9).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })} billion km`;
+  }
+  if (abs >= 1e6) {
+    return `${(km / 1e6).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })} million km`;
+  }
+  return `${km.toLocaleString(undefined, { maximumFractionDigits: 0 })} km`;
+}
+
+// Convert a linear-RGB triple (0..1) to a CSS rgb() string for a panel swatch.
+export function colorTripleToCss(color) {
+  const channel = (value) => {
+    const n = Number(value);
+    const clamped = Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : 0;
+    return Math.round(clamped * 255);
+  };
+  const [r = 0, g = 0, b = 0] = Array.isArray(color) ? color : [];
+  return `rgb(${channel(r)}, ${channel(g)}, ${channel(b)})`;
+}
+
 export class OrbitalApp {
   constructor({
     form,
@@ -231,6 +271,8 @@ export class OrbitalApp {
     hudDistance,
     autoFitButton,
     zoomEarthButton,
+    bodiesPanel,
+    bodiesList,
     root
   }) {
     this.root = root;
@@ -258,6 +300,13 @@ export class OrbitalApp {
 
     this.autoFitButton = autoFitButton;
     this.zoomEarthButton = zoomEarthButton;
+
+    // Bodies panel: per-body distance readouts. Rows are built once after the
+    // first submit; each row's distance <output> is stored by key for live
+    // updates in #updateTimelineUi().
+    this.bodiesPanel = bodiesPanel;
+    this.bodiesList = bodiesList;
+    this.bodyDistanceOutputs = new Map();
     // Tracks which framing preset is active ("auto-fit" | "earth") so the
     // buttons can reflect state and zooming toward Earth implies tracking.
     this.framingMode = "auto-fit";
@@ -371,10 +420,110 @@ export class OrbitalApp {
     // Auto-fit is the default framing on (re)load of a journey.
     this.#applyFraming("auto-fit");
 
+    this.#buildBodiesPanel();
     this.#setTimelineEnabled(true);
     this.statsHud?.classList.remove("hud--hidden");
     this.#updateTimelineUi(this.timelineController.getState());
     this.root?.classList.add("journey-active");
+  }
+
+  // Build one Bodies-panel row per registered body: [swatch][name][distance].
+  // Idempotent — rebuilds the list each submit so a fresh journey resets it. The
+  // distance <output> for each row is stored by key for live updates.
+  #buildBodiesPanel() {
+    if (!this.bodiesList) {
+      return;
+    }
+
+    this.bodyDistanceOutputs = new Map();
+    this.bodiesList.textContent = "";
+
+    const doc = this.bodiesList.ownerDocument ?? globalThis.document;
+    if (!doc || typeof doc.createElement !== "function") {
+      return;
+    }
+
+    // Group parented sub-bodies (e.g. the Moon under Earth) by their parent key so
+    // they can be nested beneath the parent row rather than listed at top level.
+    // This sets the precedent for future sub-bodies (moons, probes, etc.).
+    const childrenByParent = new Map();
+    for (const config of RENDERED_BODIES) {
+      if (config.parent) {
+        const siblings = childrenByParent.get(config.parent) ?? [];
+        siblings.push(config);
+        childrenByParent.set(config.parent, siblings);
+      }
+    }
+
+    const placedChildKeys = new Set();
+    for (const config of RENDERED_BODIES) {
+      if (config.parent) {
+        continue;
+      }
+
+      const row = this.#createBodyRow(doc, config);
+      this.bodiesList.append(row);
+
+      const children = childrenByParent.get(config.key);
+      if (children && children.length > 0) {
+        const subList = doc.createElement("ul");
+        subList.className = "bodies__sublist";
+        for (const child of children) {
+          subList.append(this.#createBodyRow(doc, child, { isChild: true }));
+          placedChildKeys.add(child.key);
+        }
+        row.append(subList);
+      }
+    }
+
+    // Safety net: surface any sub-body whose parent isn't a top-level row at the
+    // root so it never silently disappears.
+    for (const config of RENDERED_BODIES) {
+      if (config.parent && !placedChildKeys.has(config.key)) {
+        this.bodiesList.append(this.#createBodyRow(doc, config));
+      }
+    }
+  }
+
+  // Build a single Bodies-panel row (`<li>` with swatch + name + distance output)
+  // and register its distance output for live updates. Child rows (nested
+  // sub-bodies) get an extra modifier class for indentation.
+  #createBodyRow(doc, config, { isChild = false } = {}) {
+    const row = doc.createElement("li");
+    row.className = isChild ? "bodies__row bodies__row--child" : "bodies__row";
+    row.dataset.key = config.key;
+
+    const swatch = doc.createElement("span");
+    swatch.className = "bodies__swatch";
+    swatch.setAttribute("aria-hidden", "true");
+    swatch.style.background = colorTripleToCss(config.color);
+
+    const name = doc.createElement("span");
+    name.className = "bodies__name";
+    name.textContent = formatBodyName(config.key);
+
+    const distance = doc.createElement("output");
+    distance.className = "bodies__distance";
+    distance.textContent = "--";
+
+    row.append(swatch, name, distance);
+    this.bodyDistanceOutputs.set(config.key, distance);
+    return row;
+  }
+
+  #updateBodyDistances(state) {
+    if (!this.bodyDistanceOutputs || this.bodyDistanceOutputs.size === 0) {
+      return;
+    }
+
+    const traveled = state.bodyTraveledKm;
+    if (!traveled || typeof traveled.get !== "function") {
+      return;
+    }
+
+    for (const [key, output] of this.bodyDistanceOutputs) {
+      output.textContent = formatTraveledKm(traveled.get(key));
+    }
   }
 
   #bindTimelineControls() {
@@ -526,6 +675,8 @@ export class OrbitalApp {
     }
 
     this.#setPlayButtonState(state.playing);
+
+    this.#updateBodyDistances(state);
 
     if (this.hudOrbits) {
       this.hudOrbits.textContent = `ORBITS ${orbitsCompleted(state.elapsedDays)}`;

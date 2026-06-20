@@ -3,7 +3,8 @@ import {
   SUPPORTED_PLANET_KEYS,
   SUPPORTED_DERIVED_BODY_KEYS,
   getBodyPositionAuAtInstant,
-  getBodyDerivedOffsetAuAtInstant
+  getBodyDerivedOffsetAuAtInstant,
+  bodyPathLengthAuBetween as runtimeBodyPathLengthAuBetween
 } from "./ephemeris/runtime.js";
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -222,6 +223,26 @@ export function bodyHeliocentricPositionAuAtInstant(bodyKey, dateInput) {
 
 export function earthHeliocentricPositionAuAtInstant(dateInput) {
   return bodyHeliocentricPositionAuAtInstant("earth", dateInput);
+}
+
+// Distance (AU) a body has travelled along its true 3D path between two instants.
+// Used for the Bodies-panel "distance travelled since birthdate" odometer. Both
+// endpoints must lie in the supported range; the underlying table is clamped to
+// the dataset window.
+export function bodyPathLengthAuBetween(bodyKey, startInput, endInput) {
+  const normalizedBodyKey = String(bodyKey).toLowerCase();
+  if (!SUPPORTED_PLANET_KEYS.includes(normalizedBodyKey)) {
+    throw new Error(
+      `Unsupported body "${bodyKey}". Expected one of: ${SUPPORTED_PLANET_KEYS.join(", ")}`
+    );
+  }
+
+  const start = toDateFromInput(startInput);
+  const end = toDateFromInput(endInput);
+  assertDateInSupportedRange(start);
+  assertDateInSupportedRange(end);
+
+  return runtimeBodyPathLengthAuBetween(normalizedBodyKey, start, end);
 }
 
 // Return a body's parent-relative offset in AU from the derived dataset (e.g. the

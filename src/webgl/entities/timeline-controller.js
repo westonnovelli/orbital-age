@@ -2,11 +2,16 @@ import {
   assertDateInSupportedRange,
   bodyHeliocentricPositionAuAtInstant,
   bodyEarthRelativePositionAuAtInstant,
+  bodyPathLengthAuBetween,
   daysBetweenUtc,
   normalizeToUtcMidnight
 } from "../../orbital-time.js";
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+// 1 astronomical unit in kilometres (IAU 2012 definition). Converts each body's
+// AU path length to the kilometres shown in the Bodies panel.
+const KM_PER_AU = 149_597_870.7;
 
 // ─── Parented-body (Moon) tuning knobs ──────────────────────────────────────
 // A parented body (the Moon) is drawn at:
@@ -92,6 +97,13 @@ export class TimelineControllerEntity {
     if (this.birthdayUtc > this.maxTimelineUtc) {
       throw new Error("Birthday cannot be after max timeline date.");
     }
+
+    // Per-frame odometer for each body, keyed by body key: the distance in km the
+    // body has travelled along its true 3D path since the birthdate, up to the
+    // current timeline instant. Computed in #applyToBodies() as a deterministic
+    // function of the timeline position (so it stays correct under scrubbing) and
+    // surfaced via getState().
+    this.bodyTraveledKm = new Map();
 
     this.totalDays = daysBetweenUtc(this.birthdayUtc, this.maxTimelineUtc);
     if (this.totalDays === 0) {
@@ -205,12 +217,21 @@ export class TimelineControllerEntity {
       normalizedProgress: this.totalDays === 0 ? 1 : this.timelineDays / this.totalDays,
       elapsedDays: this.timelineDays,
       totalDays: this.totalDays,
-      playing: this.playing
+      playing: this.playing,
+      bodyTraveledKm: this.bodyTraveledKm
     };
   }
 
   #instantFromTimelineDays() {
     return new Date(this.birthdayUtc.getTime() + this.timelineDays * MS_PER_DAY);
+  }
+
+  // Kilometres a body has travelled along its true 3D path from the birthdate to
+  // the given instant. Returns NaN if the body has no ephemeris path (the UI then
+  // renders "--").
+  #traveledKmForBody(bodyKey, instant) {
+    const au = bodyPathLengthAuBetween(bodyKey, this.birthdayUtc, instant);
+    return au == null ? Number.NaN : au * KM_PER_AU;
   }
 
   // Enable/disable camera tracking of a body by key (e.g. "earth"). Passing null
@@ -242,6 +263,7 @@ export class TimelineControllerEntity {
       body.marker.setPosition(position.xAu, position.yAu);
       body.trail?.setCursorForDay?.(this.timelineDays);
       resolved.set(body.key, { x: position.xAu, y: position.yAu });
+      this.bodyTraveledKm.set(body.key, this.#traveledKmForBody(body.key, instant));
       if (this.trackBodyKey && body.key === this.trackBodyKey) {
         trackedPosition = { x: position.xAu, y: position.yAu };
       }
@@ -266,6 +288,10 @@ export class TimelineControllerEntity {
       body.marker.setPosition(x, y);
       body.trail?.setCursorForDay?.(this.timelineDays);
       resolved.set(body.key, { x, y });
+      // The Moon reads the same odometer as every other body: the true distance
+      // it has travelled through space since the birthdate (its barycentric path),
+      // not the zoom-coupled render offset.
+      this.bodyTraveledKm.set(body.key, this.#traveledKmForBody(body.key, instant));
       if (this.trackBodyKey && body.key === this.trackBodyKey) {
         trackedPosition = { x, y };
       }

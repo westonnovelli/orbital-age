@@ -36,3 +36,8 @@ test("birthday form and timeline controls expose basic accessible semantics", ()
   assert.match(html, /id="webgl-message" class="message message--hidden" aria-live="polite"/);
   assert.match(html, /<canvas id="orbit-canvas" aria-label="Orbital map"><\/canvas>/);
 });
+
+test("bodies panel exposes a labeled landmark and a polite live region", () => {
+  assert.match(html, /<aside class="panel panel--bodies" aria-label="Bodies">/);
+  assert.match(html, /<ul id="bodies-list" class="bodies__list" aria-live="polite">/);
+});

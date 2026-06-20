@@ -35,7 +35,9 @@ const app = new OrbitalApp({
   hudAge: document.querySelector("#hud-age"),
   hudDistance: document.querySelector("#hud-distance"),
   autoFitButton: document.querySelector("#framing-auto-fit"),
-  zoomEarthButton: document.querySelector("#framing-zoom-earth")
+  zoomEarthButton: document.querySelector("#framing-zoom-earth"),
+  bodiesPanel: document.querySelector(".panel--bodies"),
+  bodiesList: document.querySelector("#bodies-list")
 });
 
 app.initialize();

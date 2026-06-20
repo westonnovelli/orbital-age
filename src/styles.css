@@ -709,6 +709,110 @@ label {
   color: var(--fg);
 }
 
+/* Bodies panel: per-body distance readouts (right edge) */
+.panel--bodies {
+  right: 2.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(280px, calc(100vw - 5rem));
+  padding-top: 1.4rem;
+  padding-bottom: 1.4rem;
+}
+
+.bodies__heading {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.9rem;
+  font-family: var(--font-headline);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.bodies__caption {
+  margin: -0.5rem 0 0.9rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted, rgba(255, 255, 255, 0.55));
+}
+
+.bodies__pulse {
+  width: 0.42rem;
+  height: 0.42rem;
+  background: var(--primary);
+  box-shadow: 0 0 9px var(--primary-glow);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+.bodies__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.bodies__row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.18rem 0;
+}
+
+.bodies__swatch {
+  width: 0.72rem;
+  height: 0.72rem;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.18);
+}
+
+.bodies__name {
+  font-family: var(--font-headline);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.bodies__distance {
+  font-family: var(--font-headline);
+  font-size: 0.72rem;
+  color: var(--secondary);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Nested sub-bodies (e.g. the Moon under Earth). The sublist spans the parent
+   row's full width and indents with a tree guide; child rows are slightly
+   smaller to read as subordinate. */
+.bodies__sublist {
+  grid-column: 1 / -1;
+  list-style: none;
+  margin: 0.3rem 0 0 0.34rem;
+  padding: 0 0 0 0.6rem;
+  border-left: 1px solid var(--outline, rgba(255, 255, 255, 0.14));
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.bodies__row--child .bodies__swatch {
+  width: 0.6rem;
+  height: 0.6rem;
+}
+
+.bodies__row--child .bodies__name,
+.bodies__row--child .bodies__distance {
+  font-size: 0.66rem;
+  opacity: 0.85;
+}
+
 /* ----------------------------------------------------------------------- */
 /* Forms + buttons                                                          */
 /* ----------------------------------------------------------------------- */
@@ -1045,7 +1149,8 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @media (max-width: 1024px) {
-  .panel--telemetry {
+  .panel--telemetry,
+  .panel--bodies {
     display: none;
   }
 }

@@ -9,8 +9,11 @@ import {
 } from "../src/webgl/entities/timeline-controller.js";
 import {
   bodyHeliocentricPositionAuAtInstant,
-  bodyEarthRelativePositionAuAtInstant
+  bodyEarthRelativePositionAuAtInstant,
+  bodyPathLengthAuBetween
 } from "../src/orbital-time.js";
+
+const KM_PER_AU = 149_597_870.7;
 
 function markerStub() {
   return {
@@ -435,6 +438,57 @@ test("parented body separation shrinks toward its parent when zoomed out", () =>
   // Sanity: the close-in separation matches the un-coupled delta × scale.
   const expected = Math.hypot(delta.xAu, delta.yAu) * relativeScale;
   assert.ok(Math.abs(closeIn - expected) < 1e-9);
+});
+
+test("getState exposes per-body distance travelled since birthdate (km)", () => {
+  const earthMarker = markerStub();
+  const venusMarker = markerStub();
+  const moonMarker = markerStub();
+  const camera = {
+    halfHeight: ZOOM_COUPLING_REFERENCE_HALF_HEIGHT,
+    setCenter() {}
+  };
+
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    bodies: [
+      { key: "earth", marker: earthMarker, trail: null },
+      { key: "venus", marker: venusMarker, trail: null },
+      { key: "moon", marker: moonMarker, trail: null, parent: "earth", relativeScale: 40 }
+    ],
+    camera
+  });
+
+  controller.init();
+
+  // At the birthdate (timelineDays = 0) nothing has travelled yet.
+  const atBirth = controller.getState().bodyTraveledKm;
+  assert.equal(typeof atBirth.get, "function");
+  for (const key of ["earth", "venus", "moon"]) {
+    assert.ok(Math.abs(atBirth.get(key)) < 1e-6, `${key} travelled ~0 at birth`);
+  }
+
+  // Advance 10 days; each body's odometer is its true 3D path length over that
+  // span, converted to km — the same uniform metric for the Moon as the planets.
+  controller.render({ deltaSeconds: 10 / controller.speedDaysPerSecond });
+  const traveled = controller.getState().bodyTraveledKm;
+  const birthday = new Date(Date.UTC(2000, 0, 1));
+  const now = new Date(Date.UTC(2000, 0, 11));
+
+  for (const key of ["earth", "venus", "moon"]) {
+    const expectedKm = bodyPathLengthAuBetween(key, birthday, now) * KM_PER_AU;
+    assert.ok(
+      Math.abs(traveled.get(key) - expectedKm) < 1,
+      `${key} travelled distance matches the ephemeris path length`
+    );
+  }
+
+  // Earth covers a sizeable arc in 10 days but the inner Moon's own path is
+  // shorter; all are positive and finite.
+  assert.ok(traveled.get("earth") > 0);
+  assert.ok(traveled.get("venus") > 0);
+  assert.ok(traveled.get("moon") > 0);
 });
 
 test("all supported speeds advance timeline correctly", () => {

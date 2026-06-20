@@ -98,7 +98,7 @@
         <section class="panel panel--entry" aria-label="Birthday controls">
           <div class="panel__eyebrow">Chronos Alignment</div>
           <p class="panel__lead">
-            Enter your birthday to calibrate Earth's orbital trajectory through time.
+            Enter your birthday to visualize Earth's orbital trajectory through time.
           </p>
           <form id="birthday-form" novalidate>
             <div class="field">
@@ -136,6 +136,16 @@
               <dd>29.78 km/s</dd>
             </div>
           </dl>
+        </aside>
+
+        <!-- Bodies panel: per-body distance-travelled readouts (rows built in JS) -->
+        <aside class="panel panel--bodies" aria-label="Bodies">
+          <h2 class="bodies__heading">
+            <span class="bodies__pulse" aria-hidden="true"></span>
+            Bodies
+          </h2>
+          <p class="bodies__caption">Distance travelled since birth</p>
+          <ul id="bodies-list" class="bodies__list" aria-live="polite"></ul>
         </aside>
 
         <!-- Bottom control dock -->

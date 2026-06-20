@@ -147,6 +147,73 @@ function interpolateVectorsAtInstant(vectors, dateInput) {
   };
 }
 
+// Cumulative path-length tables, keyed by body. cum[i] is the 3D arc length (in
+// AU) travelled along the daily barycentric samples from sample 0 to sample i,
+// so cum[0] is always 0. Built lazily from the raw vectors and cached, since the
+// dataset is immutable for the life of the page.
+const cumulativePathCache = new Map();
+
+function getCumulativePathAu(bodyKey) {
+  if (cumulativePathCache.has(bodyKey)) {
+    return cumulativePathCache.get(bodyKey);
+  }
+
+  const vectors = getBodyVectors(bodyKey);
+  if (!vectors) {
+    return null;
+  }
+
+  const sampleCount = Math.floor(vectors.length / 3);
+  const cumulative = new Float64Array(sampleCount);
+  for (let index = 1; index < sampleCount; index += 1) {
+    const prev = (index - 1) * 3;
+    const curr = index * 3;
+    const dx = vectors[curr] - vectors[prev];
+    const dy = vectors[curr + 1] - vectors[prev + 1];
+    const dz = vectors[curr + 2] - vectors[prev + 2];
+    cumulative[index] = cumulative[index - 1] + Math.hypot(dx, dy, dz);
+  }
+
+  cumulativePathCache.set(bodyKey, cumulative);
+  return cumulative;
+}
+
+// Cumulative path length (AU) from the dataset start to the given instant,
+// linearly interpolated within the daily segment and clamped to the dataset
+// window. Returns null for unknown bodies.
+function cumulativePathAuAtInstant(bodyKey, dateInput) {
+  const cumulative = getCumulativePathAu(bodyKey);
+  if (!cumulative || cumulative.length === 0) {
+    return null;
+  }
+
+  const instant = toDateFromInput(dateInput);
+  const startUnixS = Date.parse(EPHEMERIS_V1.startUtc) / 1000;
+  const lastIndex = cumulative.length - 1;
+  const indexFloat = clamp(
+    (toUnixSeconds(instant) - startUnixS) / EPHEMERIS_V1.stepSeconds,
+    0,
+    lastIndex
+  );
+  const lowerIndex = Math.floor(indexFloat);
+  const upperIndex = Math.min(lowerIndex + 1, lastIndex);
+  const t = indexFloat - lowerIndex;
+  return interpolate(cumulative[lowerIndex], cumulative[upperIndex], t);
+}
+
+// Distance (AU) a body travels along its true 3D path between two instants. This
+// is a deterministic function of the endpoints — independent of playback history
+// — so it stays correct when the timeline is scrubbed or jumped. Returns null for
+// unknown bodies.
+export function bodyPathLengthAuBetween(bodyKey, startInput, endInput) {
+  const startCumulative = cumulativePathAuAtInstant(bodyKey, startInput);
+  const endCumulative = cumulativePathAuAtInstant(bodyKey, endInput);
+  if (startCumulative == null || endCumulative == null) {
+    return null;
+  }
+  return Math.abs(endCumulative - startCumulative);
+}
+
 export function getBodyPositionAuAtInstant(bodyKey, dateInput) {
   const vectors = getBodyVectors(bodyKey);
   if (!vectors) {
