@@ -138,6 +138,20 @@ const MAX_ORBIT_RADIUS_AU = Math.max(...RENDERED_BODIES.map((b) => b.orbitRadius
 const AUTO_FIT_HALF_HEIGHT = autoFitHalfHeight(MAX_ORBIT_RADIUS_AU);
 const STARFIELD_SPREAD = starfieldSpread(AUTO_FIT_HALF_HEIGHT);
 
+// Maximum zoom-in framing ("Zoom to Earth"). Earth orbits at ~1 AU; this frames
+// a small region around it so the Moon — added in a later phase with an
+// exaggerated Earth-relative offset — reads clearly. This is the camera's
+// minimum halfHeight (most zoomed in). Tunable: shrink to frame tighter once the
+// Moon's relativeScale is dialed in.
+const EARTH_MOON_HALF_HEIGHT = 0.3;
+
+// Multiplicative zoom step applied per wheel/pinch notch. Values >1 zoom out,
+// <1 zoom in; the camera clamps the result to the framing limits.
+const ZOOM_WHEEL_STEP = 1.1;
+
+// Key of the body the "Zoom to Earth" preset tracks.
+const TRACKED_BODY_KEY = "earth";
+
 // Marker/trail orbital-ellipse radii. Origin uses a unit circle (radiusY 1).
 const BODY_RADIUS_X = 1;
 const BODY_RADIUS_Y = 1;
@@ -183,6 +197,8 @@ export class OrbitalApp {
     hudOrbits,
     hudAge,
     hudDistance,
+    autoFitButton,
+    zoomEarthButton,
     root
   }) {
     this.root = root;
@@ -209,9 +225,20 @@ export class OrbitalApp {
     this.hudAge = hudAge;
     this.hudDistance = hudDistance;
 
-    this.renderer = new WebGLRenderer(canvas, {
-      camera: new OrthoCamera2D({ halfHeight: AUTO_FIT_HALF_HEIGHT })
+    this.autoFitButton = autoFitButton;
+    this.zoomEarthButton = zoomEarthButton;
+    // Tracks which framing preset is active ("auto-fit" | "earth") so the
+    // buttons can reflect state and zooming toward Earth implies tracking.
+    this.framingMode = "auto-fit";
+
+    // Auto-fit is the default framing on load (most zoomed out). User zoom is
+    // clamped between Earth-Moon framing (min) and Auto-fit (max).
+    this.camera = new OrthoCamera2D({
+      halfHeight: AUTO_FIT_HALF_HEIGHT,
+      minHalfHeight: EARTH_MOON_HALF_HEIGHT,
+      maxHalfHeight: AUTO_FIT_HALF_HEIGHT
     });
+    this.renderer = new WebGLRenderer(canvas, { camera: this.camera });
     this.timelineController = null;
   }
 
@@ -226,6 +253,7 @@ export class OrbitalApp {
     }
 
     this.#bindTimelineControls();
+    this.#bindFramingControls();
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       this.#handleRenderSubmit();
@@ -281,6 +309,8 @@ export class OrbitalApp {
       initialTimelineDate: validation.date,
       speedDaysPerSecond: parseSpeedValue(this.speedSelect?.value),
       bodies,
+      camera: this.camera,
+      trackBodyKey: this.framingMode === "earth" ? TRACKED_BODY_KEY : null,
       onStateChange: (state) => this.#updateTimelineUi(state)
     });
 
@@ -300,6 +330,9 @@ export class OrbitalApp {
     this.timelineController = timelineController;
     this.renderer.setScene(scene);
     this.renderer.start();
+
+    // Auto-fit is the default framing on (re)load of a journey.
+    this.#applyFraming("auto-fit");
 
     this.#setTimelineEnabled(true);
     this.statsHud?.classList.remove("hud--hidden");
@@ -378,6 +411,48 @@ export class OrbitalApp {
       }
       this.#setRampToggleState(willBeActive);
     });
+  }
+
+  #bindFramingControls() {
+    // Continuous zoom via scroll wheel / trackpad pinch (pinch arrives as a
+    // wheel event with ctrlKey set). Zooming is clamped by the camera.
+    this.canvas?.addEventListener(
+      "wheel",
+      (event) => {
+        event.preventDefault();
+        const factor = event.deltaY > 0 ? ZOOM_WHEEL_STEP : 1 / ZOOM_WHEEL_STEP;
+        this.camera.zoomBy(factor);
+      },
+      { passive: false }
+    );
+
+    this.autoFitButton?.addEventListener("click", () => this.#applyFraming("auto-fit"));
+    this.zoomEarthButton?.addEventListener("click", () => this.#applyFraming("earth"));
+
+    this.#updateFramingButtons();
+  }
+
+  // Apply a framing preset: "auto-fit" frames the whole system (no tracking),
+  // "earth" zooms in and tracks Earth as it orbits.
+  #applyFraming(mode) {
+    this.framingMode = mode === "earth" ? "earth" : "auto-fit";
+
+    if (this.framingMode === "earth") {
+      this.camera.setZoom(EARTH_MOON_HALF_HEIGHT);
+      this.timelineController?.setTrackBodyKey(TRACKED_BODY_KEY);
+    } else {
+      this.camera.setZoom(AUTO_FIT_HALF_HEIGHT);
+      this.timelineController?.setTrackBodyKey(null);
+      this.camera.setCenter(0, 0);
+    }
+
+    this.#updateFramingButtons();
+  }
+
+  #updateFramingButtons() {
+    const earthActive = this.framingMode === "earth";
+    this.autoFitButton?.setAttribute("aria-pressed", String(!earthActive));
+    this.zoomEarthButton?.setAttribute("aria-pressed", String(earthActive));
   }
 
   #setTimelineEnabled(enabled) {

@@ -41,3 +41,47 @@ test("camera frames the auto-fit bounds for the outermost orbit", () => {
   const right = project(camera.matrix, halfHeight, 0);
   assert.ok(Math.abs(right.ndcX - 1) < 1e-6, "framed right maps to NDC x = 1");
 });
+
+test("camera centers the view on a tracked world point", () => {
+  const camera = new OrthoCamera2D({ halfHeight: 2 });
+  camera.setViewport(100, 100); // square viewport, halfWidth == halfHeight
+
+  camera.setCenter(0.5, -0.5);
+
+  // The center world point should land at NDC center (0, 0).
+  const center = project(camera.matrix, 0.5, -0.5);
+  assert.ok(Math.abs(center.ndcX) < 1e-6, "tracked center maps to NDC x = 0");
+  assert.ok(Math.abs(center.ndcY) < 1e-6, "tracked center maps to NDC y = 0");
+
+  // A point one halfHeight above the center maps to the top edge (y = 1).
+  const top = project(camera.matrix, 0.5, -0.5 + 2);
+  assert.ok(Math.abs(top.ndcY - 1) < 1e-6, "point one halfHeight above center maps to NDC y = 1");
+});
+
+test("camera clamps zoom between min and max halfHeight", () => {
+  const camera = new OrthoCamera2D({
+    halfHeight: 30,
+    minHalfHeight: 0.3,
+    maxHalfHeight: 30
+  });
+
+  // Cannot zoom out past the auto-fit (max) limit.
+  assert.equal(camera.setZoom(1000), 30);
+  // Cannot zoom in past the earth-moon (min) limit.
+  assert.equal(camera.setZoom(0.001), 0.3);
+  // A value within range is applied verbatim.
+  assert.equal(camera.setZoom(5), 5);
+});
+
+test("camera zoomBy multiplies current zoom and respects clamps", () => {
+  const camera = new OrthoCamera2D({
+    halfHeight: 10,
+    minHalfHeight: 1,
+    maxHalfHeight: 20
+  });
+
+  assert.equal(camera.zoomBy(1.5), 15); // zoom out
+  assert.equal(camera.zoomBy(0.1), 1.5); // zoom in
+  assert.equal(camera.zoomBy(0.01), 1); // clamped to min
+  assert.equal(camera.zoomBy(1000), 20); // clamped to max
+});

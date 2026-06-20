@@ -59,6 +59,27 @@
           <p id="webgl-message" class="message message--hidden" aria-live="polite"></p>
         </section>
 
+        <!-- Camera framing presets (kept outside .viewport so they stack above
+             the fixed vignette/atmosphere overlays) -->
+        <div class="framing" role="group" aria-label="Camera framing presets">
+          <button
+            id="framing-auto-fit"
+            type="button"
+            class="btn btn--ghost framing__btn"
+            aria-pressed="true"
+          >
+            Auto-fit
+          </button>
+          <button
+            id="framing-zoom-earth"
+            type="button"
+            class="btn btn--ghost framing__btn"
+            aria-pressed="false"
+          >
+            Zoom to Earth
+          </button>
+        </div>
+
         <!-- Central metrics HUD (revealed after a birthday is rendered) -->
         <div id="stats-hud" class="hud hud--hidden" aria-live="polite" aria-atomic="true">
           <div class="hud__eyebrow">

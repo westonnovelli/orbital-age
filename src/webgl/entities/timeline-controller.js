@@ -27,12 +27,21 @@ export class TimelineControllerEntity {
     bodies,
     earthMarker,
     motionTrails = [],
+    camera = null,
+    trackBodyKey = null,
     onStateChange
   }) {
     this.bodies = normalizeBodies({ bodies, earthMarker, motionTrails });
     if (this.bodies.length === 0) {
       throw new Error("TimelineControllerEntity requires at least one body.");
     }
+
+    // Optional camera tracking: when `trackBodyKey` names a body, the camera's
+    // center follows that body's resolved render position each frame so it stays
+    // framed ("Zoom to Earth"). When null, the camera is left centered on the
+    // system origin (Auto-fit).
+    this.camera = camera;
+    this.trackBodyKey = trackBodyKey;
 
     // Back-compat accessor for callers/tests that still expect a single marker.
     this.earthMarker = earthMarker ?? this.bodies[0].marker;
@@ -178,12 +187,33 @@ export class TimelineControllerEntity {
     return new Date(this.birthdayUtc.getTime() + this.timelineDays * MS_PER_DAY);
   }
 
+  // Enable/disable camera tracking of a body by key (e.g. "earth"). Passing null
+  // stops tracking and recenters the camera on the system origin. Re-applies the
+  // current frame so the camera updates immediately, not just on the next tick.
+  setTrackBodyKey(bodyKey) {
+    this.trackBodyKey = bodyKey ?? null;
+    if (this.camera) {
+      if (!this.trackBodyKey) {
+        this.camera.setCenter(0, 0);
+      }
+      this.#applyToBodies();
+    }
+  }
+
   #applyToBodies() {
     const instant = this.#instantFromTimelineDays();
+    let trackedPosition = null;
     for (const body of this.bodies) {
       const position = bodyHeliocentricPositionAuAtInstant(body.key, instant);
       body.marker.setPosition(position.xAu, position.yAu);
       body.trail?.setCursorForDay?.(this.timelineDays);
+      if (this.trackBodyKey && body.key === this.trackBodyKey) {
+        trackedPosition = position;
+      }
+    }
+
+    if (this.camera && this.trackBodyKey && trackedPosition) {
+      this.camera.setCenter(trackedPosition.xAu, trackedPosition.yAu);
     }
   }
 

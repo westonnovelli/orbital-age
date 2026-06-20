@@ -312,6 +312,26 @@ body {
   pointer-events: none;
 }
 
+.framing {
+  position: absolute;
+  /* Clear the fixed topbar (top:0, ~3.4rem tall) which would otherwise cover
+     the buttons in the top-right. */
+  top: 4.5rem;
+  right: 1.5rem;
+  /* Above the fixed vignette (6) / atmosphere (3) overlays and panels (30);
+     the topbar (50) sits clear above, so no overlap. */
+  z-index: 45;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.framing__btn[aria-pressed="true"] {
+  color: #07332e;
+  background: linear-gradient(120deg, var(--secondary), var(--secondary-dim));
+  border-color: transparent;
+  box-shadow: 0 0 20px var(--secondary-glow);
+}
+
 .scanline {
   position: absolute;
   left: 0;

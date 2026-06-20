@@ -74,6 +74,77 @@ test("timeline controller drives multiple bodies to distinct positions", () => {
   );
 });
 
+function cameraStub() {
+  return {
+    centers: [],
+    setCenter(x, y) {
+      this.centers.push({ x, y });
+    }
+  };
+}
+
+test("timeline controller updates camera center to tracked body position", () => {
+  const earthMarker = markerStub();
+  const camera = cameraStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    bodies: [{ key: "earth", marker: earthMarker, trail: null }],
+    camera,
+    trackBodyKey: "earth"
+  });
+
+  controller.init();
+
+  // The marker and the camera center should agree on Earth's position.
+  assert.ok(camera.centers.length >= 1);
+  const lastCenter = camera.centers[camera.centers.length - 1];
+  const earthPos = earthMarker.positions[earthMarker.positions.length - 1];
+  assert.equal(lastCenter.x, earthPos.x);
+  assert.equal(lastCenter.y, earthPos.y);
+});
+
+test("timeline controller does not move camera center when tracking is off", () => {
+  const earthMarker = markerStub();
+  const camera = cameraStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    bodies: [{ key: "earth", marker: earthMarker, trail: null }],
+    camera,
+    trackBodyKey: null
+  });
+
+  controller.init();
+  assert.equal(camera.centers.length, 0);
+});
+
+test("setTrackBodyKey toggles camera tracking and recenters on disable", () => {
+  const earthMarker = markerStub();
+  const camera = cameraStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    bodies: [{ key: "earth", marker: earthMarker, trail: null }],
+    camera,
+    trackBodyKey: null
+  });
+
+  controller.init();
+  assert.equal(camera.centers.length, 0);
+
+  controller.setTrackBodyKey("earth");
+  const trackedCenter = camera.centers[camera.centers.length - 1];
+  const earthPos = earthMarker.positions[earthMarker.positions.length - 1];
+  assert.equal(trackedCenter.x, earthPos.x);
+  assert.equal(trackedCenter.y, earthPos.y);
+
+  controller.setTrackBodyKey(null);
+  const recentered = camera.centers[camera.centers.length - 1];
+  assert.equal(recentered.x, 0);
+  assert.equal(recentered.y, 0);
+});
+
 test("timeline controller supports stepping and normalized scrubbing with bounds", () => {
   const marker = markerStub();
   const controller = new TimelineControllerEntity({
