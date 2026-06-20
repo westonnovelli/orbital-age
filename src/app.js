@@ -142,6 +142,26 @@ const RENDERED_BODIES = [
       color: [0.82, 0.74, 0.68, 0.06],
       hueStart: 0.78
     }
+  },
+  {
+    // The Moon is stored barycentric like every other body, but rendered relative
+    // to Earth using the SEPARATE derived Earth-relative offset dataset
+    // (`delta = moon_ssb − earth_ssb`). The controller places it at Earth's
+    // resolved render position plus that delta, exaggerated by `relativeScale` and
+    // coupled to zoom. It has no trail and collapses onto Earth at Auto-fit.
+    key: "moon",
+    color: [0.85, 0.86, 0.9],
+    size: 0.02,
+    parent: "earth",
+    // Exaggeration of the ~0.0027 AU Earth-relative offset. With the zoom coupling
+    // referenced to EARTH_MOON_HALF_HEIGHT, this is the effective scale at the
+    // "Zoom to Earth" preset: ~0.0027 AU × 40 ≈ 0.11 scene units of separation,
+    // comfortably framed inside a 0.3 halfHeight. Tunable polish knob.
+    relativeScale: 40,
+    // No orbit trail for the Moon (an Earth-relative trail is a tight rosette).
+    trail: null,
+    // Small value so the Moon never expands the Auto-fit frame (it sits on Earth).
+    orbitRadiusAu: 0
   }
 ];
 
@@ -305,7 +325,13 @@ export class OrbitalApp {
         });
         trails.push(trail);
       }
-      bodies.push({ key: config.key, marker, trail });
+      bodies.push({
+        key: config.key,
+        marker,
+        trail,
+        parent: config.parent ?? null,
+        relativeScale: config.relativeScale
+      });
     }
 
     const todayUtc = normalizeToUtcMidnight(new Date());

@@ -36,12 +36,12 @@ everything else is planetary (plus Pluto).
 
 **Yes.** The refresh pipeline pulls live from the JPL Horizons API
 ([refresh-v1.mjs](../scripts/ephemeris/refresh-v1.mjs)), and Horizons (backed by
-the DE44x kernel family) has full coverage of both. **Pluto (NAIF 999) is now
-in the dataset**; the Moon is not yet tracked.
+the DE44x kernel family) has full coverage of both. **Pluto (NAIF 999) and the
+Moon (NAIF 301) are both now in the dataset.**
 
 | Body | NAIF ID (Horizons `COMMAND`) | Notes |
 |------|------------------------------|-------|
-| Earth's Moon | **301** | Fully supported. Integral to the DE ephemeris (Earth–Moon barycenter is a primary integration body), so it is exact, not interpolated. Not yet in `targets`. |
+| Earth's Moon | **301** | In `targets` as `moon` / `301`. Fetched and stored barycentric like every other body (`CENTER=500@0`); a *separate derived dataset* additionally holds its per-epoch Earth-relative offset (`delta = moon_ssb − earth_ssb`, annotated `relativeTo: 399`) for the render layer. Integral to the DE ephemeris, so it is exact, not interpolated. |
 | Pluto | **999** (body center) or **9** (Pluto system barycenter) | In `targets` as `pluto` / `999` (the planet body itself). |
 
 ## What Adding Them Would Involve
@@ -60,12 +60,15 @@ issues one Horizons request per `naifId` using the existing config
 ## Realism Caveats
 
 1. **The Moon is visually coincident with Earth at solar-system scale.** Its
-   heliocentric distance differs from Earth's by only ~0.00257 AU (the
+   barycentric distance differs from Earth's by only ~0.00257 AU (the
    Earth–Moon distance) versus Earth's ~1 AU from the Sun. On a Sun-centered
    view spanning out to Neptune (~30 AU) or Pluto (~49 AU), the Moon and Earth
-   render as the same pixel. To show it meaningfully would require either a
-   zoomed Earth-local inset or plotting the Moon *relative to Earth* (different
-   `CENTER`, e.g. `CENTER=500@399`, or post-processed Earth-relative offsets).
+   render as the same pixel. This is handled by plotting the Moon *relative to
+   Earth* via the post-processed Earth-relative offset dataset (`delta =
+   moon_ssb − earth_ssb`, the `relativeTo: 399` derived blob): the render layer
+   draws the Moon at Earth's resolved position plus that delta, exaggerated by a
+   `relativeScale` factor and coupled to zoom. At Auto-fit the Moon collapses
+   onto Earth (expected); at "Zoom to Earth" it reads as a distinct body.
 
 2. **Pluto extends the scene bounds significantly.** Its orbit ranges ~30–49 AU
    and is inclined ~17°, so it stretches camera framing and the trail geometry

@@ -1,7 +1,9 @@
 import {
   EPHEMERIS_INTERPOLATION_WINDOW,
   SUPPORTED_PLANET_KEYS,
-  getBodyPositionAuAtInstant
+  SUPPORTED_DERIVED_BODY_KEYS,
+  getBodyPositionAuAtInstant,
+  getBodyDerivedOffsetAuAtInstant
 } from "./ephemeris/runtime.js";
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -220,6 +222,37 @@ export function bodyHeliocentricPositionAuAtInstant(bodyKey, dateInput) {
 
 export function earthHeliocentricPositionAuAtInstant(dateInput) {
   return bodyHeliocentricPositionAuAtInstant("earth", dateInput);
+}
+
+// Return a body's parent-relative offset in AU from the derived dataset (e.g. the
+// Moon relative to Earth). This is the small delta `body_ssb − parent_ssb`, not a
+// barycentric position — use `bodyHeliocentricPositionAuAtInstant` for the true
+// heliocentric/barycentric position. The render layer adds this delta (scaled)
+// to the parent's resolved render position so a parented body separates visibly.
+export function bodyEarthRelativePositionAuAtInstant(bodyKey, dateInput) {
+  const normalizedBodyKey = String(bodyKey).toLowerCase();
+  if (!SUPPORTED_DERIVED_BODY_KEYS.includes(normalizedBodyKey)) {
+    throw new Error(
+      `No derived (parent-relative) dataset for "${bodyKey}". Expected one of: ${SUPPORTED_DERIVED_BODY_KEYS.join(", ")}`
+    );
+  }
+
+  const instant = toDateFromInput(dateInput);
+  assertDateInSupportedRange(instant);
+
+  const offset = getBodyDerivedOffsetAuAtInstant(normalizedBodyKey, instant);
+  if (!offset) {
+    throw new Error(
+      `No derived ephemeris offset available for ${normalizedBodyKey} at ${instant.toISOString()}`
+    );
+  }
+
+  return {
+    body: normalizedBodyKey,
+    xAu: offset.xAu,
+    yAu: offset.yAu,
+    zAu: offset.zAu
+  };
 }
 
 export function computeOrbitalTimelineState({

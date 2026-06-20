@@ -1,7 +1,16 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { TimelineControllerEntity } from "../src/webgl/entities/timeline-controller.js";
+import {
+  TimelineControllerEntity,
+  zoomCouplingRatio,
+  ZOOM_COUPLING_REFERENCE_HALF_HEIGHT,
+  ZOOM_COUPLING_MAX_RATIO
+} from "../src/webgl/entities/timeline-controller.js";
+import {
+  bodyHeliocentricPositionAuAtInstant,
+  bodyEarthRelativePositionAuAtInstant
+} from "../src/orbital-time.js";
 
 function markerStub() {
   return {
@@ -386,6 +395,104 @@ test("high-speed playback clamps to totalDays in a single large frame", () => {
   controller.render({ deltaSeconds: 1 });
   assert.equal(controller.getState().elapsedDays, 40);
   assert.equal(controller.getState().playing, false);
+});
+
+test("zoomCouplingRatio grows as the view zooms in and clamps to bounds", () => {
+  const ref = ZOOM_COUPLING_REFERENCE_HALF_HEIGHT;
+
+  // At the reference halfHeight the ratio is exactly 1.
+  assert.equal(zoomCouplingRatio(ref, ref), 1);
+
+  // Zooming OUT (larger halfHeight) shrinks the ratio toward 0 (Moon collapses).
+  assert.ok(zoomCouplingRatio(ref * 10, ref) < 1);
+
+  // Zooming IN (smaller halfHeight) grows the ratio, clamped at the max.
+  assert.equal(zoomCouplingRatio(ref / 100, ref), ZOOM_COUPLING_MAX_RATIO);
+
+  // Non-finite / non-positive zoom is treated as the neutral ratio (1).
+  assert.equal(zoomCouplingRatio(0, ref), 1);
+  assert.equal(zoomCouplingRatio(Number.NaN, ref), 1);
+});
+
+test("parented body (moon) resolves to parent render pos + scaled derived delta", () => {
+  const earthMarker = markerStub();
+  const moonMarker = markerStub();
+  // Stub camera exposing a fixed halfHeight equal to the coupling reference so
+  // the zoom coupling ratio is exactly 1 and the math is easy to assert.
+  const camera = {
+    halfHeight: ZOOM_COUPLING_REFERENCE_HALF_HEIGHT,
+    centers: [],
+    setCenter(x, y) {
+      this.centers.push({ x, y });
+    }
+  };
+  const relativeScale = 40;
+
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    bodies: [
+      { key: "earth", marker: earthMarker, trail: null },
+      { key: "moon", marker: moonMarker, trail: null, parent: "earth", relativeScale }
+    ],
+    camera
+  });
+
+  controller.init();
+
+  const instant = new Date(Date.UTC(2000, 0, 1));
+  const earth = bodyHeliocentricPositionAuAtInstant("earth", instant);
+  const delta = bodyEarthRelativePositionAuAtInstant("moon", instant);
+
+  const earthPos = earthMarker.positions[earthMarker.positions.length - 1];
+  const moonPos = moonMarker.positions[moonMarker.positions.length - 1];
+
+  // Earth resolves to its raw heliocentric position.
+  assert.ok(Math.abs(earthPos.x - earth.xAu) < 1e-9);
+  assert.ok(Math.abs(earthPos.y - earth.yAu) < 1e-9);
+
+  // The ratio is 1 at the reference halfHeight, so effective scale = relativeScale.
+  const expectedX = earth.xAu + delta.xAu * relativeScale;
+  const expectedY = earth.yAu + delta.yAu * relativeScale;
+  assert.ok(Math.abs(moonPos.x - expectedX) < 1e-9);
+  assert.ok(Math.abs(moonPos.y - expectedY) < 1e-9);
+
+  // The Moon is genuinely offset from Earth (it does not collapse at this zoom).
+  assert.ok(moonPos.x !== earthPos.x || moonPos.y !== earthPos.y);
+});
+
+test("parented body separation shrinks toward its parent when zoomed out", () => {
+  const instant = new Date(Date.UTC(2000, 0, 1));
+  const earth = bodyHeliocentricPositionAuAtInstant("earth", instant);
+  const delta = bodyEarthRelativePositionAuAtInstant("moon", instant);
+  const relativeScale = 40;
+
+  function moonSeparationAtHalfHeight(halfHeight) {
+    const earthMarker = markerStub();
+    const moonMarker = markerStub();
+    const camera = { halfHeight, setCenter() {} };
+    const controller = new TimelineControllerEntity({
+      birthday: "2000-01-01",
+      maxTimelineDate: "2000-01-11",
+      bodies: [
+        { key: "earth", marker: earthMarker, trail: null },
+        { key: "moon", marker: moonMarker, trail: null, parent: "earth", relativeScale }
+      ],
+      camera
+    });
+    controller.init();
+    const moonPos = moonMarker.positions[moonMarker.positions.length - 1];
+    return Math.hypot(moonPos.x - earth.xAu, moonPos.y - earth.yAu);
+  }
+
+  const closeIn = moonSeparationAtHalfHeight(ZOOM_COUPLING_REFERENCE_HALF_HEIGHT);
+  const zoomedOut = moonSeparationAtHalfHeight(ZOOM_COUPLING_REFERENCE_HALF_HEIGHT * 20);
+
+  // Zoomed out, the exaggerated offset shrinks (Moon collapses toward Earth).
+  assert.ok(zoomedOut < closeIn);
+  // Sanity: the close-in separation matches the un-coupled delta × scale.
+  const expected = Math.hypot(delta.xAu, delta.yAu) * relativeScale;
+  assert.ok(Math.abs(closeIn - expected) < 1e-9);
 });
 
 test("all supported speeds advance timeline correctly", () => {

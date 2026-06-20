@@ -94,8 +94,59 @@ for (const key of keys) {
   vectorsBase64[key] = Buffer.from(vectorArray.buffer).toString("base64");
 }
 
+// Derived datasets: every body's primary blob is barycentric (uniform, honest).
+// Bodies annotated with `relativeTo: <naifId>` in header.targets additionally
+// get a *separate derived blob* holding their per-epoch offset relative to the
+// referenced parent body (`delta = body_ssb - parent_ssb`). This keeps the
+// primary dataset uniform while still letting the render layer fetch a small
+// Earth-relative offset (e.g. the Moon) without recomputing it. The primary
+// `EPHEMERIS_V1_BODY_VECTORS_BASE64["moon"]` remains true barycentric.
+const keyByNaifId = new Map(header.targets.map((target) => [target.naifId, target.key]));
+const derivedVectorsBase64 = {};
+const derivedDescriptors = {};
+for (const target of header.targets) {
+  if (target.relativeTo === undefined || target.relativeTo === null) {
+    continue;
+  }
+  const parentKey = keyByNaifId.get(target.relativeTo);
+  if (!parentKey) {
+    throw new Error(
+      `relativeTo target ${target.relativeTo} for "${target.key}" is not a tracked body.`
+    );
+  }
+  const bodyValues = vectorsByKey.get(target.key);
+  const parentValues = vectorsByKey.get(parentKey);
+  if (bodyValues.length !== parentValues.length) {
+    throw new Error(
+      `Cannot derive "${target.key}" relative to "${parentKey}": vector length mismatch.`
+    );
+  }
+  const delta = new Float32Array(bodyValues.length);
+  for (let i = 0; i < bodyValues.length; i += 1) {
+    delta[i] = bodyValues[i] - parentValues[i];
+  }
+  derivedVectorsBase64[target.key] = Buffer.from(delta.buffer).toString("base64");
+  derivedDescriptors[target.key] = {
+    relativeTo: target.relativeTo,
+    relativeToKey: parentKey,
+    rowCount: delta.length / 3
+  };
+}
+
+const derivedMeta = {
+  schemaVersion: header.schemaVersion,
+  frame: header.frame,
+  startUtc: header.window.startUtc,
+  endUtc: header.window.endUtc,
+  stepSeconds: 86400,
+  samplesPerBody: header.cadence.samplesPerBody,
+  bodies: derivedDescriptors
+};
+
 const keyListLiteral = `[${keys.map((key) => JSON.stringify(key)).join(", ")}]`;
-const moduleSource = `// Generated from data/ephemeris/v1/snapshots.ndjson. Do not edit manually.\nexport const EPHEMERIS_V1 = Object.freeze(${JSON.stringify(generated, null, 2)});\n\nexport const EPHEMERIS_V1_BODY_VECTORS_BASE64 = Object.freeze(${JSON.stringify(vectorsBase64, null, 2)});\n\nexport const EPHEMERIS_V1_BODY_KEYS = Object.freeze(${keyListLiteral});\n`;
+const derivedKeys = Object.keys(derivedVectorsBase64);
+const derivedKeyListLiteral = `[${derivedKeys.map((key) => JSON.stringify(key)).join(", ")}]`;
+const moduleSource = `// Generated from data/ephemeris/v1/snapshots.ndjson. Do not edit manually.\nexport const EPHEMERIS_V1 = Object.freeze(${JSON.stringify(generated, null, 2)});\n\nexport const EPHEMERIS_V1_BODY_VECTORS_BASE64 = Object.freeze(${JSON.stringify(vectorsBase64, null, 2)});\n\nexport const EPHEMERIS_V1_BODY_KEYS = Object.freeze(${keyListLiteral});\n\nexport const EPHEMERIS_V1_DERIVED = Object.freeze(${JSON.stringify(derivedMeta, null, 2)});\n\nexport const EPHEMERIS_V1_DERIVED_VECTORS_BASE64 = Object.freeze(${JSON.stringify(derivedVectorsBase64, null, 2)});\n\nexport const EPHEMERIS_V1_DERIVED_BODY_KEYS = Object.freeze(${derivedKeyListLiteral});\n`;
 
 fs.writeFileSync(outModulePath, moduleSource);
 

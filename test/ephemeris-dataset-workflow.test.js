@@ -103,6 +103,77 @@ test("rebuild and verify scripts run end-to-end against a fixture dataset", () =
   assert.equal(fs.existsSync(outputModule), true);
 });
 
+test("rebuild derives a parent-relative dataset (delta = body_ssb - parent_ssb)", async () => {
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "ephemeris-derived-"));
+  const dataDir = path.join(tmpRoot, "data");
+  const outputModule = path.join(tmpRoot, "generated-v1.js");
+  fs.mkdirSync(dataDir, { recursive: true });
+
+  const header = {
+    schemaVersion: "1.0.0",
+    ephemerisSource: { provider: "test", kernel: "test", retrievedOn: "2026-03-07" },
+    frame: "ECLIPJ2000",
+    origin: "SSB",
+    window: { startUtc: "1970-01-01T00:00:00Z", endUtc: "1970-01-02T00:00:00Z", days: 2 },
+    cadence: { step: "P1D", samplesPerBody: 2 },
+    targets: [
+      { key: "sun", naifId: 10 },
+      { key: "earth", naifId: 399 },
+      { key: "moon", naifId: 301, relativeTo: 399 }
+    ],
+    ordering: { primary: "epochUnixS", secondary: "naifId" }
+  };
+
+  // Interleaved per epoch in targets order: sun, earth, moon.
+  const fixtureRows = [
+    { epochUtc: "1970-01-01T00:00:00Z", epochUnixS: 0, naifId: 10, body: "sun", frame: "ECLIPJ2000", origin: "SSB", xAu: 0, yAu: 0, zAu: 0 },
+    { epochUtc: "1970-01-01T00:00:00Z", epochUnixS: 0, naifId: 399, body: "earth", frame: "ECLIPJ2000", origin: "SSB", xAu: 1, yAu: 2, zAu: 3 },
+    { epochUtc: "1970-01-01T00:00:00Z", epochUnixS: 0, naifId: 301, body: "moon", frame: "ECLIPJ2000", origin: "SSB", xAu: 1.1, yAu: 2.2, zAu: 3.3 },
+    { epochUtc: "1970-01-02T00:00:00Z", epochUnixS: 86400, naifId: 10, body: "sun", frame: "ECLIPJ2000", origin: "SSB", xAu: 0, yAu: 0, zAu: 0 },
+    { epochUtc: "1970-01-02T00:00:00Z", epochUnixS: 86400, naifId: 399, body: "earth", frame: "ECLIPJ2000", origin: "SSB", xAu: 4, yAu: 5, zAu: 6 },
+    { epochUtc: "1970-01-02T00:00:00Z", epochUnixS: 86400, naifId: 301, body: "moon", frame: "ECLIPJ2000", origin: "SSB", xAu: 4.4, yAu: 5.5, zAu: 6.6 }
+  ];
+
+  fs.writeFileSync(path.join(dataDir, "header.json"), `${JSON.stringify(header, null, 2)}\n`);
+  fs.writeFileSync(path.join(dataDir, "snapshots.ndjson"), fixtureRows.map((row) => JSON.stringify(row)).join("\n") + "\n");
+
+  const env = {
+    ...process.env,
+    EPHEMERIS_DATA_DIR: dataDir,
+    EPHEMERIS_OUTPUT_MODULE: outputModule,
+    EPHEMERIS_GENERATED_ON_UTC: "2026-03-07T00:00:00.000Z"
+  };
+
+  execFileSync("node", ["scripts/ephemeris/rebuild-v1.mjs"], { cwd: process.cwd(), env, stdio: "pipe" });
+  execFileSync("node", ["scripts/ephemeris/verify-v1.mjs"], { cwd: process.cwd(), env, stdio: "pipe" });
+
+  const generated = await import(`file://${outputModule}?t=${Date.now()}`);
+
+  // The Moon's PRIMARY blob stays barycentric (unchanged by derivation).
+  const decode = (b64) => {
+    const buf = Buffer.from(b64, "base64");
+    return new Float32Array(buf.buffer, buf.byteOffset, buf.byteLength / 4);
+  };
+  const moonPrimary = decode(generated.EPHEMERIS_V1_BODY_VECTORS_BASE64.moon);
+  assert.ok(Math.abs(moonPrimary[0] - 1.1) < 1e-6);
+  assert.ok(Math.abs(moonPrimary[1] - 2.2) < 1e-6);
+
+  // A separate derived dataset holds delta = moon_ssb - earth_ssb per epoch.
+  assert.deepEqual(generated.EPHEMERIS_V1_DERIVED_BODY_KEYS, ["moon"]);
+  assert.equal(generated.EPHEMERIS_V1_DERIVED.bodies.moon.relativeTo, 399);
+  assert.equal(generated.EPHEMERIS_V1_DERIVED.bodies.moon.rowCount, 2);
+
+  const derived = decode(generated.EPHEMERIS_V1_DERIVED_VECTORS_BASE64.moon);
+  // epoch 0: moon(1.1,2.2,3.3) - earth(1,2,3) = (0.1,0.2,0.3)
+  assert.ok(Math.abs(derived[0] - 0.1) < 1e-6);
+  assert.ok(Math.abs(derived[1] - 0.2) < 1e-6);
+  assert.ok(Math.abs(derived[2] - 0.3) < 1e-6);
+  // epoch 1: moon(4.4,5.5,6.6) - earth(4,5,6) = (0.4,0.5,0.6)
+  assert.ok(Math.abs(derived[3] - 0.4) < 1e-6);
+  assert.ok(Math.abs(derived[4] - 0.5) < 1e-6);
+  assert.ok(Math.abs(derived[5] - 0.6) < 1e-6);
+});
+
 test("refresh script rebuilds snapshots from cached Horizons payloads", () => {
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "ephemeris-refresh-"));
   const dataDir = path.join(tmpRoot, "data");

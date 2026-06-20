@@ -5,6 +5,7 @@ import {
   SUPPORTED_DATE_RANGE,
   assertDateInSupportedRange,
   bodyHeliocentricPositionAuAtInstant,
+  bodyEarthRelativePositionAuAtInstant,
   computeOrbitalTimelineState,
   daysBetweenUtc,
   earthHeliocentricPositionAuAtInstant,
@@ -173,6 +174,44 @@ test("bodyHeliocentricPositionAuAtInstant supports multiple planets", () => {
   assert.throws(
     () => bodyHeliocentricPositionAuAtInstant("nibiru", "1926-01-01T00:00:00Z"),
     /Unsupported body/
+  );
+});
+
+test("Moon resolves to a true barycentric position like every other body", () => {
+  const moon = bodyHeliocentricPositionAuAtInstant("moon", "1926-01-01T00:00:00Z");
+  assert.equal(moon.body, "moon");
+  assert.ok(Number.isFinite(moon.xAu));
+  assert.ok(Number.isFinite(moon.yAu));
+  assert.ok(Number.isFinite(moon.zAu));
+
+  // The Moon's barycentric position is ~1 AU from the origin (it shares Earth's
+  // heliocentric distance), NOT the tiny Earth-relative offset.
+  const radius = Math.hypot(moon.xAu, moon.yAu);
+  assert.ok(radius > 0.9 && radius < 1.1, `expected ~1 AU barycentric radius, got ${radius}`);
+});
+
+test("Moon Earth-relative offset matches moon_ssb - earth_ssb and is small", () => {
+  const date = "1926-01-01T00:00:00Z";
+  const moon = bodyHeliocentricPositionAuAtInstant("moon", date);
+  const earth = bodyHeliocentricPositionAuAtInstant("earth", date);
+  const delta = bodyEarthRelativePositionAuAtInstant("moon", date);
+
+  assert.equal(delta.body, "moon");
+  // The derived offset equals barycentric Moon minus barycentric Earth, within
+  // float32 round-off of differencing two ~1 AU magnitudes.
+  assert.ok(Math.abs(delta.xAu - (moon.xAu - earth.xAu)) < 1e-5);
+  assert.ok(Math.abs(delta.yAu - (moon.yAu - earth.yAu)) < 1e-5);
+  assert.ok(Math.abs(delta.zAu - (moon.zAu - earth.zAu)) < 1e-5);
+
+  // The Moon orbits Earth at ~0.0026 AU; the offset magnitude is tiny.
+  const magnitude = Math.hypot(delta.xAu, delta.yAu, delta.zAu);
+  assert.ok(magnitude > 0.002 && magnitude < 0.003, `expected ~0.0026 AU, got ${magnitude}`);
+});
+
+test("bodyEarthRelativePositionAuAtInstant rejects bodies without a derived dataset", () => {
+  assert.throws(
+    () => bodyEarthRelativePositionAuAtInstant("earth", "1926-01-01T00:00:00Z"),
+    /No derived/
   );
 });
 

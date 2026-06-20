@@ -60,6 +60,11 @@
     {
       "key": "pluto",
       "naifId": 999
+    },
+    {
+      "key": "moon",
+      "naifId": 301,
+      "relativeTo": 399
     }
   ],
   "ordering": {
