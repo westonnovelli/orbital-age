@@ -25,8 +25,10 @@ void main() {
   float dist = length(vUV);
   if (dist > 1.0) discard;
 
-  // Radial gradient: white core -> body color mid -> dimmed halo -> transparent
-  float core = 1.0 - smoothstep(0.0, 0.18, dist);
+  // Radial gradient: white core -> body color mid -> dimmed halo -> transparent.
+  // The core is stronger and tighter than before so the body reads as a crisp,
+  // distinct point over its own additive trail rather than washing out.
+  float core = 1.0 - smoothstep(0.0, 0.26, dist);
   float mid = 1.0 - smoothstep(0.05, 0.5, dist);
   float outer = 1.0 - smoothstep(0.15, 1.0, dist);
 
@@ -35,7 +37,18 @@ void main() {
   vec3 halo = uColor * 0.6;
 
   vec3 color = halo * outer + (body - halo) * mid + (white - body) * core;
+  // Lift the white core's contribution so the bright center stays legible even
+  // when sitting on top of the brightest (overlapping) parts of a trail.
+  color += white * core * 0.45;
   float alpha = outer;
+
+  // Thin dark contrast ring just inside the rim. Under additive blending we can't
+  // paint a darker color, so we instead carve an alpha gap there: the colored disc
+  // ends, a transparent annulus lets the dark background (or dim trail) show
+  // through, then the soft halo resumes — giving the marker a defined edge that
+  // separates it from a bright trail underneath. Centered at dist ~0.62.
+  float ring = 1.0 - smoothstep(0.0, 0.09, abs(dist - 0.62));
+  alpha *= 1.0 - 0.85 * ring;
 
   gl_FragColor = vec4(color * alpha, alpha);
 }
@@ -46,8 +59,9 @@ const QUAD_VERTS = new Float32Array([
   -1, -1,  1,  1, -1, 1
 ]);
 
-// Reproduces the previous baked-in Earth teal so existing appearance is preserved.
-const DEFAULT_COLOR = [0.18, 0.92, 0.64];
+// Fallback marker color when a body supplies none — tracks Earth's accurate blue
+// (the same triple used for Earth in the RENDERED_BODIES registry).
+const DEFAULT_COLOR = [0.3, 0.55, 0.85];
 
 export class BodyMarkerEntity {
   constructor({

@@ -44,7 +44,7 @@ const HUE_CYCLES_PER_ORBIT = 1;
 const RENDERED_BODIES = [
   {
     key: "mercury",
-    color: [0.78, 0.72, 0.66],
+    color: [0.62, 0.59, 0.55],
     size: 0.04,
     orbitRadiusAu: 0.47,
     trail: {
@@ -55,7 +55,7 @@ const RENDERED_BODIES = [
   },
   {
     key: "venus",
-    color: [0.98, 0.82, 0.45],
+    color: [0.96, 0.87, 0.62],
     size: 0.05,
     orbitRadiusAu: 0.73,
     trail: {
@@ -66,7 +66,7 @@ const RENDERED_BODIES = [
   },
   {
     key: "earth",
-    color: [0.18, 0.92, 0.64],
+    color: [0.3, 0.55, 0.85],
     size: 0.06,
     orbitRadiusAu: 1.02,
     trail: {
@@ -77,7 +77,7 @@ const RENDERED_BODIES = [
   },
   {
     key: "mars",
-    color: [0.86, 0.42, 0.28],
+    color: [0.78, 0.33, 0.2],
     size: 0.05,
     orbitRadiusAu: 1.67,
     trail: {
@@ -88,7 +88,7 @@ const RENDERED_BODIES = [
   },
   {
     key: "jupiter",
-    color: [0.85, 0.7, 0.5],
+    color: [0.83, 0.71, 0.55],
     size: 0.09,
     orbitRadiusAu: 5.46,
     trail: {
@@ -99,7 +99,7 @@ const RENDERED_BODIES = [
   },
   {
     key: "saturn",
-    color: [0.9, 0.82, 0.6],
+    color: [0.89, 0.8, 0.58],
     size: 0.08,
     orbitRadiusAu: 10.12,
     trail: {
@@ -110,7 +110,7 @@ const RENDERED_BODIES = [
   },
   {
     key: "uranus",
-    color: [0.6, 0.86, 0.9],
+    color: [0.62, 0.85, 0.86],
     size: 0.07,
     orbitRadiusAu: 20.1,
     trail: {
@@ -121,7 +121,7 @@ const RENDERED_BODIES = [
   },
   {
     key: "neptune",
-    color: [0.35, 0.5, 0.92],
+    color: [0.25, 0.4, 0.85],
     size: 0.07,
     orbitRadiusAu: 30.33,
     trail: {
@@ -132,7 +132,7 @@ const RENDERED_BODIES = [
   },
   {
     key: "pluto",
-    color: [0.82, 0.74, 0.68],
+    color: [0.75, 0.68, 0.6],
     size: 0.03,
     // Pluto's eccentric orbit reaches ~49 AU at aphelion; this drives Auto-fit
     // to expand the frame well beyond Neptune so Pluto stays on screen.
@@ -150,7 +150,7 @@ const RENDERED_BODIES = [
     // resolved render position plus that delta, exaggerated by `relativeScale` and
     // coupled to zoom. It has no trail and collapses onto Earth at Auto-fit.
     key: "moon",
-    color: [0.85, 0.86, 0.9],
+    color: [0.8, 0.8, 0.82],
     size: 0.02,
     parent: "earth",
     // Exaggeration of the ~0.0027 AU Earth-relative offset. With the zoom coupling
