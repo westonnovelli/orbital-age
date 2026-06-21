@@ -86,6 +86,52 @@ test("camera zoomBy multiplies current zoom and respects clamps", () => {
   assert.equal(camera.zoomBy(1000), 20); // clamped to max
 });
 
+test("unproject is the inverse of the projection at known points", () => {
+  const camera = new OrthoCamera2D({ halfHeight: 2 });
+  camera.setViewport(200, 100); // wide aspect: halfWidth = 2 * 2 = 4
+
+  // Round-trip a set of NDC points back to scene space, then forward again via
+  // the projection matrix, and confirm we land where we started.
+  const ndcPoints = [
+    [0, 0],
+    [1, 1],
+    [-1, -1],
+    [0.5, -0.25]
+  ];
+  for (const [ndcX, ndcY] of ndcPoints) {
+    const scene = camera.unproject(ndcX, ndcY);
+    const back = project(camera.matrix, scene.x, scene.y);
+    assert.ok(Math.abs(back.ndcX - ndcX) < 1e-6, `ndcX round-trips for ${ndcX}`);
+    assert.ok(Math.abs(back.ndcY - ndcY) < 1e-6, `ndcY round-trips for ${ndcY}`);
+  }
+
+  // Direct values at the framed edges: NDC top-right maps to (+halfWidth, +halfHeight).
+  const corner = camera.unproject(1, 1);
+  assert.ok(Math.abs(corner.x - 4) < 1e-6, "NDC right maps to +halfWidth");
+  assert.ok(Math.abs(corner.y - 2) < 1e-6, "NDC top maps to +halfHeight");
+});
+
+test("unproject honors setCenter and setZoom", () => {
+  const camera = new OrthoCamera2D({ halfHeight: 2, minHalfHeight: 0.3, maxHalfHeight: 10 });
+  camera.setViewport(100, 100); // square: halfWidth == halfHeight
+
+  camera.setCenter(3, -1);
+  camera.setZoom(5);
+
+  // NDC origin maps to the camera center.
+  const center = camera.unproject(0, 0);
+  assert.ok(Math.abs(center.x - 3) < 1e-6, "NDC origin x maps to centerX");
+  assert.ok(Math.abs(center.y - -1) < 1e-6, "NDC origin y maps to centerY");
+
+  // One halfHeight above center maps to centerY + halfHeight.
+  const top = camera.unproject(0, 1);
+  assert.ok(Math.abs(top.y - (-1 + 5)) < 1e-6, "NDC top maps to centerY + halfHeight");
+
+  // And the forward projection round-trips the off-center point.
+  const back = project(camera.matrix, center.x, center.y);
+  assert.ok(Math.abs(back.ndcX) < 1e-6 && Math.abs(back.ndcY) < 1e-6, "center round-trips to NDC origin");
+});
+
 test("setZoom clamps the zoom-cluster log range [0.3, 54.23]", () => {
   // The bottom-right zoom bar maps over [EARTH_MOON_HALF_HEIGHT, AUTO_FIT_HALF_HEIGHT];
   // the camera clamps setZoom to those framing limits.

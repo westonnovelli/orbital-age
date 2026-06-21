@@ -62,6 +62,23 @@ export class OrthoCamera2D {
     }
   }
 
+  // Map a normalized-device-coordinate point (NDC, each axis in [-1, 1]) back to
+  // a scene-space point — the inverse of the ortho projection in `matrix`. Used
+  // for click hit-testing: convert a canvas pixel to NDC, then to scene units,
+  // and compare against resolved body positions. The projection is affine (the
+  // bottom row is [0, 0, 1]) and axis-aligned, so the inverse is the closed form
+  //   sceneX = ndcX * halfWidth + centerX
+  //   sceneY = ndcY * halfHeight + centerY
+  // derived directly from createOrtho2D's scale/translation terms.
+  unproject(ndcX, ndcY) {
+    const aspect = this.viewportWidth / this.viewportHeight;
+    const halfWidth = this.halfHeight * aspect;
+    return {
+      x: Number(ndcX) * halfWidth + this.centerX,
+      y: Number(ndcY) * this.halfHeight + this.centerY
+    };
+  }
+
   #rebuild() {
     const aspect = this.viewportWidth / this.viewportHeight;
     const halfWidth = this.halfHeight * aspect;

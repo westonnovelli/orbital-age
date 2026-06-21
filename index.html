@@ -56,6 +56,16 @@
             <span class="bracket bracket--bl"></span>
             <span class="bracket bracket--br"></span>
           </div>
+          <!-- In-scene body labels: an absolutely-positioned, non-interactive
+               overlay layered above the canvas. Label elements are created in JS
+               and positioned each frame via transform-only writes; the container
+               never intercepts pointer events (clicks pass through to the canvas
+               for click-to-follow). Hidden until the Labels toggle is enabled. -->
+          <div
+            id="scene-labels"
+            class="scene-labels scene-labels--hidden"
+            aria-hidden="true"
+          ></div>
           <p id="webgl-message" class="message message--hidden" aria-live="polite"></p>
         </section>
 
@@ -77,6 +87,14 @@
               True scale: Off
             </button>
             <p class="scale-mode__note">Sizes all bodies to real radii and frames Earth. Scroll to zoom further.</p>
+            <button
+              id="labels-toggle"
+              type="button"
+              class="btn btn--ghost scale-mode__btn"
+              aria-pressed="false"
+            >
+              Labels: Off
+            </button>
           </div>
 
           <div class="zoom-cluster__bar" role="group" aria-label="Zoom level">

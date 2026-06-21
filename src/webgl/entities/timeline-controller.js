@@ -105,6 +105,13 @@ export class TimelineControllerEntity {
     // surfaced via getState().
     this.bodyTraveledKm = new Map();
 
+    // Per-frame resolved render position (scene units) for each body, keyed by
+    // body key. Populated in #applyToBodies() (the same positions handed to the
+    // markers, including the Moon's zoom-coupled exaggerated offset) so the app
+    // can hit-test scene clicks and project in-scene labels against live
+    // positions. Surfaced via getState() and the getBodyPositions() accessor.
+    this.bodyRenderPositions = new Map();
+
     this.totalDays = daysBetweenUtc(this.birthdayUtc, this.maxTimelineUtc);
     if (this.totalDays === 0) {
       this.playing = false;
@@ -240,8 +247,16 @@ export class TimelineControllerEntity {
       elapsedDays: this.timelineDays,
       totalDays: this.totalDays,
       playing: this.playing,
-      bodyTraveledKm: this.bodyTraveledKm
+      bodyTraveledKm: this.bodyTraveledKm,
+      bodyRenderPositions: this.bodyRenderPositions
     };
+  }
+
+  // Live render positions (scene units) for every body, keyed by body key. The
+  // same map is updated in place each frame by #applyToBodies(), so callers can
+  // read current positions for click hit-testing and label projection.
+  getBodyPositions() {
+    return this.bodyRenderPositions;
   }
 
   #instantFromTimelineDays() {
@@ -317,6 +332,7 @@ export class TimelineControllerEntity {
       body.marker.setPosition(position.xAu, position.yAu);
       body.trail?.setCursorForDay?.(this.timelineDays);
       resolved.set(body.key, { x: position.xAu, y: position.yAu });
+      this.bodyRenderPositions.set(body.key, { x: position.xAu, y: position.yAu });
       this.bodyTraveledKm.set(body.key, this.#traveledKmForBody(body.key, instant));
       if (this.trackBodyKey && body.key === this.trackBodyKey) {
         trackedPosition = { x: position.xAu, y: position.yAu };
@@ -352,6 +368,7 @@ export class TimelineControllerEntity {
       body.trail?.setRosetteScale?.(rosetteScale);
       body.trail?.setCursorForDay?.(this.timelineDays);
       resolved.set(body.key, { x, y });
+      this.bodyRenderPositions.set(body.key, { x, y });
       // The Moon's odometer is its true distance through space (barycentric path),
       // the same uniform metric as every other body — not the zoom-coupled render
       // offset and not its small path around Earth.

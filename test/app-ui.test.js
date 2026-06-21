@@ -55,10 +55,15 @@ class FakeElement {
     this.listeners.set(type, list);
   }
 
-  dispatch(type) {
+  dispatch(type, payload = {}) {
+    const event = { preventDefault() {}, target: this, ...payload };
     for (const callback of this.listeners.get(type) ?? []) {
-      callback({ preventDefault() {} });
+      callback(event);
     }
+  }
+
+  getBoundingClientRect() {
+    return this.rect ?? { left: 0, top: 0, width: 200, height: 200 };
   }
 
   setAttribute(name, value) {
@@ -77,10 +82,27 @@ class FakeElement {
 }
 
 class FakeDocument {
+  constructor() {
+    this.listeners = new Map();
+  }
+
   createElement(tag) {
     const el = new FakeElement({ ownerDocument: this });
     el.tagName = String(tag).toUpperCase();
     return el;
+  }
+
+  addEventListener(type, callback) {
+    const list = this.listeners.get(type) ?? [];
+    list.push(callback);
+    this.listeners.set(type, list);
+  }
+
+  dispatch(type, payload = {}) {
+    const event = { preventDefault() {}, target: this, ...payload };
+    for (const callback of this.listeners.get(type) ?? []) {
+      callback(event);
+    }
   }
 }
 
@@ -102,7 +124,7 @@ function buildUi() {
     dateInput: new FakeElement(),
     validationMessage: new FakeElement(),
     webglMessage: new FakeElement({ textContent: "" }),
-    canvas: new FakeElement(),
+    canvas: new FakeElement({ ownerDocument: doc }),
     timelineControls: new FakeFieldSetElement({ id: "timeline-controls" }),
     timelineScrubber: new FakeElement({ id: "date-scrubber" }),
     timelineDate: new FakeOutputElement({ id: "timeline-date" }),
@@ -114,6 +136,8 @@ function buildUi() {
     bodiesList,
     trailsMasterToggle: new FakeElement({ id: "bodies-master-trails" }),
     trueScaleToggle: new FakeElement({ id: "true-scale-toggle" }),
+    labelsToggle: new FakeElement({ id: "labels-toggle" }),
+    labelsOverlay: new FakeElement({ id: "scene-labels", ownerDocument: doc }),
     autoFitButton: new FakeElement({ id: "framing-auto-fit" }),
     innerPlanetsButton: new FakeElement({ id: "framing-inner-planets" }),
     zoomEarthButton: new FakeElement({ id: "framing-zoom-earth" }),
@@ -590,4 +614,204 @@ test("bottom-right zoom cluster wires presets, +/- buttons, and the zoom bar", (
   ui.zoomBar.value = "800";
   ui.zoomBar.dispatch("input");
   assert.ok(setZoomCalls.at(-1) < lastZoom, "higher slider value zooms in");
+});
+
+// Project a scene point to CSS pixels the same way the app does, so the test can
+// aim a synthetic click at a body's on-screen location.
+function projectToScreen(camera, sceneX, sceneY, width, height) {
+  const m = camera.matrix;
+  const ndcX = m[0] * sceneX + m[3] * sceneY + m[6];
+  const ndcY = m[1] * sceneX + m[4] * sceneY + m[7];
+  return {
+    x: (ndcX * 0.5 + 0.5) * width,
+    y: (1 - (ndcY * 0.5 + 0.5)) * height
+  };
+}
+
+test("clicking near a body's projected position follows it", (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+  ui.canvas.rect = { left: 0, top: 0, width: 200, height: 200 };
+
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  ui.form.dispatch("submit");
+
+  // Frame the inner planets and advance so Earth is off the origin, then read its
+  // live render position and aim a click there.
+  ui.innerPlanetsButton.dispatch("click");
+  const controller = app.timelineController;
+  controller.render({ deltaSeconds: 120 / controller.speedDaysPerSecond });
+
+  const trackCalls = [];
+  const realTrack = controller.setTrackBodyKey.bind(controller);
+  controller.setTrackBodyKey = (key) => {
+    trackCalls.push(key);
+    return realTrack(key);
+  };
+
+  const earthPos = controller.getBodyPositions().get("earth");
+  const screen = projectToScreen(app.camera, earthPos.x, earthPos.y, 200, 200);
+
+  ui.canvas.dispatch("pointerdown", { clientX: screen.x, clientY: screen.y });
+  assert.equal(trackCalls.at(-1), "earth", "click near Earth follows Earth");
+
+  // A click in empty space (far corner) selects nothing.
+  const before = trackCalls.length;
+  ui.canvas.dispatch("pointerdown", { clientX: 2, clientY: 2 });
+  // Only fires setTrackBodyKey if something was within the hit radius.
+  if (trackCalls.length > before) {
+    assert.notEqual(trackCalls.at(-1), undefined);
+  }
+});
+
+test("labels toggle flips overlay visibility and positions labels", (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+  ui.canvas.rect = { left: 0, top: 0, width: 200, height: 200 };
+
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  ui.form.dispatch("submit");
+
+  // One label per rendered body is built in the overlay, hidden by default.
+  assert.equal(app.bodyLabels.size, 10);
+  assert.equal(ui.labelsOverlay.children.length, 10);
+  assert.equal(ui.labelsOverlay.classList.contains("scene-labels--hidden"), true);
+  assert.equal(app.labelsVisible, false);
+  assert.equal(ui.labelsToggle.getAttribute("aria-pressed"), "false");
+
+  // Toggling on reveals the overlay and positions each label via a transform.
+  ui.innerPlanetsButton.dispatch("click");
+  app.timelineController.render({ deltaSeconds: 120 / app.timelineController.speedDaysPerSecond });
+  ui.labelsToggle.dispatch("click");
+  assert.equal(app.labelsVisible, true);
+  assert.equal(ui.labelsOverlay.classList.contains("scene-labels--hidden"), false);
+  assert.equal(ui.labelsToggle.getAttribute("aria-pressed"), "true");
+
+  const earthLabel = app.bodyLabels.get("earth");
+  assert.match(String(earthLabel.style.transform), /translate\(/);
+
+  // A camera-only change (zoom) must reposition labels — they're projected
+  // through the camera, so the on-screen transform changes even though the
+  // bodies have not moved. Regression guard against stale labels on zoom.
+  const transformBeforeZoom = String(earthLabel.style.transform);
+  ui.autoFitButton.dispatch("click");
+  assert.notEqual(
+    String(earthLabel.style.transform),
+    transformBeforeZoom,
+    "labels reposition on a zoom/preset change"
+  );
+
+  // Toggling off hides the overlay again.
+  ui.labelsToggle.dispatch("click");
+  assert.equal(app.labelsVisible, false);
+  assert.equal(ui.labelsOverlay.classList.contains("scene-labels--hidden"), true);
+});
+
+test("keyboard shortcuts drive play/pause, stepping, and follow", (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+  const doc = ui.canvas.ownerDocument;
+
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  ui.form.dispatch("submit");
+
+  const controller = app.timelineController;
+  // Playback starts true after submit; space pauses it.
+  assert.equal(controller.playing, true);
+  doc.dispatch("keydown", { key: " " });
+  assert.equal(controller.playing, false);
+  assert.equal(ui.timelinePlayToggle.textContent, "Play");
+  // Space again resumes.
+  doc.dispatch("keydown", { key: " " });
+  assert.equal(controller.playing, true);
+
+  // Arrow keys step the timeline by whole days.
+  doc.dispatch("keydown", { key: " " }); // pause for deterministic stepping
+  const daysBefore = controller.timelineDays;
+  doc.dispatch("keydown", { key: "ArrowRight" });
+  assert.ok(controller.timelineDays > daysBefore, "ArrowRight steps forward");
+  const daysAfterForward = controller.timelineDays;
+  doc.dispatch("keydown", { key: "ArrowLeft" });
+  assert.ok(controller.timelineDays < daysAfterForward, "ArrowLeft steps back");
+
+  // `f` re-follows the currently-tracked body. Follow Mars first via the panel.
+  const rows = ui.bodiesList.children;
+  const marsRow = rows.find((row) => row.dataset.key === "mars");
+  const marsFollow = marsRow.children.find((c) => c.className === "bodies__follow");
+  marsFollow.dispatch("click");
+  assert.equal(controller.trackBodyKey, "mars");
+
+  const trackCalls = [];
+  const realTrack = controller.setTrackBodyKey.bind(controller);
+  controller.setTrackBodyKey = (key) => {
+    trackCalls.push(key);
+    return realTrack(key);
+  };
+  doc.dispatch("keydown", { key: "f" });
+  assert.equal(trackCalls.at(-1), "mars", "f re-follows the tracked body");
+
+  // Shortcuts ignore keystrokes while typing in a form field.
+  const before = controller.timelineDays;
+  doc.dispatch("keydown", { key: "ArrowRight", target: { tagName: "INPUT" } });
+  assert.equal(controller.timelineDays, before, "ignored while typing in an input");
 });

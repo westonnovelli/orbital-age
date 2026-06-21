@@ -44,7 +44,9 @@ const app = new OrbitalApp({
   bodiesPanel: document.querySelector(".panel--bodies"),
   bodiesList: document.querySelector("#bodies-list"),
   trailsMasterToggle: document.querySelector("#bodies-master-trails"),
-  trueScaleToggle: document.querySelector("#true-scale-toggle")
+  trueScaleToggle: document.querySelector("#true-scale-toggle"),
+  labelsToggle: document.querySelector("#labels-toggle"),
+  labelsOverlay: document.querySelector("#scene-labels")
 });
 
 app.initialize();

@@ -245,6 +245,15 @@ const ZOOM_BAR_STEPS = 1000;
 // <1 zoom in; the camera clamps the result to the framing limits.
 const ZOOM_WHEEL_STEP = 1.1;
 
+// Click hit-test tolerance in CSS pixels. A scene click selects the nearest body
+// marker whose projected screen position is within this radius of the pointer, so
+// small/overlapping markers stay clickable without demanding pixel precision.
+const CLICK_HIT_RADIUS_PX = 28;
+
+// Days stepped per arrow-key press (and shift-arrow for a larger jump).
+const KEYBOARD_STEP_DAYS = 1;
+const KEYBOARD_STEP_DAYS_LARGE = 30;
+
 // Key of the body the "Zoom to Earth" preset tracks.
 const TRACKED_BODY_KEY = "earth";
 
@@ -384,6 +393,8 @@ export class OrbitalApp {
     bodiesList,
     trailsMasterToggle,
     trueScaleToggle,
+    labelsToggle,
+    labelsOverlay,
     root
   }) {
     this.root = root;
@@ -447,6 +458,17 @@ export class OrbitalApp {
     // exaggeratedScale }, so the Moon's scale can be resolved from a single source
     // of truth and its row checkbox disabled while True scale forces ×1.
     this.exaggerationControls = new Map();
+    // In-scene body labels: a toggle (button, aria-pressed) that shows/hides an
+    // absolutely-positioned HTML overlay layered above the canvas. One label
+    // element per body is created once after submit and stored by key; their
+    // screen positions are synced from projected scene positions inside the
+    // per-frame UI path using transform-only writes (no layout thrash). Default
+    // off so first-run is unchanged.
+    this.labelsToggle = labelsToggle;
+    this.labelsOverlay = labelsOverlay;
+    this.bodyLabels = new Map();
+    this.labelsVisible = false;
+
     // Tracks which framing preset is active ("auto-fit" | "inner" | "earth" |
     // "origin") so the buttons can reflect state and zooming toward Earth implies
     // tracking. A manual zoom (wheel/bar/+-) clears it to null (no active preset).
@@ -477,6 +499,7 @@ export class OrbitalApp {
     this.#bindFramingControls();
     this.#bindTrailControls();
     this.#bindScaleControls();
+    this.#bindSceneInteraction();
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       this.#handleRenderSubmit();
@@ -569,6 +592,7 @@ export class OrbitalApp {
     this.#applyFraming("auto-fit");
 
     this.#buildBodiesPanel();
+    this.#buildBodyLabels();
     this.#syncMasterTrailToggle();
     // Re-apply the current scale mode so a re-render preserves True scale (fresh
     // markers default to their dramatized size; the Moon resets to ×40).
@@ -780,6 +804,7 @@ export class OrbitalApp {
     this.timelineController?.refresh?.();
     this.#syncTrueScaleButton();
     this.#syncZoomBar();
+    this.#updateBodyLabels();
   }
 
   // Single source of truth for a parented body's effective relativeScale: True
@@ -802,6 +827,220 @@ export class OrbitalApp {
     }
     this.trueScaleToggle.setAttribute("aria-pressed", String(this.trueScale));
     this.trueScaleToggle.textContent = this.trueScale ? "True scale: On" : "True scale: Off";
+  }
+
+  // Build one in-scene label element per rendered body inside the overlay,
+  // stored by key for per-frame positioning. Idempotent — rebuilt each submit so
+  // a fresh journey resets it. The overlay itself is non-interactive
+  // (pointer-events: none) so it never intercepts canvas clicks/zoom.
+  #buildBodyLabels() {
+    this.bodyLabels = new Map();
+    if (!this.labelsOverlay) {
+      return;
+    }
+
+    this.labelsOverlay.textContent = "";
+    const doc = this.labelsOverlay.ownerDocument ?? globalThis.document;
+    if (!doc || typeof doc.createElement !== "function") {
+      return;
+    }
+
+    for (const config of RENDERED_BODIES) {
+      const label = doc.createElement("span");
+      label.className = "scene-label";
+      label.dataset.key = config.key;
+      label.textContent = formatBodyName(config.key);
+      label.setAttribute("aria-hidden", "true");
+      this.labelsOverlay.append(label);
+      this.bodyLabels.set(config.key, label);
+    }
+
+    // Reflect the current visibility (default hidden) on the overlay container.
+    this.#applyLabelsVisible(this.labelsVisible);
+  }
+
+  // Bind the in-scene interaction layer: click-to-follow a marker, the labels
+  // toggle, and keyboard shortcuts (space / arrows / `f`). All controller-driven
+  // handlers guard on `this.timelineController` so they no-op before a journey.
+  #bindSceneInteraction() {
+    this.canvas?.addEventListener("pointerdown", (event) => {
+      this.#handleScenePointer(event);
+    });
+
+    this.labelsToggle?.addEventListener("click", () => {
+      this.#applyLabelsVisible(!this.labelsVisible);
+    });
+    this.#syncLabelsButton();
+
+    // Keyboard shortcuts are document-level so they work without focusing the
+    // canvas; ignore them while typing in a form field so the date input etc.
+    // keep normal behavior.
+    const doc = this.canvas?.ownerDocument ?? globalThis.document;
+    doc?.addEventListener?.("keydown", (event) => {
+      this.#handleKeydown(event);
+    });
+  }
+
+  // Convert a canvas pointer event to scene space and follow the nearest body
+  // marker within the hit radius. Recenter-only (reuses follow), so zoom is
+  // preserved exactly like the Bodies-panel follow control.
+  #handleScenePointer(event) {
+    if (!this.timelineController || !this.canvas) {
+      return;
+    }
+
+    const key = this.#bodyAtPointer(event);
+    if (key) {
+      this.timelineController.setTrackBodyKey(key);
+    }
+  }
+
+  // Return the body key whose live render position projects closest to the
+  // pointer (within CLICK_HIT_RADIUS_PX), or null if none is close enough.
+  #bodyAtPointer(event) {
+    const rect = this.canvas.getBoundingClientRect?.() ?? { left: 0, top: 0, width: 1, height: 1 };
+    const width = rect.width || 1;
+    const height = rect.height || 1;
+    const px = Number(event.clientX) - rect.left;
+    const py = Number(event.clientY) - rect.top;
+    if (!Number.isFinite(px) || !Number.isFinite(py)) {
+      return null;
+    }
+
+    const positions = this.timelineController.getBodyPositions?.();
+    if (!positions || positions.size === 0) {
+      return null;
+    }
+
+    let bestKey = null;
+    let bestDistSq = (CLICK_HIT_RADIUS_PX) ** 2;
+    for (const [key, pos] of positions) {
+      const screen = this.#sceneToScreen(pos.x, pos.y, width, height);
+      const dx = screen.x - px;
+      const dy = screen.y - py;
+      const distSq = dx * dx + dy * dy;
+      if (distSq <= bestDistSq) {
+        bestDistSq = distSq;
+        bestKey = key;
+      }
+    }
+    return bestKey;
+  }
+
+  // Project a scene-space point to CSS-pixel coordinates within the canvas. The
+  // forward of camera.unproject: scene -> NDC via the projection matrix, then
+  // NDC -> pixels (y flipped, since NDC y points up and pixels point down).
+  #sceneToScreen(sceneX, sceneY, width, height) {
+    const m = this.camera.matrix;
+    const ndcX = m[0] * sceneX + m[3] * sceneY + m[6];
+    const ndcY = m[1] * sceneX + m[4] * sceneY + m[7];
+    return {
+      x: (ndcX * 0.5 + 0.5) * width,
+      y: (1 - (ndcY * 0.5 + 0.5)) * height,
+      ndcX,
+      ndcY
+    };
+  }
+
+  // Show/hide the in-scene labels overlay and reflect the state on the toggle.
+  #applyLabelsVisible(visible) {
+    this.labelsVisible = Boolean(visible);
+    if (this.labelsOverlay) {
+      this.labelsOverlay.classList.toggle("scene-labels--hidden", !this.labelsVisible);
+    }
+    this.#syncLabelsButton();
+    if (this.labelsVisible) {
+      // Position immediately so labels appear at the right spot on toggle-on,
+      // not only after the next playback frame.
+      this.#updateBodyLabels();
+    }
+  }
+
+  #syncLabelsButton() {
+    if (!this.labelsToggle) {
+      return;
+    }
+    this.labelsToggle.setAttribute("aria-pressed", String(this.labelsVisible));
+    this.labelsToggle.textContent = this.labelsVisible ? "Labels: On" : "Labels: Off";
+  }
+
+  // Sync each label's screen position from the body's live render position using
+  // transform-only writes (translate) so the per-frame update stays on the GPU
+  // compositor and never triggers layout. Called from the per-frame UI path.
+  #updateBodyLabels() {
+    if (!this.labelsVisible || !this.timelineController || this.bodyLabels.size === 0) {
+      return;
+    }
+    const positions = this.timelineController.getBodyPositions?.();
+    if (!positions) {
+      return;
+    }
+
+    const rect = this.canvas?.getBoundingClientRect?.() ?? { width: 1, height: 1 };
+    const width = rect.width || 1;
+    const height = rect.height || 1;
+
+    for (const [key, label] of this.bodyLabels) {
+      const pos = positions.get(key);
+      if (!pos) {
+        continue;
+      }
+      const screen = this.#sceneToScreen(pos.x, pos.y, width, height);
+      // Hide labels for bodies projected outside the viewport so off-screen
+      // names don't pile up at the edges.
+      const onScreen =
+        screen.ndcX >= -1 && screen.ndcX <= 1 && screen.ndcY >= -1 && screen.ndcY <= 1;
+      label.style.display = onScreen ? "" : "none";
+      label.style.transform = `translate(${screen.x}px, ${screen.y}px)`;
+    }
+  }
+
+  // Keyboard shortcuts: space = play/pause, arrows = step, `f` = follow the
+  // currently-tracked body (refocus the camera on it). Guards on the controller
+  // and ignores keystrokes while a form control is focused.
+  #handleKeydown(event) {
+    if (!this.timelineController) {
+      return;
+    }
+    const target = event.target;
+    const tag = target?.tagName ? String(target.tagName).toUpperCase() : "";
+    if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA" || target?.isContentEditable) {
+      return;
+    }
+
+    const step = event.shiftKey ? KEYBOARD_STEP_DAYS_LARGE : KEYBOARD_STEP_DAYS;
+    switch (event.key) {
+      case " ":
+      case "Spacebar": {
+        event.preventDefault?.();
+        const playing = this.timelineController.togglePlaying();
+        this.#setPlayButtonState(playing);
+        break;
+      }
+      case "ArrowRight":
+      case "ArrowUp":
+        event.preventDefault?.();
+        this.timelineController.stepDays(step);
+        break;
+      case "ArrowLeft":
+      case "ArrowDown":
+        event.preventDefault?.();
+        this.timelineController.stepDays(-step);
+        break;
+      case "f":
+      case "F": {
+        event.preventDefault?.();
+        // Re-follow the currently-tracked body (snap the camera back onto it);
+        // no-op when nothing is tracked.
+        const tracked = this.timelineController.trackBodyKey;
+        if (tracked) {
+          this.timelineController.setTrackBodyKey(tracked);
+        }
+        break;
+      }
+      default:
+        break;
+    }
   }
 
   // Wire the header master "all trails" toggle. Per-row toggles are wired in
@@ -960,6 +1199,9 @@ export class OrbitalApp {
     this.timelineController?.refresh?.();
     this.#updateFramingButtons();
     this.#syncZoomBar();
+    // Labels are projected from scene positions through the camera, so a zoom
+    // change moves them on screen even though the bodies haven't moved.
+    this.#updateBodyLabels();
   }
 
   // Apply a framing preset:
@@ -991,6 +1233,9 @@ export class OrbitalApp {
 
     this.#updateFramingButtons();
     this.#syncZoomBar();
+    // Reposition labels: presets change zoom and/or center, moving each body's
+    // projected screen position even when the timeline is paused.
+    this.#updateBodyLabels();
   }
 
   #updateFramingButtons() {
@@ -1062,6 +1307,7 @@ export class OrbitalApp {
     this.#setPlayButtonState(state.playing);
 
     this.#updateBodyDistances(state);
+    this.#updateBodyLabels();
 
     if (this.hudOrbits) {
       this.hudOrbits.textContent = `ORBITS ${orbitsCompleted(state.elapsedDays)}`;

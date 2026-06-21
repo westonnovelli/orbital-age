@@ -385,6 +385,45 @@ body {
   color: var(--text-dim, rgba(220, 235, 245, 0.55));
 }
 
+/* In-scene body labels overlay. Fills the viewport above the canvas but never
+   intercepts pointer events (clicks pass through for click-to-follow). Each
+   label is positioned per frame via transform translate only — no layout writes
+   — so it stays on the compositor and never causes jank. */
+.scene-labels {
+  position: absolute;
+  inset: 0;
+  z-index: 22;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.scene-labels--hidden {
+  display: none;
+}
+
+.scene-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Anchor the label just above-right of the body and keep transform-only
+     updates: the per-axis offset is folded into the translate written each
+     frame, so this base transform only sets the will-change hint. */
+  transform: translate(0, 0);
+  will-change: transform;
+  margin: 0;
+  padding: 0.1rem 0.4rem;
+  font-family: var(--font-headline);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--fg, #fff);
+  background: var(--glass, rgba(10, 9, 16, 0.55));
+  border: 1px solid var(--outline-soft, rgba(255, 255, 255, 0.06));
+  border-radius: 2px;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+}
+
 .scanline {
   position: absolute;
   left: 0;
