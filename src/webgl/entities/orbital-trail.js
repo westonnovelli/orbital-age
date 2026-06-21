@@ -25,7 +25,8 @@ export class OrbitalTrailEntity {
     historyDays = 540,
     minSampleDistance = 0.002,
     minDayDelta = 0.1,
-    minFade = 0.05
+    minFade = 0.05,
+    visible = true
   } = {}) {
     this.radiusX = radiusX;
     this.radiusY = radiusY;
@@ -64,10 +65,27 @@ export class OrbitalTrailEntity {
     this.samples = [];
     this.cursorIndex = 0;
     this.precomputed = false;
+    // For parented (rosette) trails: per-sample base components
+    // {day, px, py, ox, oy} where (px,py) is the parent's position and (ox,oy) is
+    // the parent-relative offset at coupling 1. Live world positions are
+    // (px + ox*rosetteScale, py + oy*rosetteScale), recomputed when the zoom
+    // coupling changes so the rosette breathes with zoom like the marker does.
+    this.parentedBase = null;
+    this.rosetteScale = 1;
     this.vertices = new Float32Array(this.maxSamples * 4);
     this.dirty = false;
     this.primitive = null;
     this.buffer = null;
+    // Per-trail visibility flag. When false, render() short-circuits so the
+    // trail's geometry is retained (cursor/scrubbing still work) but nothing is
+    // drawn. Wired to the Bodies-panel per-row and master toggles.
+    this.visible = visible !== false;
+  }
+
+  // Toggle whether this trail draws. Anything other than an explicit `false`
+  // keeps it visible (so `setVisible(undefined)` is a no-op show).
+  setVisible(visible) {
+    this.visible = visible !== false;
   }
 
   init(gl) {
@@ -121,6 +139,94 @@ export class OrbitalTrailEntity {
     this.cursorIndex = samples.length;
     this.precomputed = true;
     this.dirty = true;
+  }
+
+  /**
+   * Pre-compute a parented (rosette) trail from day 0 to totalDays. Unlike
+   * precomputeTrail, the world position of each sample depends on the live zoom
+   * coupling: this stores the parent position and the parent-relative offset (at
+   * coupling 1) separately so the rosette can be re-scaled cheaply via
+   * setRosetteScale() without re-sampling the ephemeris.
+   * @param {number} totalDays
+   * @param {(day: number) => {px: number, py: number, ox: number, oy: number}} baseAtDay
+   *   - px,py: parent position; ox,oy: parent-relative offset at coupling 1.
+   */
+  precomputeParentedTrail(totalDays, baseAtDay) {
+    const step = Math.max(this.minDayDelta, 0.01);
+    const base = [];
+
+    const pushBase = (day) => {
+      const b = baseAtDay(day);
+      base.push({
+        day,
+        px: b.px * this.radiusX,
+        py: b.py * this.radiusY,
+        ox: b.ox * this.radiusX,
+        oy: b.oy * this.radiusY
+      });
+    };
+
+    for (let day = 0; day <= totalDays; day += step) {
+      const b = baseAtDay(day);
+      const px = b.px * this.radiusX;
+      const py = b.py * this.radiusY;
+      const ox = b.ox * this.radiusX;
+      const oy = b.oy * this.radiusY;
+      const last = base[base.length - 1];
+
+      if (last) {
+        // Filter on world positions at the reference scale (coupling 1) so the
+        // sample density reflects the fully-separated rosette.
+        const dayDelta = day - last.day;
+        const distance = Math.hypot(px + ox - (last.px + last.ox), py + oy - (last.py + last.oy));
+        if (dayDelta < this.minDayDelta && distance < this.minSampleDistance) {
+          continue;
+        }
+      }
+
+      base.push({ day, px, py, ox, oy });
+    }
+
+    const lastDay = base[base.length - 1]?.day;
+    if (lastDay === undefined || lastDay < totalDays) {
+      pushBase(totalDays);
+    }
+
+    if (base.length > this.maxSamples) {
+      base.splice(0, base.length - this.maxSamples);
+    }
+
+    this.parentedBase = base;
+    this.precomputed = true;
+    this.#applyRosetteScale();
+  }
+
+  // Rebuild this.samples from parentedBase at the current rosetteScale.
+  #applyRosetteScale() {
+    const base = this.parentedBase;
+    if (!base) {
+      return;
+    }
+    const scale = this.rosetteScale;
+    this.samples = base.map((s) => ({ day: s.day, x: s.px + s.ox * scale, y: s.py + s.oy * scale }));
+    this.cursorIndex = this.samples.length;
+    this.dirty = true;
+  }
+
+  // Set the rosette exaggeration scale (the live zoom-coupling ratio) for a
+  // parented trail, recomputing sample positions while preserving the current
+  // cursor day. No-op for non-parented trails or unchanged scales.
+  setRosetteScale(scale) {
+    const next = Number(scale);
+    if (!this.parentedBase || !Number.isFinite(next) || next === this.rosetteScale) {
+      return;
+    }
+    const cursorDay = this.samples[this.cursorIndex - 1]?.day;
+    this.rosetteScale = next;
+    this.#applyRosetteScale();
+    if (cursorDay !== undefined) {
+      this.setCursorForDay(cursorDay);
+    }
   }
 
   /**
@@ -184,7 +290,7 @@ export class OrbitalTrailEntity {
 
   render({ gl, camera }) {
     const drawCount = this.precomputed ? this.cursorIndex : this.samples.length;
-    if (!this.primitive || !this.buffer || drawCount < 2) {
+    if (!this.visible || !this.primitive || !this.buffer || drawCount < 2) {
       return;
     }
 

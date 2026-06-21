@@ -111,8 +111,10 @@ function buildUi() {
     speedSelect: new FakeElement({ id: "playback-speed" }),
     timelineStatus: new FakeElement({ id: "timeline-status" }),
     bodiesPanel: new FakeElement(),
-    bodiesList
+    bodiesList,
+    trailsMasterToggle: new FakeElement({ id: "bodies-master-trails" })
   };
+  ui.trailsMasterToggle.checked = true;
 
   ui.webglMessage.classList = new FakeClassList(["message--hidden"]);
   ui.speedSelect.value = "30";
@@ -276,4 +278,65 @@ test("submit builds one Bodies-panel row per body and writes distance travelled"
   const moonDistance = moonRow.children.find((c) => c.className === "bodies__distance");
   assert.ok(/ km$/.test(moonDistance.textContent), `moon distance in km: ${moonDistance.textContent}`);
   assert.ok(Number.parseFloat(moonDistance.textContent) > 0);
+});
+
+test("per-row trail toggle drives the matching trail and master fans out to all", (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  ui.form.dispatch("submit");
+
+  // Earth has a trail, so its row carries a trail-toggle checkbox.
+  const rows = ui.bodiesList.children;
+  const earthRow = rows.find((row) => row.dataset.key === "earth");
+  const earthToggle = earthRow.children.find((c) => c.className === "bodies__trail-toggle");
+  assert.ok(earthToggle, "expected a trail toggle in earth's row");
+
+  const earthTrail = app.bodyTrails.get("earth");
+  assert.ok(earthTrail, "expected an earth trail entity");
+  assert.equal(earthTrail.visible, true);
+
+  // Unchecking the row toggle hides only that trail.
+  earthToggle.checked = false;
+  earthToggle.dispatch("change");
+  assert.equal(earthTrail.visible, false);
+  assert.equal(app.bodyTrails.get("mars").visible, true, "other trails unaffected");
+
+  // The master toggle fans out: unchecking hides every trail.
+  ui.trailsMasterToggle.checked = false;
+  ui.trailsMasterToggle.dispatch("change");
+  for (const trail of app.bodyTrails.values()) {
+    assert.equal(trail.visible, false);
+  }
+  // Per-row checkboxes track the master state.
+  assert.equal(earthToggle.checked, false);
+
+  // Re-checking the master shows every trail again.
+  ui.trailsMasterToggle.checked = true;
+  ui.trailsMasterToggle.dispatch("change");
+  for (const trail of app.bodyTrails.values()) {
+    assert.equal(trail.visible, true);
+  }
+  assert.equal(earthToggle.checked, true);
 });

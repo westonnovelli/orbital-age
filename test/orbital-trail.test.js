@@ -214,6 +214,44 @@ test("precomputeTrail makes addSample a no-op", () => {
   assert.equal(trail.samples.length, countAfterPrecompute, "addSample should be no-op when precomputed");
 });
 
+test("parented rosette trail re-scales with the zoom coupling", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 1000,
+    historyDays: 0,
+    minDayDelta: 0,
+    minSampleDistance: 0
+  });
+
+  // Parent fixed at (10, 0); the offset (at coupling 1) traces a unit circle.
+  const PARENT_X = 10;
+  trail.precomputeParentedTrail(6, (day) => ({
+    px: PARENT_X,
+    py: 0,
+    ox: Math.cos(day),
+    oy: Math.sin(day)
+  }));
+
+  // Default scale is 1: each sample sits at parent + full offset.
+  const atScale1 = trail.samples.map((s) => ({ x: s.x, y: s.y }));
+  assert.ok(atScale1.length > 2);
+
+  // Halving the coupling halves the offset from the parent (parent term unchanged).
+  trail.setRosetteScale(0.5);
+  trail.samples.forEach((s, i) => {
+    assert.ok(Math.abs(s.x - PARENT_X - (atScale1[i].x - PARENT_X) * 0.5) < 1e-9);
+    assert.ok(Math.abs(s.y - atScale1[i].y * 0.5) < 1e-9);
+  });
+
+  // At coupling 0 the rosette collapses onto the parent.
+  trail.setRosetteScale(0);
+  for (const s of trail.samples) {
+    assert.ok(Math.abs(s.x - PARENT_X) < 1e-9 && Math.abs(s.y) < 1e-9);
+  }
+
+  // Re-scaling preserves the sample count (cursor/scrubbing stay valid).
+  assert.equal(trail.samples.length, atScale1.length);
+});
+
 test("precomputeTrail applies spatial and temporal filters", () => {
   // With minDayDelta=5 and minSampleDistance=0.5, a slowly moving object
   // should have many samples filtered out by BOTH thresholds
@@ -473,6 +511,41 @@ test("render sets additive blend then restores the renderer default", () => {
     sfactor: gl.SRC_ALPHA,
     dfactor: gl.ONE_MINUS_SRC_ALPHA
   });
+});
+
+test("setVisible(false) skips drawing; re-enabling draws again", () => {
+  const trail = new OrbitalTrailEntity({
+    maxSamples: 10,
+    historyDays: 0,
+    minDayDelta: 0,
+    minSampleDistance: 0
+  });
+  trail.addSample(0, 0, 0);
+  trail.addSample(1, 1, 0);
+
+  const gl = makeStubGL();
+  trail.init(gl);
+
+  // Visible by default: render issues a draw.
+  trail.render({ gl, camera: { matrix: new Float32Array(9) } });
+  assert.equal(gl._calls.filter((c) => c.fn === "drawArrays").length, 1);
+
+  // Hidden: render short-circuits, no new draw.
+  trail.setVisible(false);
+  assert.equal(trail.visible, false);
+  trail.render({ gl, camera: { matrix: new Float32Array(9) } });
+  assert.equal(gl._calls.filter((c) => c.fn === "drawArrays").length, 1);
+
+  // Re-enabled: draws once more.
+  trail.setVisible(true);
+  assert.equal(trail.visible, true);
+  trail.render({ gl, camera: { matrix: new Float32Array(9) } });
+  assert.equal(gl._calls.filter((c) => c.fn === "drawArrays").length, 2);
+});
+
+test("trail visible defaults to true and honors the constructor option", () => {
+  assert.equal(new OrbitalTrailEntity().visible, true);
+  assert.equal(new OrbitalTrailEntity({ visible: false }).visible, false);
 });
 
 test("hue cycle is off by default (solid color) and configurable", () => {

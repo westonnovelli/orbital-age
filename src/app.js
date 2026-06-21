@@ -158,10 +158,22 @@ const RENDERED_BODIES = [
     // "Zoom to Earth" preset: ~0.0027 AU × 40 ≈ 0.11 scene units of separation,
     // comfortably framed inside a 0.3 halfHeight. Tunable polish knob.
     relativeScale: 40,
-    // No orbit trail for the Moon (an Earth-relative trail is a tight rosette).
-    trail: null,
-    // Small value so the Moon never expands the Auto-fit frame (it sits on Earth).
-    orbitRadiusAu: 0
+    // The Moon carries its own trail. Unlike the planets (which trace their
+    // heliocentric orbit), the Moon traces its EXAGGERATED Earth-relative rosette
+    // — Earth's position plus the ×relativeScale offset — and the rosette breathes
+    // with the zoom coupling like the marker. (Its odometer, by contrast, reports
+    // its true through-space/barycentric distance, uniform with every other body.)
+    // Defaults hidden so the first-run scene is unchanged; the Bodies-panel toggle
+    // reveals it.
+    trail: {
+      ...BASE_TRAIL,
+      color: [0.85, 0.86, 0.9, 0.06],
+      hueStart: 0.55,
+      visible: false
+    },
+    // Non-zero so the trail's hue-period (a function of orbit circumference) does
+    // not collapse to 0. The Moon never widens the Auto-fit frame regardless.
+    orbitRadiusAu: 1.02
   }
 ];
 
@@ -273,6 +285,7 @@ export class OrbitalApp {
     zoomEarthButton,
     bodiesPanel,
     bodiesList,
+    trailsMasterToggle,
     root
   }) {
     this.root = root;
@@ -307,6 +320,14 @@ export class OrbitalApp {
     this.bodiesPanel = bodiesPanel;
     this.bodiesList = bodiesList;
     this.bodyDistanceOutputs = new Map();
+    // key -> OrbitalTrailEntity for the body's trail, populated by the build
+    // loop. Drives the per-row and master Bodies-panel trail toggles.
+    this.bodyTrails = new Map();
+    // Per-row trail-toggle checkboxes, keyed by body key, so the master toggle
+    // can reflect its fan-out by syncing each row checkbox's checked state.
+    this.bodyTrailToggles = new Map();
+    // Header master "all trails" checkbox (queried/threaded from main.js).
+    this.trailsMasterToggle = trailsMasterToggle;
     // Tracks which framing preset is active ("auto-fit" | "earth") so the
     // buttons can reflect state and zooming toward Earth implies tracking.
     this.framingMode = "auto-fit";
@@ -334,6 +355,7 @@ export class OrbitalApp {
 
     this.#bindTimelineControls();
     this.#bindFramingControls();
+    this.#bindTrailControls();
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       this.#handleRenderSubmit();
@@ -353,6 +375,7 @@ export class OrbitalApp {
     // Build one marker (+ optional trail) per registered body.
     const bodies = [];
     const trails = [];
+    this.bodyTrails = new Map();
     for (const config of RENDERED_BODIES) {
       const marker = new BodyMarkerEntity({
         radiusX: BODY_RADIUS_X,
@@ -371,6 +394,7 @@ export class OrbitalApp {
           ...config.trail
         });
         trails.push(trail);
+        this.bodyTrails.set(config.key, trail);
       }
       bodies.push({
         key: config.key,
@@ -421,6 +445,7 @@ export class OrbitalApp {
     this.#applyFraming("auto-fit");
 
     this.#buildBodiesPanel();
+    this.#syncMasterTrailToggle();
     this.#setTimelineEnabled(true);
     this.statsHud?.classList.remove("hud--hidden");
     this.#updateTimelineUi(this.timelineController.getState());
@@ -436,6 +461,7 @@ export class OrbitalApp {
     }
 
     this.bodyDistanceOutputs = new Map();
+    this.bodyTrailToggles = new Map();
     this.bodiesList.textContent = "";
 
     const doc = this.bodiesList.ownerDocument ?? globalThis.document;
@@ -508,7 +534,66 @@ export class OrbitalApp {
 
     row.append(swatch, name, distance);
     this.bodyDistanceOutputs.set(config.key, distance);
+
+    // Per-row trail toggle. Only bodies that actually have a trail get one; it
+    // drives the matching OrbitalTrailEntity's setVisible(). Works for both
+    // top-level and nested child rows (keyed purely by body key).
+    if (this.bodyTrails.has(config.key)) {
+      const trail = this.bodyTrails.get(config.key);
+      const toggle = doc.createElement("input");
+      toggle.type = "checkbox";
+      toggle.className = "bodies__trail-toggle";
+      toggle.checked = trail.visible !== false;
+      toggle.setAttribute("aria-label", `Show ${formatBodyName(config.key)} trail`);
+      toggle.dataset.key = config.key;
+      toggle.addEventListener("change", () => {
+        trail.setVisible(toggle.checked);
+        this.#syncMasterTrailToggle();
+      });
+      row.append(toggle);
+      this.bodyTrailToggles.set(config.key, toggle);
+    }
+
     return row;
+  }
+
+  // Wire the header master "all trails" toggle. Per-row toggles are wired in
+  // #createBodyRow as rows are built; this only handles the master fan-out.
+  #bindTrailControls() {
+    this.trailsMasterToggle?.addEventListener("change", () => {
+      this.#setAllTrailsVisible(this.trailsMasterToggle.checked);
+    });
+  }
+
+  // Fan a single visibility state out to every trail and sync each per-row
+  // checkbox so the panel stays consistent with the master toggle.
+  #setAllTrailsVisible(visible) {
+    const show = Boolean(visible);
+    for (const trail of this.bodyTrails.values()) {
+      trail.setVisible(show);
+    }
+    for (const toggle of this.bodyTrailToggles.values()) {
+      toggle.checked = show;
+    }
+    if (this.trailsMasterToggle) {
+      this.trailsMasterToggle.checked = show;
+      this.trailsMasterToggle.indeterminate = false;
+    }
+  }
+
+  // Reflect the per-row toggles in the master toggle: checked when all visible,
+  // unchecked when none, indeterminate when mixed.
+  #syncMasterTrailToggle() {
+    if (!this.trailsMasterToggle) {
+      return;
+    }
+    const toggles = [...this.bodyTrailToggles.values()];
+    if (toggles.length === 0) {
+      return;
+    }
+    const visibleCount = toggles.filter((t) => t.checked).length;
+    this.trailsMasterToggle.checked = visibleCount === toggles.length;
+    this.trailsMasterToggle.indeterminate = visibleCount > 0 && visibleCount < toggles.length;
   }
 
   #updateBodyDistances(state) {
@@ -591,6 +676,9 @@ export class OrbitalApp {
         event.preventDefault();
         const factor = event.deltaY > 0 ? ZOOM_WHEEL_STEP : 1 / ZOOM_WHEEL_STEP;
         this.camera.zoomBy(factor);
+        // Re-resolve bodies so the marker and rosette trail track the new zoom
+        // even when playback is paused.
+        this.timelineController?.refresh?.();
       },
       { passive: false }
     );

@@ -759,7 +759,7 @@ label {
 
 .bodies__row {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
   gap: 0.7rem;
   padding: 0.18rem 0;
@@ -811,6 +811,45 @@ label {
 .bodies__row--child .bodies__distance {
   font-size: 0.66rem;
   opacity: 0.85;
+}
+
+/* Per-row trail toggle: a compact checkbox that hides/shows that body's trail.
+   The accent color tints the checked state to match the app's palette. */
+.bodies__trail-toggle {
+  width: 0.9rem;
+  height: 0.9rem;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--secondary);
+  justify-self: end;
+}
+
+.bodies__row--child .bodies__trail-toggle {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+/* Header master "show all trails" toggle. Sits above the list and fans its
+   state out to every per-row toggle. */
+.bodies__master-trails {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.7rem;
+  font-family: var(--font-headline);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted, rgba(255, 255, 255, 0.6));
+  cursor: pointer;
+}
+
+.bodies__master-toggle {
+  width: 0.9rem;
+  height: 0.9rem;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--secondary);
 }
 
 /* ----------------------------------------------------------------------- */

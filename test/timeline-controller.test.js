@@ -469,8 +469,8 @@ test("getState exposes per-body distance travelled since birthdate (km)", () => 
     assert.ok(Math.abs(atBirth.get(key)) < 1e-6, `${key} travelled ~0 at birth`);
   }
 
-  // Advance 10 days; each body's odometer is its true 3D path length over that
-  // span, converted to km — the same uniform metric for the Moon as the planets.
+  // Advance 10 days. Every body — including the Moon — reports its true 3D
+  // barycentric path length over that span, converted to km (a uniform metric).
   controller.render({ deltaSeconds: 10 / controller.speedDaysPerSecond });
   const traveled = controller.getState().bodyTraveledKm;
   const birthday = new Date(Date.UTC(2000, 0, 1));
@@ -480,15 +480,62 @@ test("getState exposes per-body distance travelled since birthdate (km)", () => 
     const expectedKm = bodyPathLengthAuBetween(key, birthday, now) * KM_PER_AU;
     assert.ok(
       Math.abs(traveled.get(key) - expectedKm) < 1,
-      `${key} travelled distance matches the ephemeris path length`
+      `${key} travelled distance matches its barycentric path length`
     );
   }
 
-  // Earth covers a sizeable arc in 10 days but the inner Moon's own path is
-  // shorter; all are positive and finite.
+  // The Moon's through-space distance is dominated by Earth's orbital motion, so
+  // it is the same order of magnitude as Earth's — NOT its small path around Earth.
+  assert.ok(traveled.get("moon") > 0.5 * traveled.get("earth"));
+
+  // Earth covers a sizeable arc in 10 days; all are positive and finite.
   assert.ok(traveled.get("earth") > 0);
   assert.ok(traveled.get("venus") > 0);
   assert.ok(traveled.get("moon") > 0);
+});
+
+test("Moon trail traces its Earth-relative rosette (parent + offset), not its heliocentric path", () => {
+  const relativeScale = 40;
+  // A trail stub that captures the baseAtDay callback handed to precomputeParentedTrail.
+  const captured = { baseAtDay: null, scaleCalls: [] };
+  const moonTrail = {
+    setCursorForDay() {},
+    setRosetteScale(scale) {
+      captured.scaleCalls.push(scale);
+    },
+    precomputeTrail() {},
+    precomputeParentedTrail(_totalDays, baseAtDay) {
+      captured.baseAtDay = baseAtDay;
+    }
+  };
+
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    bodies: [
+      { key: "earth", marker: markerStub(), trail: null },
+      { key: "moon", marker: markerStub(), trail: moonTrail, parent: "earth", relativeScale }
+    ]
+  });
+
+  controller.init();
+  assert.equal(typeof captured.baseAtDay, "function");
+
+  const instant = new Date(Date.UTC(2000, 0, 6)); // birthday + 5 days
+  const earth = bodyHeliocentricPositionAuAtInstant("earth", instant);
+  const delta = bodyEarthRelativePositionAuAtInstant("moon", instant);
+
+  // The base stores the parent position and the offset (at coupling 1) separately,
+  // so the trail can re-scale the rosette by the live zoom coupling.
+  const base = captured.baseAtDay(5);
+  assert.ok(Math.abs(base.px - earth.xAu) < 1e-9);
+  assert.ok(Math.abs(base.py - earth.yAu) < 1e-9);
+  assert.ok(Math.abs(base.ox - delta.xAu * relativeScale) < 1e-9);
+  assert.ok(Math.abs(base.oy - delta.yAu * relativeScale) < 1e-9);
+
+  // The offset is non-zero — the rosette is NOT the Moon's bare heliocentric path
+  // (which would overlay Earth's orbit).
+  assert.ok(Math.hypot(base.ox, base.oy) > 1e-3);
 });
 
 test("all supported speeds advance timeline correctly", () => {

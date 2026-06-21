@@ -134,6 +134,24 @@ export class TimelineControllerEntity {
       if (!trail || typeof trail.precomputeTrail !== "function") {
         continue;
       }
+
+      // Parented bodies (the Moon) trace their parent-relative rosette: the
+      // parent's position plus the Earth-relative offset scaled by `relativeScale`.
+      // The trail stores the parent position and offset separately so it can be
+      // re-scaled by the live zoom coupling each frame (see #applyToBodies), so the
+      // rosette breathes with zoom exactly like the marker. Other bodies trace
+      // their heliocentric path directly.
+      if (body.parent && typeof trail.precomputeParentedTrail === "function") {
+        const scale = body.relativeScale ?? 1;
+        trail.precomputeParentedTrail(this.totalDays, (day) => {
+          const instant = new Date(birthdayMs + day * MS_PER_DAY);
+          const parent = bodyHeliocentricPositionAuAtInstant(body.parent, instant);
+          const delta = bodyEarthRelativePositionAuAtInstant(body.key, instant);
+          return { px: parent.xAu, py: parent.yAu, ox: delta.xAu * scale, oy: delta.yAu * scale };
+        });
+        continue;
+      }
+
       trail.precomputeTrail(this.totalDays, (day) => {
         const instant = new Date(birthdayMs + day * MS_PER_DAY);
         const position = bodyHeliocentricPositionAuAtInstant(body.key, instant);
@@ -226,9 +244,12 @@ export class TimelineControllerEntity {
     return new Date(this.birthdayUtc.getTime() + this.timelineDays * MS_PER_DAY);
   }
 
-  // Kilometres a body has travelled along its true 3D path from the birthdate to
-  // the given instant. Returns NaN if the body has no ephemeris path (the UI then
-  // renders "--").
+  // Kilometres a body has travelled along its true 3D path through space (its
+  // barycentric path) from the birthdate to the given instant. Uniform for every
+  // body, including the Moon: its odometer is its real journey through space
+  // (Earth's orbit plus the lunar wobble), not its small path around Earth and not
+  // the ×relativeScale-exaggerated render distance. Returns NaN if the body has no
+  // ephemeris path (the UI then renders "--").
   #traveledKmForBody(bodyKey, instant) {
     const au = bodyPathLengthAuBetween(bodyKey, this.birthdayUtc, instant);
     return au == null ? Number.NaN : au * KM_PER_AU;
@@ -245,6 +266,13 @@ export class TimelineControllerEntity {
       }
       this.#applyToBodies();
     }
+  }
+
+  // Re-resolve all bodies for the current instant and camera. Call after a camera
+  // change (e.g. zoom) so marker positions, the rosette trail scale, and tracking
+  // update immediately even while playback is paused.
+  refresh() {
+    this.#applyToBodies();
   }
 
   #applyToBodies() {
@@ -286,11 +314,14 @@ export class TimelineControllerEntity {
       const x = parentPos.x + delta.xAu * scale;
       const y = parentPos.y + delta.yAu * scale;
       body.marker.setPosition(x, y);
+      // Breathe the rosette trail with the same zoom coupling as the marker so the
+      // trail tracks the marker's separation as the user zooms in and out.
+      body.trail?.setRosetteScale?.(effectiveScaleFactor);
       body.trail?.setCursorForDay?.(this.timelineDays);
       resolved.set(body.key, { x, y });
-      // The Moon reads the same odometer as every other body: the true distance
-      // it has travelled through space since the birthdate (its barycentric path),
-      // not the zoom-coupled render offset.
+      // The Moon's odometer is its true distance through space (barycentric path),
+      // the same uniform metric as every other body — not the zoom-coupled render
+      // offset and not its small path around Earth.
       this.bodyTraveledKm.set(body.key, this.#traveledKmForBody(body.key, instant));
       if (this.trackBodyKey && body.key === this.trackBodyKey) {
         trackedPosition = { x, y };
