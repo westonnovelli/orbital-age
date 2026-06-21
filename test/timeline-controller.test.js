@@ -157,6 +157,47 @@ test("setTrackBodyKey toggles camera tracking and recenters on disable", () => {
   assert.equal(recentered.y, 0);
 });
 
+test("setTrackBodyKey centers on the body without altering camera zoom", () => {
+  const earthMarker = markerStub();
+  const venusMarker = markerStub();
+  // cameraStub() has no halfHeight; give it one and a guarded setZoom so we can
+  // detect any (unexpected) zoom change. Follow must recenter only.
+  const camera = cameraStub();
+  camera.halfHeight = ZOOM_COUPLING_REFERENCE_HALF_HEIGHT;
+  camera.zoomCalls = [];
+  camera.setZoom = function setZoom(h) {
+    this.zoomCalls.push(h);
+    this.halfHeight = h;
+    return h;
+  };
+
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    bodies: [
+      { key: "earth", marker: earthMarker, trail: null },
+      { key: "venus", marker: venusMarker, trail: null }
+    ],
+    camera,
+    trackBodyKey: null
+  });
+
+  controller.init();
+  const halfHeightBefore = camera.halfHeight;
+
+  controller.setTrackBodyKey("venus");
+
+  // The camera recenters on Venus.
+  const center = camera.centers[camera.centers.length - 1];
+  const venusPos = venusMarker.positions[venusMarker.positions.length - 1];
+  assert.equal(center.x, venusPos.x);
+  assert.equal(center.y, venusPos.y);
+
+  // Zoom is untouched: halfHeight unchanged and setZoom never called.
+  assert.equal(camera.halfHeight, halfHeightBefore);
+  assert.equal(camera.zoomCalls.length, 0);
+});
+
 test("timeline controller supports stepping and normalized scrubbing with bounds", () => {
   const marker = markerStub();
   const controller = new TimelineControllerEntity({

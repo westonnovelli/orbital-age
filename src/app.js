@@ -554,6 +554,21 @@ export class OrbitalApp {
       this.bodyTrailToggles.set(config.key, toggle);
     }
 
+    // Per-row follow control. Tracking the body recenters the camera on it and
+    // leaves zoom untouched (recenter only); choosing a framing preset later
+    // still overrides tracking as today. Works for both top-level and nested
+    // child rows (keyed purely by body key).
+    const follow = doc.createElement("button");
+    follow.type = "button";
+    follow.className = "bodies__follow";
+    follow.textContent = "Follow";
+    follow.dataset.key = config.key;
+    follow.setAttribute("aria-label", `Follow ${formatBodyName(config.key)}`);
+    follow.addEventListener("click", () => {
+      this.timelineController?.setTrackBodyKey(config.key);
+    });
+    row.append(follow);
+
     return row;
   }
 

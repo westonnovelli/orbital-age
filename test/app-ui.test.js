@@ -280,6 +280,66 @@ test("submit builds one Bodies-panel row per body and writes distance travelled"
   assert.ok(Number.parseFloat(moonDistance.textContent) > 0);
 });
 
+test("per-row follow control tracks that body without changing zoom", (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  ui.form.dispatch("submit");
+
+  // Spy on the controller's tracking entry point and its camera zoom so we can
+  // confirm follow recenters only (zoom untouched).
+  const trackCalls = [];
+  const controller = app.timelineController;
+  const originalSetTrack = controller.setTrackBodyKey.bind(controller);
+  controller.setTrackBodyKey = (key) => {
+    trackCalls.push(key);
+    return originalSetTrack(key);
+  };
+  const halfHeightBefore = app.camera.halfHeight;
+
+  // A top-level row (Mars) carries a follow control keyed by its body.
+  const rows = ui.bodiesList.children;
+  const marsRow = rows.find((row) => row.dataset.key === "mars");
+  const marsFollow = marsRow.children.find((c) => c.className === "bodies__follow");
+  assert.ok(marsFollow, "expected a follow control in mars' row");
+  assert.equal(marsFollow.dataset.key, "mars");
+
+  marsFollow.dispatch("click");
+  assert.deepEqual(trackCalls, ["mars"]);
+  assert.equal(app.camera.halfHeight, halfHeightBefore, "follow leaves zoom untouched");
+
+  // A nested child row (the Moon under Earth) also follows by its own key.
+  const earthRow = rows.find((row) => row.dataset.key === "earth");
+  const subList = earthRow.children.find((c) => c.className === "bodies__sublist");
+  const moonRow = subList.children.find((row) => row.dataset.key === "moon");
+  const moonFollow = moonRow.children.find((c) => c.className === "bodies__follow");
+  assert.ok(moonFollow, "expected a follow control in the nested moon row");
+
+  moonFollow.dispatch("click");
+  assert.deepEqual(trackCalls, ["mars", "moon"]);
+});
+
 test("per-row trail toggle drives the matching trail and master fans out to all", (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
