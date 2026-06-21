@@ -69,36 +69,34 @@
           <p id="webgl-message" class="message message--hidden" aria-live="polite"></p>
         </section>
 
-        <!-- Bottom-right zoom cluster: +/- buttons, a log-mapped zoom bar (two-way
-             synced with the wheel/camera), and the framing presets. Kept outside
-             .viewport so it stacks above the fixed vignette/atmosphere overlays.
-             Shares the bottom-right corner with the global scale-mode toggle,
-             which stacks just above it. -->
-        <div class="zoom-cluster" role="group" aria-label="Zoom and camera framing">
-          <!-- Global scale mode: a larger-effect toggle than the per-body controls.
-               Stacked at the top of the cluster, clear of the timeline dock. -->
-          <div class="scale-mode" role="group" aria-label="Body scale">
-            <button
-              id="true-scale-toggle"
-              type="button"
-              class="btn btn--ghost scale-mode__btn"
-              aria-pressed="false"
-            >
-              True scale: Off
-            </button>
-            <p class="scale-mode__note">Sizes all bodies to real radii and frames Earth. Scroll to zoom further.</p>
-            <button
-              id="labels-toggle"
-              type="button"
-              class="btn btn--ghost scale-mode__btn"
-              aria-pressed="false"
-            >
-              Labels: Off
-            </button>
-          </div>
+        <!-- Top-right scene controls: the global scale mode + in-scene labels.
+             Revealed only once a journey begins (.journey-active). Kept outside
+             .viewport so it stacks above the fixed vignette/atmosphere overlays. -->
+        <div class="scene-controls" role="group" aria-label="Scene display">
+          <button
+            id="true-scale-toggle"
+            type="button"
+            class="btn btn--ghost scene-controls__btn"
+            aria-pressed="false"
+            title="Sizes all bodies to real radii and frames Earth. Scroll to zoom further."
+          >
+            True scale: Off
+          </button>
+          <button
+            id="labels-toggle"
+            type="button"
+            class="btn btn--ghost scene-controls__btn"
+            aria-pressed="false"
+          >
+            Labels: Off
+          </button>
+        </div>
 
+        <!-- Bottom-right zoom cluster: flattened — the zoom bar (slider + +/-)
+             sits at the bottom-left of the vertical framing-preset stack. Kept
+             outside .viewport so it stacks above the fixed overlays. -->
+        <div class="zoom-cluster" role="group" aria-label="Zoom and camera framing">
           <div class="zoom-cluster__bar" role="group" aria-label="Zoom level">
-            <button id="zoom-out" type="button" class="btn btn--ghost zoom-cluster__step" aria-label="Zoom out">−</button>
             <input
               id="zoom-bar"
               type="range"
@@ -109,7 +107,10 @@
               class="zoom-cluster__range"
               aria-label="Zoom level"
             />
-            <button id="zoom-in" type="button" class="btn btn--ghost zoom-cluster__step" aria-label="Zoom in">+</button>
+            <div class="zoom-cluster__steps">
+              <button id="zoom-out" type="button" class="btn btn--ghost zoom-cluster__step" aria-label="Zoom out">−</button>
+              <button id="zoom-in" type="button" class="btn btn--ghost zoom-cluster__step" aria-label="Zoom in">+</button>
+            </div>
           </div>
 
           <div class="zoom-cluster__presets" role="group" aria-label="Camera framing presets">
@@ -184,24 +185,27 @@
           </div>
         </section>
 
-        <!-- Telemetry side panel -->
-        <aside class="panel panel--telemetry" aria-label="Orbital telemetry">
+        <!-- Telemetry side panel (top-left): reflects the currently-followed body,
+             or the Sun (system center) when nothing is followed. The heading,
+             body copy, and grid cells are updated live in JS. -->
+        <aside class="panel panel--telemetry" aria-label="Orbital telemetry" aria-live="polite">
           <h2 class="telemetry__heading">
             <span class="telemetry__pulse" aria-hidden="true"></span>
             Orbital Mechanics
           </h2>
-          <p class="telemetry__body">
-            Earth orbits the Sun at an average distance of ~150M km, completing one
-            revolution each year. This visualization replays that journey across your lifetime.
+          <p class="telemetry__subject" id="telemetry-subject">Sun</p>
+          <p class="telemetry__body" id="telemetry-body">
+            The Sun sits at the system's center. Follow a body — click it, use a
+            Bodies-panel control, or press <kbd>f</kbd> — to read its orbit here.
           </p>
           <dl class="telemetry__grid">
             <div class="telemetry__cell">
               <dt>Path</dt>
-              <dd>Elliptical</dd>
+              <dd id="telemetry-path">Origin</dd>
             </div>
             <div class="telemetry__cell">
-              <dt>Mean Velocity</dt>
-              <dd>29.78 km/s</dd>
+              <dt>Distance Travelled</dt>
+              <dd id="telemetry-metric">--</dd>
             </div>
           </dl>
         </aside>

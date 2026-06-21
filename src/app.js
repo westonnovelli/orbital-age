@@ -257,14 +257,74 @@ const KEYBOARD_STEP_DAYS_LARGE = 30;
 // Key of the body the "Zoom to Earth" preset tracks.
 const TRACKED_BODY_KEY = "earth";
 
-// Effective `relativeScale` a parented body (the Moon) collapses to when its
-// exaggeration toggle is switched OFF — its physically-accurate separation. The
-// dramatized value comes from the registry entry's `relativeScale` (40).
+// Effective `relativeScale` a parented body (the Moon) collapses to under True
+// scale — its physically-accurate separation. The dramatized value (the default)
+// comes from the registry entry's `relativeScale` (40).
 const ACCURATE_RELATIVE_SCALE = 1;
 
-// Short explanation shown beneath the Moon's exaggeration toggle.
-const MOON_EXAGGERATION_NOTE =
-  "True distance ~1/400th of Earth–Sun; exaggerated ~40× for visibility.";
+// Reticle (crosshair) glyph for the per-row follow control. currentColor lets
+// CSS drive the hover/active tint; aria-hidden because the button is labelled.
+const RETICLE_ICON_SVG =
+  '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" ' +
+  'stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false">' +
+  '<circle cx="8" cy="8" r="4.2" /><path d="M8 0.6v3M8 12.4v3M0.6 8h3M12.4 8h3" ' +
+  'stroke-linecap="round" /></svg>';
+
+// Copy shown in the top-left Orbital Mechanics panel for each followed body. The
+// panel becomes dynamic: when a body is followed (via the Bodies panel, a scene
+// click, or the `f` shortcut) it describes that body; when nothing is followed
+// (Auto-fit / Inner Planets / Origin) it falls back to the Sun (the system
+// center / origin). `path` is the orbit shape shown in the grid; `body` is the
+// descriptive blurb.
+const SUN_MECHANICS = {
+  name: "Sun",
+  path: "Origin",
+  body:
+    "The Sun sits at the system's center. Follow a body — click it, use a Bodies-panel control, or press f — to read its orbit here."
+};
+
+const BODY_MECHANICS = {
+  mercury: {
+    path: "Elliptical",
+    body: "Mercury races around the Sun every 88 days on the most eccentric, fastest planetary orbit."
+  },
+  venus: {
+    path: "Near-circular",
+    body: "Venus traces a nearly circular orbit at ~0.72 AU, completing a year every 225 days."
+  },
+  earth: {
+    path: "Elliptical",
+    body: "Earth orbits the Sun at an average distance of ~150M km, completing one revolution each year."
+  },
+  mars: {
+    path: "Elliptical",
+    body: "Mars orbits at ~1.52 AU on a noticeably eccentric path, taking about 687 days per year."
+  },
+  jupiter: {
+    path: "Elliptical",
+    body: "Jupiter, the largest planet, orbits at ~5.2 AU and takes nearly 12 years to lap the Sun."
+  },
+  saturn: {
+    path: "Elliptical",
+    body: "Saturn orbits at ~9.6 AU, completing one slow, ringed revolution roughly every 29 years."
+  },
+  uranus: {
+    path: "Elliptical",
+    body: "Uranus orbits at ~19 AU on its tipped axis, taking about 84 years to circle the Sun."
+  },
+  neptune: {
+    path: "Near-circular",
+    body: "Neptune, the outermost planet, orbits at ~30 AU and takes ~165 years for one revolution."
+  },
+  pluto: {
+    path: "Eccentric",
+    body: "Pluto's eccentric, inclined orbit ranges from ~30 to ~49 AU over a 248-year journey."
+  },
+  moon: {
+    path: "Geocentric",
+    body: "The Moon orbits Earth every ~27 days while riding along Earth's own path around the Sun."
+  }
+};
 
 // Marker/trail orbital-ellipse radii. Origin uses a unit circle (radiusY 1).
 const BODY_RADIUS_X = 1;
@@ -395,6 +455,11 @@ export class OrbitalApp {
     trueScaleToggle,
     labelsToggle,
     labelsOverlay,
+    telemetryPanel,
+    telemetrySubject,
+    telemetryBody,
+    telemetryPath,
+    telemetryMetric,
     root
   }) {
     this.root = root;
@@ -454,10 +519,6 @@ export class OrbitalApp {
     // Moon's separation collapses to ×1. Default off so first-run is unchanged.
     this.trueScaleToggle = trueScaleToggle;
     this.trueScale = false;
-    // Per-parented-body exaggeration controls (the Moon). key -> { toggle,
-    // exaggeratedScale }, so the Moon's scale can be resolved from a single source
-    // of truth and its row checkbox disabled while True scale forces ×1.
-    this.exaggerationControls = new Map();
     // In-scene body labels: a toggle (button, aria-pressed) that shows/hides an
     // absolutely-positioned HTML overlay layered above the canvas. One label
     // element per body is created once after submit and stored by key; their
@@ -468,6 +529,15 @@ export class OrbitalApp {
     this.labelsOverlay = labelsOverlay;
     this.bodyLabels = new Map();
     this.labelsVisible = false;
+
+    // Top-left Orbital Mechanics panel: dynamic fields reflecting the currently-
+    // followed body (or the Sun when nothing is followed). Updated from
+    // #updateMechanicsPanel() whenever tracking or the timeline changes.
+    this.telemetryPanel = telemetryPanel;
+    this.telemetrySubject = telemetrySubject;
+    this.telemetryBody = telemetryBody;
+    this.telemetryPath = telemetryPath;
+    this.telemetryMetric = telemetryMetric;
 
     // Tracks which framing preset is active ("auto-fit" | "inner" | "earth" |
     // "origin") so the buttons can reflect state and zooming toward Earth implies
@@ -613,7 +683,6 @@ export class OrbitalApp {
 
     this.bodyDistanceOutputs = new Map();
     this.bodyTrailToggles = new Map();
-    this.exaggerationControls = new Map();
     this.bodiesList.textContent = "";
 
     const doc = this.bodiesList.ownerDocument ?? globalThis.document;
@@ -680,6 +749,9 @@ export class OrbitalApp {
     name.className = "bodies__name";
     name.textContent = formatBodyName(config.key);
 
+    // Distance reads as a subtitle on its own line beneath the name (see CSS
+    // grid). Keeping it out of the controls' row means its changing width can
+    // never jitter the trail toggle or follow button as the odometer counts up.
     const distance = doc.createElement("output");
     distance.className = "bodies__distance";
     distance.textContent = "--";
@@ -688,10 +760,14 @@ export class OrbitalApp {
     this.bodyDistanceOutputs.set(config.key, distance);
 
     // Per-row trail toggle. Only bodies that actually have a trail get one; it
-    // drives the matching OrbitalTrailEntity's setVisible(). Works for both
-    // top-level and nested child rows (keyed purely by body key).
+    // drives the matching OrbitalTrailEntity's setVisible(). The checkbox is
+    // wrapped in a label with a visible "Trail" caption so it reads clearly.
     if (this.bodyTrails.has(config.key)) {
       const trail = this.bodyTrails.get(config.key);
+      const trailLabel = doc.createElement("label");
+      trailLabel.className = "bodies__trail";
+      trailLabel.title = `Show ${formatBodyName(config.key)} trail`;
+
       const toggle = doc.createElement("input");
       toggle.type = "checkbox";
       toggle.className = "bodies__trail-toggle";
@@ -702,7 +778,13 @@ export class OrbitalApp {
         trail.setVisible(toggle.checked);
         this.#syncMasterTrailToggle();
       });
-      row.append(toggle);
+
+      const trailText = doc.createElement("span");
+      trailText.className = "bodies__trail-text";
+      trailText.textContent = "Trail";
+
+      trailLabel.append(toggle, trailText);
+      row.append(trailLabel);
       this.bodyTrailToggles.set(config.key, toggle);
     }
 
@@ -713,51 +795,17 @@ export class OrbitalApp {
     const follow = doc.createElement("button");
     follow.type = "button";
     follow.className = "bodies__follow";
-    follow.textContent = "Follow";
+    // A reticle (crosshair) icon reads as "target this body" without repeating
+    // the word "Follow" down every row. The accessible name carries the intent.
+    follow.innerHTML = RETICLE_ICON_SVG;
     follow.dataset.key = config.key;
+    follow.title = `Follow ${formatBodyName(config.key)}`;
     follow.setAttribute("aria-label", `Follow ${formatBodyName(config.key)}`);
     follow.addEventListener("click", () => {
       this.timelineController?.setTrackBodyKey(config.key);
+      this.#updateMechanicsPanel();
     });
     row.append(follow);
-
-    // Exaggeration toggle for parented bodies (the Moon): flips the body's
-    // effective relativeScale between dramatized (registry value, ~40×) and
-    // physically-accurate (1×), keeping the zoom-coupling. Default stays
-    // exaggerated so first-run is unchanged. Inline copy explains the scale.
-    if (config.parent && Number.isFinite(config.relativeScale)) {
-      const exaggeratedScale = config.relativeScale;
-      const wrap = doc.createElement("div");
-      wrap.className = "bodies__exaggeration";
-
-      const label = doc.createElement("label");
-      label.className = "bodies__exaggerate-label";
-
-      const toggle = doc.createElement("input");
-      toggle.type = "checkbox";
-      toggle.className = "bodies__exaggerate-toggle";
-      toggle.checked = true;
-      toggle.dataset.key = config.key;
-      toggle.setAttribute("aria-label", `Exaggerate ${formatBodyName(config.key)} separation`);
-      // Disabled while True scale forces an accurate (×1) separation.
-      toggle.disabled = this.trueScale;
-      this.exaggerationControls.set(config.key, { toggle, exaggeratedScale });
-      toggle.addEventListener("change", () => {
-        this.#resolveBodyScale(config.key);
-      });
-
-      const text = doc.createElement("span");
-      text.textContent = "Exaggerate distance";
-
-      label.append(toggle, text);
-
-      const note = doc.createElement("p");
-      note.className = "bodies__exaggerate-note";
-      note.textContent = MOON_EXAGGERATION_NOTE;
-
-      wrap.append(label, note);
-      row.append(wrap);
-    }
 
     return row;
   }
@@ -784,11 +832,12 @@ export class OrbitalApp {
       marker.setSize(this.trueScale && Number.isFinite(trueSize) ? trueSize : config?.size);
     }
     this.sunEntity?.setSize(this.trueScale ? TRUE_RADIUS_AU.sun : SUN_DISPLAY_SIZE);
-    // Re-resolve each parented body's separation (the Moon) and reflect the lock
-    // in its row checkbox.
-    for (const [key, control] of this.exaggerationControls) {
-      control.toggle.disabled = this.trueScale;
-      this.#resolveBodyScale(key);
+    // Re-resolve each parented body's separation (the Moon): True scale collapses
+    // it to ×1, otherwise it stays at the dramatized registry value.
+    for (const config of RENDERED_BODIES) {
+      if (config.parent && Number.isFinite(config.relativeScale)) {
+        this.#resolveBodyScale(config.key);
+      }
     }
     // Real radii are invisible at solar-system zoom, so turning the mode ON snaps
     // to a tight frame centered on Earth and unlocks deeper zoom for inspection.
@@ -805,19 +854,18 @@ export class OrbitalApp {
     this.#syncTrueScaleButton();
     this.#syncZoomBar();
     this.#updateBodyLabels();
+    // True scale tracks Earth when on; refresh the panel to match.
+    this.#updateMechanicsPanel();
   }
 
   // Single source of truth for a parented body's effective relativeScale: True
-  // scale forces ×1; otherwise honor the row's exaggeration checkbox.
+  // scale forces ×1; otherwise the dramatized registry value (~40×) is used.
   #resolveBodyScale(key) {
-    const control = this.exaggerationControls.get(key);
-    if (!control) {
+    const config = RENDERED_BODIES.find((body) => body.key === key);
+    if (!config || !config.parent || !Number.isFinite(config.relativeScale)) {
       return;
     }
-    const scale =
-      !this.trueScale && control.toggle.checked
-        ? control.exaggeratedScale
-        : ACCURATE_RELATIVE_SCALE;
+    const scale = this.trueScale ? ACCURATE_RELATIVE_SCALE : config.relativeScale;
     this.timelineController?.setBodyRelativeScale(key, scale);
   }
 
@@ -892,6 +940,7 @@ export class OrbitalApp {
     const key = this.#bodyAtPointer(event);
     if (key) {
       this.timelineController.setTrackBodyKey(key);
+      this.#updateMechanicsPanel();
     }
   }
 
@@ -1035,6 +1084,7 @@ export class OrbitalApp {
         const tracked = this.timelineController.trackBodyKey;
         if (tracked) {
           this.timelineController.setTrackBodyKey(tracked);
+          this.#updateMechanicsPanel();
         }
         break;
       }
@@ -1094,6 +1144,48 @@ export class OrbitalApp {
 
     for (const [key, output] of this.bodyDistanceOutputs) {
       output.textContent = formatTraveledKm(traveled.get(key));
+    }
+  }
+
+  // Update the top-left Orbital Mechanics panel to describe whichever body is
+  // currently followed. When nothing is tracked (trackBodyKey == null, e.g.
+  // Auto-fit / Inner Planets / Origin) it falls back to the Sun (system center).
+  // The distance-travelled metric reuses the same odometer the Bodies panel
+  // shows (state.bodyTraveledKm). Called from #updateTimelineUi() every frame and
+  // directly whenever a follow action changes tracking (so it updates while
+  // paused too). `state` is optional — when omitted the latest controller state
+  // is read so follow-only triggers still refresh the metric.
+  #updateMechanicsPanel(state) {
+    if (
+      !this.telemetrySubject &&
+      !this.telemetryBody &&
+      !this.telemetryPath &&
+      !this.telemetryMetric
+    ) {
+      return;
+    }
+
+    const trackedKey = this.timelineController?.trackBodyKey ?? null;
+    const mechanics = trackedKey ? BODY_MECHANICS[trackedKey] : null;
+
+    if (this.telemetrySubject) {
+      this.telemetrySubject.textContent = trackedKey ? formatBodyName(trackedKey) : SUN_MECHANICS.name;
+    }
+    if (this.telemetryBody) {
+      this.telemetryBody.textContent = mechanics ? mechanics.body : SUN_MECHANICS.body;
+    }
+    if (this.telemetryPath) {
+      this.telemetryPath.textContent = mechanics ? mechanics.path : SUN_MECHANICS.path;
+    }
+    if (this.telemetryMetric) {
+      if (!trackedKey) {
+        this.telemetryMetric.textContent = "--";
+      } else {
+        const resolved = state ?? this.timelineController?.getState?.();
+        const traveled = resolved?.bodyTraveledKm;
+        const km = traveled && typeof traveled.get === "function" ? traveled.get(trackedKey) : Number.NaN;
+        this.telemetryMetric.textContent = formatTraveledKm(km);
+      }
     }
   }
 
@@ -1236,6 +1328,9 @@ export class OrbitalApp {
     // Reposition labels: presets change zoom and/or center, moving each body's
     // projected screen position even when the timeline is paused.
     this.#updateBodyLabels();
+    // Presets change tracking (earth tracks Earth; auto-fit/inner/origin clear
+    // it), so refresh the Orbital Mechanics panel to match the followed body.
+    this.#updateMechanicsPanel();
   }
 
   #updateFramingButtons() {
@@ -1308,6 +1403,7 @@ export class OrbitalApp {
 
     this.#updateBodyDistances(state);
     this.#updateBodyLabels();
+    this.#updateMechanicsPanel(state);
 
     if (this.hudOrbits) {
       this.hudOrbits.textContent = `ORBITS ${orbitsCompleted(state.elapsedDays)}`;

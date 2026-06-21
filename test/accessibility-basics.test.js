@@ -42,6 +42,14 @@ test("bodies panel exposes a labeled landmark and a polite live region", () => {
   assert.match(html, /<ul id="bodies-list" class="bodies__list" aria-live="polite">/);
 });
 
+test("orbital mechanics panel is a labeled landmark with a polite live region and dynamic fields", () => {
+  assert.match(html, /<aside class="panel panel--telemetry" aria-label="Orbital telemetry" aria-live="polite">/);
+  assert.match(html, /id="telemetry-subject"/);
+  assert.match(html, /id="telemetry-body"/);
+  assert.match(html, /id="telemetry-path"/);
+  assert.match(html, /id="telemetry-metric"/);
+});
+
 test("bottom-right zoom cluster exposes labeled groups, presets, and a zoom bar", () => {
   assert.match(html, /<div class="zoom-cluster" role="group" aria-label="Zoom and camera framing">/);
   assert.match(html, /id="zoom-bar"[^>]*type="range"[^>]*aria-label="Zoom level"/);

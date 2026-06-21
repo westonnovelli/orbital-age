@@ -46,7 +46,12 @@ const app = new OrbitalApp({
   trailsMasterToggle: document.querySelector("#bodies-master-trails"),
   trueScaleToggle: document.querySelector("#true-scale-toggle"),
   labelsToggle: document.querySelector("#labels-toggle"),
-  labelsOverlay: document.querySelector("#scene-labels")
+  labelsOverlay: document.querySelector("#scene-labels"),
+  telemetryPanel: document.querySelector(".panel--telemetry"),
+  telemetrySubject: document.querySelector("#telemetry-subject"),
+  telemetryBody: document.querySelector("#telemetry-body"),
+  telemetryPath: document.querySelector("#telemetry-path"),
+  telemetryMetric: document.querySelector("#telemetry-metric")
 });
 
 app.initialize();

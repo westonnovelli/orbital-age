@@ -138,6 +138,11 @@ function buildUi() {
     trueScaleToggle: new FakeElement({ id: "true-scale-toggle" }),
     labelsToggle: new FakeElement({ id: "labels-toggle" }),
     labelsOverlay: new FakeElement({ id: "scene-labels", ownerDocument: doc }),
+    telemetryPanel: new FakeElement(),
+    telemetrySubject: new FakeElement({ id: "telemetry-subject" }),
+    telemetryBody: new FakeElement({ id: "telemetry-body" }),
+    telemetryPath: new FakeElement({ id: "telemetry-path" }),
+    telemetryMetric: new FakeElement({ id: "telemetry-metric" }),
     autoFitButton: new FakeElement({ id: "framing-auto-fit" }),
     innerPlanetsButton: new FakeElement({ id: "framing-inner-planets" }),
     zoomEarthButton: new FakeElement({ id: "framing-zoom-earth" }),
@@ -415,19 +420,8 @@ test("true-scale toggle resizes every body and locks the Moon's separation", (t)
   assert.equal(app.sunEntity.size, 0.15, "sun starts at its dramatized size");
   assert.equal(app.trueScale, false);
 
-  // The Moon row's exaggeration checkbox starts enabled.
-  const rows = ui.bodiesList.children;
-  const earthRow = rows.find((row) => row.dataset.key === "earth");
-  const subList = earthRow.children.find((c) => c.className === "bodies__sublist");
-  const moonRow = subList.children.find((row) => row.dataset.key === "moon");
-  const exaggeration = moonRow.children.find((c) => c.className === "bodies__exaggeration");
-  const exaggerateToggle = exaggeration.children
-    .find((c) => c.className === "bodies__exaggerate-label")
-    .children.find((c) => c.className === "bodies__exaggerate-toggle");
-  assert.equal(exaggerateToggle.disabled, false);
-
   // Turn True scale on: every body shrinks to its real radius and the Moon's
-  // separation collapses to 1x; its row checkbox is disabled.
+  // separation collapses to 1x.
   const halfHeightBefore = app.camera.halfHeight;
   ui.trueScaleToggle.dispatch("click");
   assert.equal(app.trueScale, true);
@@ -435,21 +429,19 @@ test("true-scale toggle resizes every body and locks the Moon's separation", (t)
   assert.ok(moonMarker.size < 0.001, "moon shrank to a real radius");
   assert.ok(app.sunEntity.size < 0.01, "sun shrank to a real radius");
   assert.deepEqual(scaleCalls.at(-1), ["moon", 1]);
-  assert.equal(exaggerateToggle.disabled, true);
   assert.equal(ui.trueScaleToggle.getAttribute("aria-pressed"), "true");
   // Snaps to a tight frame centered on Earth so the specks are visible.
   assert.ok(app.camera.halfHeight < halfHeightBefore, "zoom tightened");
   assert.equal(app.camera.halfHeight, 0.004, "snapped to the true-scale frame");
   assert.equal(controller.trackBodyKey, "earth", "centered on Earth");
 
-  // Turn it off: dramatized sizes restore, the Moon returns to exaggerated, and
-  // the zoom re-clamps back into the normal range.
+  // Turn it off: dramatized sizes restore, the Moon returns to exaggerated (40x),
+  // and the zoom re-clamps back into the normal range.
   ui.trueScaleToggle.dispatch("click");
   assert.equal(app.trueScale, false);
   assert.equal(earthMarker.size, 0.06, "earth restored to its dramatized size");
   assert.equal(app.sunEntity.size, 0.15, "sun restored to its dramatized size");
   assert.deepEqual(scaleCalls.at(-1), ["moon", 40]);
-  assert.equal(exaggerateToggle.disabled, false);
   assert.equal(ui.trueScaleToggle.getAttribute("aria-pressed"), "false");
   assert.ok(app.camera.halfHeight >= 0.3, "zoom re-clamped to the normal minimum");
 });
@@ -481,10 +473,11 @@ test("per-row trail toggle drives the matching trail and master fans out to all"
   app.initialize();
   ui.form.dispatch("submit");
 
-  // Earth has a trail, so its row carries a trail-toggle checkbox.
+  // Earth has a trail, so its row carries a labeled trail-toggle checkbox.
   const rows = ui.bodiesList.children;
   const earthRow = rows.find((row) => row.dataset.key === "earth");
-  const earthToggle = earthRow.children.find((c) => c.className === "bodies__trail-toggle");
+  const earthTrailLabel = earthRow.children.find((c) => c.className === "bodies__trail");
+  const earthToggle = earthTrailLabel.children.find((c) => c.className === "bodies__trail-toggle");
   assert.ok(earthToggle, "expected a trail toggle in earth's row");
 
   const earthTrail = app.bodyTrails.get("earth");
@@ -814,4 +807,64 @@ test("keyboard shortcuts drive play/pause, stepping, and follow", (t) => {
   const before = controller.timelineDays;
   doc.dispatch("keydown", { key: "ArrowRight", target: { tagName: "INPUT" } });
   assert.equal(controller.timelineDays, before, "ignored while typing in an input");
+});
+
+test("Orbital Mechanics panel describes the followed body and falls back to the Sun", (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  ui.form.dispatch("submit");
+
+  // First load is Auto-fit (nothing followed), so the panel describes the Sun.
+  assert.equal(ui.telemetrySubject.textContent, "Sun");
+  assert.match(ui.telemetryBody.textContent, /Sun sits at the system/);
+  assert.equal(ui.telemetryPath.textContent, "Origin");
+  assert.equal(ui.telemetryMetric.textContent, "--");
+
+  // Advance the timeline so bodies have a non-zero odometer.
+  const controller = app.timelineController;
+  controller.render({ deltaSeconds: 400 / controller.speedDaysPerSecond });
+
+  // Follow Mars via the panel: the heading, copy, path, and metric all switch.
+  const rows = ui.bodiesList.children;
+  const marsRow = rows.find((row) => row.dataset.key === "mars");
+  const marsFollow = marsRow.children.find((c) => c.className === "bodies__follow");
+  marsFollow.dispatch("click");
+  assert.equal(ui.telemetrySubject.textContent, "Mars");
+  assert.match(ui.telemetryBody.textContent, /Mars/);
+  assert.equal(ui.telemetryPath.textContent, "Elliptical");
+  assert.match(ui.telemetryMetric.textContent, / km$/, "metric shows the followed body's odometer");
+
+  // Switching to another followed body updates the panel again.
+  const earthRow = rows.find((row) => row.dataset.key === "earth");
+  const earthFollow = earthRow.children.find((c) => c.className === "bodies__follow");
+  earthFollow.dispatch("click");
+  assert.equal(ui.telemetrySubject.textContent, "Earth");
+  assert.match(ui.telemetryBody.textContent, /Earth orbits the Sun/);
+
+  // A framing preset that stops tracking (Origin) returns the panel to the Sun.
+  ui.originButton.dispatch("click");
+  assert.equal(ui.telemetrySubject.textContent, "Sun");
+  assert.equal(ui.telemetryMetric.textContent, "--");
 });
