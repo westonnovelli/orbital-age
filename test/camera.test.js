@@ -85,3 +85,22 @@ test("camera zoomBy multiplies current zoom and respects clamps", () => {
   assert.equal(camera.zoomBy(0.01), 1); // clamped to min
   assert.equal(camera.zoomBy(1000), 20); // clamped to max
 });
+
+test("setZoom clamps the zoom-cluster log range [0.3, 54.23]", () => {
+  // The bottom-right zoom bar maps over [EARTH_MOON_HALF_HEIGHT, AUTO_FIT_HALF_HEIGHT];
+  // the camera clamps setZoom to those framing limits.
+  const maxHalfHeight = autoFitHalfHeight(49.3); // Pluto aphelion -> ~54.23
+  const camera = new OrthoCamera2D({
+    halfHeight: maxHalfHeight,
+    minHalfHeight: 0.3,
+    maxHalfHeight
+  });
+
+  assert.ok(Math.abs(maxHalfHeight - 54.23) < 0.01, "auto-fit halfHeight is ~54.23");
+  // Below the inner-zoom floor clamps up to 0.3.
+  assert.equal(camera.setZoom(0.01), 0.3);
+  // Above the auto-fit ceiling clamps down to the max.
+  assert.equal(camera.setZoom(1000), maxHalfHeight);
+  // A mid-range value is applied verbatim.
+  assert.equal(camera.setZoom(1.84), 1.84);
+});

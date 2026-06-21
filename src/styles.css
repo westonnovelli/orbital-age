@@ -312,16 +312,45 @@ body {
   pointer-events: none;
 }
 
-.framing {
+/* Bottom-right zoom cluster: the global scale-mode toggle, a +/- zoom bar, and
+   the framing presets, stacked together clear of the timeline dock and panels. */
+.zoom-cluster {
   position: absolute;
-  /* Clear the fixed topbar (top:0, ~3.4rem tall) which would otherwise cover
-     the buttons in the top-right. */
-  top: 4.5rem;
   right: 1.5rem;
+  bottom: 1.5rem;
   /* Above the fixed vignette (6) / atmosphere (3) overlays and panels (30);
      the topbar (50) sits clear above, so no overlap. */
   z-index: 45;
   display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55rem;
+  text-align: right;
+}
+
+.zoom-cluster__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.zoom-cluster__step {
+  min-width: 2rem;
+  padding: 0.3rem 0;
+  font-size: 1rem;
+  line-height: 1;
+  text-align: center;
+}
+
+.zoom-cluster__range {
+  width: 9rem;
+  accent-color: var(--secondary);
+}
+
+.zoom-cluster__presets {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.5rem;
 }
 
@@ -332,13 +361,8 @@ body {
   box-shadow: 0 0 20px var(--secondary-glow);
 }
 
-/* Global scale-mode toggle: anchored bottom-right, clear of the timeline dock
-   and the side panels. */
+/* Global scale-mode toggle: now nested at the top of the bottom-right cluster. */
 .scale-mode {
-  position: absolute;
-  right: 1.5rem;
-  bottom: 1.5rem;
-  z-index: 45;
   display: flex;
   flex-direction: column;
   align-items: flex-end;

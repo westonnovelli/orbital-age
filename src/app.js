@@ -222,6 +222,25 @@ const STARFIELD_SPREAD = starfieldSpread(AUTO_FIT_HALF_HEIGHT);
 // Moon's relativeScale is dialed in.
 const EARTH_MOON_HALF_HEIGHT = 0.3;
 
+// "Inner Planets" framing: frame the inner solar system out through Mars'
+// aphelion (~1.67 AU) with generous headroom. Beyond autoFitHalfHeight's built-in
+// 1.1 margin, the extra padding keeps Mars' orbit clear of the on-screen overlays
+// that cover the vertical extremes — the top distance-metric banner (#stats-hud)
+// and the bottom timeline dock — which would otherwise hide the orbit's top/bottom.
+// Like Auto-fit, it shows the system and stops tracking.
+const INNER_PLANETS_FRAME_AU = 2.4;
+const INNER_PLANETS_HALF_HEIGHT = autoFitHalfHeight(INNER_PLANETS_FRAME_AU);
+
+// Zoom-bar log mapping bounds. The bar maps a [0,1] slider position to a camera
+// halfHeight logarithmically over the framing range so equal travel == equal zoom
+// RATIO, matching the multiplicative wheel/zoomBy model. These bounds are FIXED to
+// the documented [0.3 … Auto-fit] range (not the live camera.minHalfHeight, which
+// True scale mutates) so the bar stays stable across modes.
+const ZOOM_BAR_MIN_HALF_HEIGHT = EARTH_MOON_HALF_HEIGHT;
+const ZOOM_BAR_MAX_HALF_HEIGHT = AUTO_FIT_HALF_HEIGHT;
+// Slider resolution: integer steps 0..ZOOM_BAR_STEPS map across the log range.
+const ZOOM_BAR_STEPS = 1000;
+
 // Multiplicative zoom step applied per wheel/pinch notch. Values >1 zoom out,
 // <1 zoom in; the camera clamps the result to the framing limits.
 const ZOOM_WHEEL_STEP = 1.1;
@@ -299,6 +318,38 @@ export function colorTripleToCss(color) {
   return `rgb(${channel(r)}, ${channel(g)}, ${channel(b)})`;
 }
 
+// Map a zoom-bar slider position t in [0,1] to a camera halfHeight, logarithmically
+// over [min, max] so equal slider travel is equal zoom ratio. The slider is
+// oriented to match the +/- buttons (and intuition): t=0 is fully zoomed OUT (max
+// halfHeight), t=1 is fully zoomed IN (min halfHeight). So sliding right zooms in.
+export function zoomBarTToHalfHeight(
+  t,
+  min = ZOOM_BAR_MIN_HALF_HEIGHT,
+  max = ZOOM_BAR_MAX_HALF_HEIGHT
+) {
+  const clampedT = Math.min(1, Math.max(0, Number(t)));
+  if (!Number.isFinite(clampedT) || min <= 0 || max <= 0) {
+    return max;
+  }
+  return max * Math.pow(min / max, clampedT);
+}
+
+// Inverse of zoomBarTToHalfHeight: map a halfHeight back to a slider position in
+// [0,1] so the bar can be synced from camera state (wheel/preset/button changes).
+// Mirrors the orientation above: a smaller halfHeight (more zoomed in) → larger t.
+export function zoomBarHalfHeightToT(
+  halfHeight,
+  min = ZOOM_BAR_MIN_HALF_HEIGHT,
+  max = ZOOM_BAR_MAX_HALF_HEIGHT
+) {
+  const h = Number(halfHeight);
+  if (!Number.isFinite(h) || h <= 0 || min <= 0 || max <= 0 || max === min) {
+    return 0;
+  }
+  const t = Math.log(h / max) / Math.log(min / max);
+  return Math.min(1, Math.max(0, t));
+}
+
 export class OrbitalApp {
   constructor({
     form,
@@ -323,7 +374,12 @@ export class OrbitalApp {
     hudAge,
     hudDistance,
     autoFitButton,
+    innerPlanetsButton,
     zoomEarthButton,
+    originButton,
+    zoomInButton,
+    zoomOutButton,
+    zoomBar,
     bodiesPanel,
     bodiesList,
     trailsMasterToggle,
@@ -353,8 +409,15 @@ export class OrbitalApp {
     this.hudAge = hudAge;
     this.hudDistance = hudDistance;
 
+    // Bottom-right zoom cluster: framing presets + a log-mapped zoom bar and
+    // +/- buttons, all two-way synced with the camera (and the wheel).
     this.autoFitButton = autoFitButton;
+    this.innerPlanetsButton = innerPlanetsButton;
     this.zoomEarthButton = zoomEarthButton;
+    this.originButton = originButton;
+    this.zoomInButton = zoomInButton;
+    this.zoomOutButton = zoomOutButton;
+    this.zoomBar = zoomBar;
 
     // Bodies panel: per-body distance readouts. Rows are built once after the
     // first submit; each row's distance <output> is stored by key for live
@@ -384,8 +447,9 @@ export class OrbitalApp {
     // exaggeratedScale }, so the Moon's scale can be resolved from a single source
     // of truth and its row checkbox disabled while True scale forces ×1.
     this.exaggerationControls = new Map();
-    // Tracks which framing preset is active ("auto-fit" | "earth") so the
-    // buttons can reflect state and zooming toward Earth implies tracking.
+    // Tracks which framing preset is active ("auto-fit" | "inner" | "earth" |
+    // "origin") so the buttons can reflect state and zooming toward Earth implies
+    // tracking. A manual zoom (wheel/bar/+-) clears it to null (no active preset).
     this.framingMode = "auto-fit";
 
     // Auto-fit is the default framing on load (most zoomed out). User zoom is
@@ -715,6 +779,7 @@ export class OrbitalApp {
     }
     this.timelineController?.refresh?.();
     this.#syncTrueScaleButton();
+    this.#syncZoomBar();
   }
 
   // Single source of truth for a parented body's effective relativeScale: True
@@ -857,41 +922,91 @@ export class OrbitalApp {
       (event) => {
         event.preventDefault();
         const factor = event.deltaY > 0 ? ZOOM_WHEEL_STEP : 1 / ZOOM_WHEEL_STEP;
-        this.camera.zoomBy(factor);
-        // Re-resolve bodies so the marker and rosette trail track the new zoom
-        // even when playback is paused.
-        this.timelineController?.refresh?.();
+        this.#applyManualZoom(() => this.camera.zoomBy(factor));
       },
       { passive: false }
     );
 
     this.autoFitButton?.addEventListener("click", () => this.#applyFraming("auto-fit"));
+    this.innerPlanetsButton?.addEventListener("click", () => this.#applyFraming("inner"));
     this.zoomEarthButton?.addEventListener("click", () => this.#applyFraming("earth"));
+    this.originButton?.addEventListener("click", () => this.#applyFraming("origin"));
+
+    // +/- buttons reuse the same multiplicative step as the wheel.
+    this.zoomInButton?.addEventListener("click", () => {
+      this.#applyManualZoom(() => this.camera.zoomBy(1 / ZOOM_WHEEL_STEP));
+    });
+    this.zoomOutButton?.addEventListener("click", () => {
+      this.#applyManualZoom(() => this.camera.zoomBy(ZOOM_WHEEL_STEP));
+    });
+
+    // The zoom bar drives an absolute setZoom via the log map; dragging it counts
+    // as a manual zoom (clears the active preset) and re-resolves bodies.
+    this.zoomBar?.addEventListener("input", () => {
+      const t = Number(this.zoomBar.value) / ZOOM_BAR_STEPS;
+      this.#applyManualZoom(() => this.camera.setZoom(zoomBarTToHalfHeight(t)));
+    });
 
     this.#updateFramingButtons();
+    this.#syncZoomBar();
   }
 
-  // Apply a framing preset: "auto-fit" frames the whole system (no tracking),
-  // "earth" zooms in and tracks Earth as it orbits.
-  #applyFraming(mode) {
-    this.framingMode = mode === "earth" ? "earth" : "auto-fit";
+  // Apply a user-driven (non-preset) zoom: run the camera mutation, clear the
+  // active framing preset, re-resolve bodies so the marker/rosette track the new
+  // zoom even while paused, and keep the zoom bar + buttons in sync.
+  #applyManualZoom(mutate) {
+    mutate();
+    this.framingMode = null;
+    this.timelineController?.refresh?.();
+    this.#updateFramingButtons();
+    this.#syncZoomBar();
+  }
 
-    if (this.framingMode === "earth") {
+  // Apply a framing preset:
+  //   "auto-fit" — frame the whole system, no tracking
+  //   "inner"    — frame the inner planets out through Mars, no tracking
+  //   "earth"    — zoom in and track Earth as it orbits
+  //   "origin"   — recenter on the Sun (origin), preserving the current zoom
+  #applyFraming(mode) {
+    this.framingMode = mode;
+
+    if (mode === "earth") {
       this.camera.setZoom(EARTH_MOON_HALF_HEIGHT);
       this.timelineController?.setTrackBodyKey(TRACKED_BODY_KEY);
+    } else if (mode === "inner") {
+      this.camera.setZoom(INNER_PLANETS_HALF_HEIGHT);
+      this.timelineController?.setTrackBodyKey(null);
+      this.camera.setCenter(0, 0);
+    } else if (mode === "origin") {
+      // Snap the camera back to the system center (the Sun) without changing
+      // zoom. setTrackBodyKey(null) recenters to (0,0) internally.
+      this.timelineController?.setTrackBodyKey(null);
+      this.camera.setCenter(0, 0);
     } else {
+      this.framingMode = "auto-fit";
       this.camera.setZoom(AUTO_FIT_HALF_HEIGHT);
       this.timelineController?.setTrackBodyKey(null);
       this.camera.setCenter(0, 0);
     }
 
     this.#updateFramingButtons();
+    this.#syncZoomBar();
   }
 
   #updateFramingButtons() {
-    const earthActive = this.framingMode === "earth";
-    this.autoFitButton?.setAttribute("aria-pressed", String(!earthActive));
-    this.zoomEarthButton?.setAttribute("aria-pressed", String(earthActive));
+    this.autoFitButton?.setAttribute("aria-pressed", String(this.framingMode === "auto-fit"));
+    this.innerPlanetsButton?.setAttribute("aria-pressed", String(this.framingMode === "inner"));
+    this.zoomEarthButton?.setAttribute("aria-pressed", String(this.framingMode === "earth"));
+    this.originButton?.setAttribute("aria-pressed", String(this.framingMode === "origin"));
+  }
+
+  // Reflect the camera's current halfHeight on the zoom bar via the log inverse.
+  #syncZoomBar() {
+    if (!this.zoomBar) {
+      return;
+    }
+    const t = zoomBarHalfHeightToT(this.camera.halfHeight);
+    this.zoomBar.value = String(Math.round(t * ZOOM_BAR_STEPS));
   }
 
   #setTimelineEnabled(enabled) {

@@ -113,7 +113,14 @@ function buildUi() {
     bodiesPanel: new FakeElement(),
     bodiesList,
     trailsMasterToggle: new FakeElement({ id: "bodies-master-trails" }),
-    trueScaleToggle: new FakeElement({ id: "true-scale-toggle" })
+    trueScaleToggle: new FakeElement({ id: "true-scale-toggle" }),
+    autoFitButton: new FakeElement({ id: "framing-auto-fit" }),
+    innerPlanetsButton: new FakeElement({ id: "framing-inner-planets" }),
+    zoomEarthButton: new FakeElement({ id: "framing-zoom-earth" }),
+    originButton: new FakeElement({ id: "framing-origin" }),
+    zoomInButton: new FakeElement({ id: "zoom-in" }),
+    zoomOutButton: new FakeElement({ id: "zoom-out" }),
+    zoomBar: new FakeElement({ id: "zoom-bar" })
   };
   ui.trailsMasterToggle.checked = true;
 
@@ -482,4 +489,105 @@ test("per-row trail toggle drives the matching trail and master fans out to all"
     assert.equal(trail.visible, true);
   }
   assert.equal(earthToggle.checked, true);
+});
+
+test("bottom-right zoom cluster wires presets, +/- buttons, and the zoom bar", (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  ui.form.dispatch("submit");
+
+  // Spy on the camera + controller so we can confirm the wiring dispatches the
+  // documented preset contract (setZoom / setTrackBodyKey / setCenter / zoomBy).
+  const setZoomCalls = [];
+  const zoomByCalls = [];
+  const trackCalls = [];
+  const centerCalls = [];
+  const camera = app.camera;
+  const controller = app.timelineController;
+  const realSetZoom = camera.setZoom.bind(camera);
+  const realZoomBy = camera.zoomBy.bind(camera);
+  const realSetCenter = camera.setCenter.bind(camera);
+  const realTrack = controller.setTrackBodyKey.bind(controller);
+  camera.setZoom = (h) => {
+    setZoomCalls.push(h);
+    return realSetZoom(h);
+  };
+  camera.zoomBy = (f) => {
+    zoomByCalls.push(f);
+    return realZoomBy(f);
+  };
+  camera.setCenter = (x, y) => {
+    centerCalls.push([x, y]);
+    return realSetCenter(x, y);
+  };
+  controller.setTrackBodyKey = (key) => {
+    trackCalls.push(key);
+    return realTrack(key);
+  };
+
+  // Inner Planets: setZoom to Mars' frame, no tracking, recenter on origin.
+  ui.innerPlanetsButton.dispatch("click");
+  assert.ok(Math.abs(setZoomCalls.at(-1) - 2.4 * 1.1) < 1e-9, "inner zoom frames Mars with headroom");
+  assert.equal(trackCalls.at(-1), null);
+  assert.deepEqual(centerCalls.at(-1), [0, 0]);
+  assert.equal(ui.innerPlanetsButton.getAttribute("aria-pressed"), "true");
+
+  // Zoom to Earth: tracks Earth at the inner framing.
+  ui.zoomEarthButton.dispatch("click");
+  assert.equal(setZoomCalls.at(-1), 0.3);
+  assert.equal(trackCalls.at(-1), "earth");
+  assert.equal(ui.zoomEarthButton.getAttribute("aria-pressed"), "true");
+
+  // Origin: recenters on the Sun without changing zoom.
+  const trackCountBeforeOrigin = trackCalls.length;
+  ui.originButton.dispatch("click");
+  assert.equal(trackCalls.at(-1), null, "origin stops tracking");
+  assert.ok(trackCalls.length > trackCountBeforeOrigin);
+  assert.deepEqual(centerCalls.at(-1), [0, 0]);
+  assert.equal(ui.originButton.getAttribute("aria-pressed"), "true");
+
+  // +/- buttons reuse zoomBy with the multiplicative wheel step.
+  ui.zoomInButton.dispatch("click");
+  assert.ok(zoomByCalls.at(-1) < 1, "zoom in uses a factor < 1");
+  ui.zoomOutButton.dispatch("click");
+  assert.ok(zoomByCalls.at(-1) > 1, "zoom out uses a factor > 1");
+  // A manual zoom clears the active preset.
+  assert.equal(ui.originButton.getAttribute("aria-pressed"), "false");
+
+  // The zoom bar's input drives an absolute setZoom via the log map; the slider
+  // value is reflected back from the clamped camera state.
+  ui.zoomBar.value = "500";
+  ui.zoomBar.dispatch("input");
+  const lastZoom = setZoomCalls.at(-1);
+  assert.ok(lastZoom > 0.3 && lastZoom < 54.24, "bar maps within the framing range");
+  // Round-trip: the bar value reflects the camera's clamped halfHeight.
+  assert.ok(Math.abs(Number(ui.zoomBar.value) - 500) <= 1, "bar synced from camera");
+
+  // Orientation matches the +/- buttons: a higher slider value zooms IN (smaller
+  // halfHeight), so it must not be inverted relative to the buttons.
+  ui.zoomBar.value = "800";
+  ui.zoomBar.dispatch("input");
+  assert.ok(setZoomCalls.at(-1) < lastZoom, "higher slider value zooms in");
 });

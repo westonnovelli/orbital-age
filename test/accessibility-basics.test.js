@@ -41,3 +41,14 @@ test("bodies panel exposes a labeled landmark and a polite live region", () => {
   assert.match(html, /<aside class="panel panel--bodies" aria-label="Bodies">/);
   assert.match(html, /<ul id="bodies-list" class="bodies__list" aria-live="polite">/);
 });
+
+test("bottom-right zoom cluster exposes labeled groups, presets, and a zoom bar", () => {
+  assert.match(html, /<div class="zoom-cluster" role="group" aria-label="Zoom and camera framing">/);
+  assert.match(html, /id="zoom-bar"[^>]*type="range"[^>]*aria-label="Zoom level"/);
+  assert.match(html, /id="zoom-in"[^>]*aria-label="Zoom in"/);
+  assert.match(html, /id="zoom-out"[^>]*aria-label="Zoom out"/);
+  assert.match(html, /id="framing-auto-fit"[^>]*aria-pressed="true"/);
+  assert.match(html, /id="framing-inner-planets"/);
+  assert.match(html, /id="framing-zoom-earth"/);
+  assert.match(html, /id="framing-origin"/);
+});
