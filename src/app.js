@@ -177,6 +177,38 @@ const RENDERED_BODIES = [
   }
 ];
 
+// Physically-accurate body radii in AU (equatorial radius km ÷ 149,597,870.7),
+// keyed by body. Used only by "True scale" mode, which swaps each marker's
+// dramatized world-space size for its real radius so the whole system — orbits
+// (already real AU) and bodies — shares one consistent length scale. At
+// solar-system zoom these are sub-pixel specks (the honest picture); they read
+// once you zoom in.
+const TRUE_RADIUS_AU = {
+  sun: 0.0046505,
+  mercury: 0.0000163,
+  venus: 0.0000405,
+  earth: 0.0000426,
+  moon: 0.0000116,
+  mars: 0.0000227,
+  jupiter: 0.0004673,
+  saturn: 0.0003893,
+  uranus: 0.0001695,
+  neptune: 0.0001646,
+  pluto: 0.0000079
+};
+
+// The Sun's dramatized world-space radius (matches SunEntity's default), restored
+// when "True scale" mode is switched off.
+const SUN_DISPLAY_SIZE = 0.15;
+
+// Camera framing applied when "True scale" mode turns on. At real radii the
+// bodies are specks at solar-system zoom, so the toggle snaps to a tight frame
+// centered on Earth: the half-height frames the true Earth–Moon separation
+// (~0.00257 AU) with margin, and the lowered minimum lets the user keep zooming
+// in to inspect a single body. Restored to EARTH_MOON_HALF_HEIGHT when off.
+const TRUE_SCALE_HALF_HEIGHT = 0.004;
+const TRUE_SCALE_MIN_HALF_HEIGHT = 0.0006;
+
 // Auto-fit framing: the camera halfHeight is derived from the outermost tracked
 // orbit (Neptune ~30 AU) rather than the old hardcoded 2.2 tuned for Earth.
 const MAX_ORBIT_RADIUS_AU = Math.max(...RENDERED_BODIES.map((b) => b.orbitRadiusAu ?? 0));
@@ -295,6 +327,7 @@ export class OrbitalApp {
     bodiesPanel,
     bodiesList,
     trailsMasterToggle,
+    trueScaleToggle,
     root
   }) {
     this.root = root;
@@ -337,6 +370,20 @@ export class OrbitalApp {
     this.bodyTrailToggles = new Map();
     // Header master "all trails" checkbox (queried/threaded from main.js).
     this.trailsMasterToggle = trailsMasterToggle;
+    // key -> BodyMarkerEntity, populated by the build loop, so "True scale" mode
+    // can resize every marker between its dramatized and physically-accurate size.
+    this.bodyMarkers = new Map();
+    // The Sun glow entity, stored so "True scale" can resize it too.
+    this.sunEntity = null;
+    // Prominent global "True scale" toggle (button, aria-pressed). When on, every
+    // body (Sun, planets, Pluto, Moon) renders at its real AU radius and the
+    // Moon's separation collapses to ×1. Default off so first-run is unchanged.
+    this.trueScaleToggle = trueScaleToggle;
+    this.trueScale = false;
+    // Per-parented-body exaggeration controls (the Moon). key -> { toggle,
+    // exaggeratedScale }, so the Moon's scale can be resolved from a single source
+    // of truth and its row checkbox disabled while True scale forces ×1.
+    this.exaggerationControls = new Map();
     // Tracks which framing preset is active ("auto-fit" | "earth") so the
     // buttons can reflect state and zooming toward Earth implies tracking.
     this.framingMode = "auto-fit";
@@ -365,6 +412,7 @@ export class OrbitalApp {
     this.#bindTimelineControls();
     this.#bindFramingControls();
     this.#bindTrailControls();
+    this.#bindScaleControls();
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       this.#handleRenderSubmit();
@@ -385,6 +433,7 @@ export class OrbitalApp {
     const bodies = [];
     const trails = [];
     this.bodyTrails = new Map();
+    this.bodyMarkers = new Map();
     for (const config of RENDERED_BODIES) {
       const marker = new BodyMarkerEntity({
         radiusX: BODY_RADIUS_X,
@@ -392,6 +441,7 @@ export class OrbitalApp {
         color: config.color,
         size: config.size
       });
+      this.bodyMarkers.set(config.key, marker);
       let trail = null;
       if (config.trail) {
         // One hue cycle per orbit: period = orbit circumference in scene units.
@@ -433,9 +483,10 @@ export class OrbitalApp {
       onStateChange: (state) => this.#updateTimelineUi(state)
     });
 
+    this.sunEntity = new SunEntity();
     const scene = new Scene()
       .add(new StarfieldEntity({ spread: STARFIELD_SPREAD }))
-      .add(new SunEntity());
+      .add(this.sunEntity);
     for (const trail of trails) {
       scene.add(trail);
     }
@@ -455,6 +506,9 @@ export class OrbitalApp {
 
     this.#buildBodiesPanel();
     this.#syncMasterTrailToggle();
+    // Re-apply the current scale mode so a re-render preserves True scale (fresh
+    // markers default to their dramatized size; the Moon resets to ×40).
+    this.#applyTrueScale(this.trueScale);
     this.#setTimelineEnabled(true);
     this.statsHud?.classList.remove("hud--hidden");
     this.#updateTimelineUi(this.timelineController.getState());
@@ -471,6 +525,7 @@ export class OrbitalApp {
 
     this.bodyDistanceOutputs = new Map();
     this.bodyTrailToggles = new Map();
+    this.exaggerationControls = new Map();
     this.bodiesList.textContent = "";
 
     const doc = this.bodiesList.ownerDocument ?? globalThis.document;
@@ -596,9 +651,11 @@ export class OrbitalApp {
       toggle.checked = true;
       toggle.dataset.key = config.key;
       toggle.setAttribute("aria-label", `Exaggerate ${formatBodyName(config.key)} separation`);
+      // Disabled while True scale forces an accurate (×1) separation.
+      toggle.disabled = this.trueScale;
+      this.exaggerationControls.set(config.key, { toggle, exaggeratedScale });
       toggle.addEventListener("change", () => {
-        const scale = toggle.checked ? exaggeratedScale : ACCURATE_RELATIVE_SCALE;
-        this.timelineController?.setBodyRelativeScale(config.key, scale);
+        this.#resolveBodyScale(config.key);
       });
 
       const text = doc.createElement("span");
@@ -615,6 +672,71 @@ export class OrbitalApp {
     }
 
     return row;
+  }
+
+  // Wire the global "True scale" toggle (a button with aria-pressed). It flips
+  // the whole scene between dramatized and physically-accurate body sizes.
+  #bindScaleControls() {
+    this.trueScaleToggle?.addEventListener("click", () => {
+      this.#applyTrueScale(!this.trueScale);
+    });
+    this.#syncTrueScaleButton();
+  }
+
+  // Switch every body (Sun, planets, Pluto, Moon) between its dramatized
+  // world-space size and its physically-accurate AU radius, and collapse the
+  // Moon's separation to ×1 while on. Orbits are already in real AU, so True
+  // scale makes the whole system share one consistent length scale. Frame is left
+  // untouched (zoom in to inspect — the accurate bodies are specks at full view).
+  #applyTrueScale(enabled) {
+    this.trueScale = Boolean(enabled);
+    for (const [key, marker] of this.bodyMarkers) {
+      const config = RENDERED_BODIES.find((body) => body.key === key);
+      const trueSize = TRUE_RADIUS_AU[key];
+      marker.setSize(this.trueScale && Number.isFinite(trueSize) ? trueSize : config?.size);
+    }
+    this.sunEntity?.setSize(this.trueScale ? TRUE_RADIUS_AU.sun : SUN_DISPLAY_SIZE);
+    // Re-resolve each parented body's separation (the Moon) and reflect the lock
+    // in its row checkbox.
+    for (const [key, control] of this.exaggerationControls) {
+      control.toggle.disabled = this.trueScale;
+      this.#resolveBodyScale(key);
+    }
+    // Real radii are invisible at solar-system zoom, so turning the mode ON snaps
+    // to a tight frame centered on Earth and unlocks deeper zoom for inspection.
+    // Turning it OFF restores the normal minimum and re-clamps the current zoom.
+    if (this.trueScale) {
+      this.camera.minHalfHeight = TRUE_SCALE_MIN_HALF_HEIGHT;
+      this.camera.setZoom(TRUE_SCALE_HALF_HEIGHT);
+      this.timelineController?.setTrackBodyKey(TRACKED_BODY_KEY);
+    } else {
+      this.camera.minHalfHeight = EARTH_MOON_HALF_HEIGHT;
+      this.camera.setZoom(this.camera.halfHeight);
+    }
+    this.timelineController?.refresh?.();
+    this.#syncTrueScaleButton();
+  }
+
+  // Single source of truth for a parented body's effective relativeScale: True
+  // scale forces ×1; otherwise honor the row's exaggeration checkbox.
+  #resolveBodyScale(key) {
+    const control = this.exaggerationControls.get(key);
+    if (!control) {
+      return;
+    }
+    const scale =
+      !this.trueScale && control.toggle.checked
+        ? control.exaggeratedScale
+        : ACCURATE_RELATIVE_SCALE;
+    this.timelineController?.setBodyRelativeScale(key, scale);
+  }
+
+  #syncTrueScaleButton() {
+    if (!this.trueScaleToggle) {
+      return;
+    }
+    this.trueScaleToggle.setAttribute("aria-pressed", String(this.trueScale));
+    this.trueScaleToggle.textContent = this.trueScale ? "True scale: On" : "True scale: Off";
   }
 
   // Wire the header master "all trails" toggle. Per-row toggles are wired in

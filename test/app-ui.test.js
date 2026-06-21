@@ -112,7 +112,8 @@ function buildUi() {
     timelineStatus: new FakeElement({ id: "timeline-status" }),
     bodiesPanel: new FakeElement(),
     bodiesList,
-    trailsMasterToggle: new FakeElement({ id: "bodies-master-trails" })
+    trailsMasterToggle: new FakeElement({ id: "bodies-master-trails" }),
+    trueScaleToggle: new FakeElement({ id: "true-scale-toggle" })
   };
   ui.trailsMasterToggle.checked = true;
 
@@ -338,6 +339,88 @@ test("per-row follow control tracks that body without changing zoom", (t) => {
 
   moonFollow.dispatch("click");
   assert.deepEqual(trackCalls, ["mars", "moon"]);
+});
+
+test("true-scale toggle resizes every body and locks the Moon's separation", (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  ui.form.dispatch("submit");
+
+  // Record relative-scale changes so we can confirm the Moon locks to 1x and back.
+  const scaleCalls = [];
+  const controller = app.timelineController;
+  const originalSetScale = controller.setBodyRelativeScale.bind(controller);
+  controller.setBodyRelativeScale = (key, scale) => {
+    scaleCalls.push([key, scale]);
+    return originalSetScale(key, scale);
+  };
+
+  // Dramatized sizes before the toggle: markers carry their registry display size.
+  const earthMarker = app.bodyMarkers.get("earth");
+  const moonMarker = app.bodyMarkers.get("moon");
+  assert.equal(earthMarker.size, 0.06, "earth starts at its dramatized size");
+  assert.equal(app.sunEntity.size, 0.15, "sun starts at its dramatized size");
+  assert.equal(app.trueScale, false);
+
+  // The Moon row's exaggeration checkbox starts enabled.
+  const rows = ui.bodiesList.children;
+  const earthRow = rows.find((row) => row.dataset.key === "earth");
+  const subList = earthRow.children.find((c) => c.className === "bodies__sublist");
+  const moonRow = subList.children.find((row) => row.dataset.key === "moon");
+  const exaggeration = moonRow.children.find((c) => c.className === "bodies__exaggeration");
+  const exaggerateToggle = exaggeration.children
+    .find((c) => c.className === "bodies__exaggerate-label")
+    .children.find((c) => c.className === "bodies__exaggerate-toggle");
+  assert.equal(exaggerateToggle.disabled, false);
+
+  // Turn True scale on: every body shrinks to its real radius and the Moon's
+  // separation collapses to 1x; its row checkbox is disabled.
+  const halfHeightBefore = app.camera.halfHeight;
+  ui.trueScaleToggle.dispatch("click");
+  assert.equal(app.trueScale, true);
+  assert.ok(earthMarker.size < 0.001, "earth shrank to a real radius");
+  assert.ok(moonMarker.size < 0.001, "moon shrank to a real radius");
+  assert.ok(app.sunEntity.size < 0.01, "sun shrank to a real radius");
+  assert.deepEqual(scaleCalls.at(-1), ["moon", 1]);
+  assert.equal(exaggerateToggle.disabled, true);
+  assert.equal(ui.trueScaleToggle.getAttribute("aria-pressed"), "true");
+  // Snaps to a tight frame centered on Earth so the specks are visible.
+  assert.ok(app.camera.halfHeight < halfHeightBefore, "zoom tightened");
+  assert.equal(app.camera.halfHeight, 0.004, "snapped to the true-scale frame");
+  assert.equal(controller.trackBodyKey, "earth", "centered on Earth");
+
+  // Turn it off: dramatized sizes restore, the Moon returns to exaggerated, and
+  // the zoom re-clamps back into the normal range.
+  ui.trueScaleToggle.dispatch("click");
+  assert.equal(app.trueScale, false);
+  assert.equal(earthMarker.size, 0.06, "earth restored to its dramatized size");
+  assert.equal(app.sunEntity.size, 0.15, "sun restored to its dramatized size");
+  assert.deepEqual(scaleCalls.at(-1), ["moon", 40]);
+  assert.equal(exaggerateToggle.disabled, false);
+  assert.equal(ui.trueScaleToggle.getAttribute("aria-pressed"), "false");
+  assert.ok(app.camera.halfHeight >= 0.3, "zoom re-clamped to the normal minimum");
 });
 
 test("per-row trail toggle drives the matching trail and master fans out to all", (t) => {

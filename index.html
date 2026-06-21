@@ -80,6 +80,20 @@
           </button>
         </div>
 
+        <!-- Global scale mode: a larger-effect toggle than the per-body controls,
+             so it lives prominently bottom-right rather than inside a panel row. -->
+        <div class="scale-mode" role="group" aria-label="Body scale">
+          <button
+            id="true-scale-toggle"
+            type="button"
+            class="btn btn--ghost scale-mode__btn"
+            aria-pressed="false"
+          >
+            True scale: Off
+          </button>
+          <p class="scale-mode__note">Sizes all bodies to real radii and frames Earth. Scroll to zoom further.</p>
+        </div>
+
         <!-- Central metrics HUD (revealed after a birthday is rendered) -->
         <div id="stats-hud" class="hud hud--hidden" aria-live="polite" aria-atomic="true">
           <div class="hud__eyebrow">

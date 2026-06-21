@@ -71,6 +71,14 @@ export class BodyMarkerEntity {
     this.#setPosition(this.angle);
   }
 
+  // Swap the marker's world-space radius (AU). Used by the "True scale" mode to
+  // collapse the dramatized glyph to the body's physically-accurate radius.
+  setSize(size) {
+    if (Number.isFinite(size)) {
+      this.size = size;
+    }
+  }
+
   init(gl) {
     this.program = createProgram(gl, VERTEX_SHADER, FRAGMENT_SHADER);
     this.attribs = {

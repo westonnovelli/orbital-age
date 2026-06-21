@@ -38,7 +38,8 @@ const app = new OrbitalApp({
   zoomEarthButton: document.querySelector("#framing-zoom-earth"),
   bodiesPanel: document.querySelector(".panel--bodies"),
   bodiesList: document.querySelector("#bodies-list"),
-  trailsMasterToggle: document.querySelector("#bodies-master-trails")
+  trailsMasterToggle: document.querySelector("#bodies-master-trails"),
+  trueScaleToggle: document.querySelector("#true-scale-toggle")
 });
 
 app.initialize();

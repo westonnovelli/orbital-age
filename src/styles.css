@@ -332,6 +332,35 @@ body {
   box-shadow: 0 0 20px var(--secondary-glow);
 }
 
+/* Global scale-mode toggle: anchored bottom-right, clear of the timeline dock
+   and the side panels. */
+.scale-mode {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  text-align: right;
+}
+
+.scale-mode__btn[aria-pressed="true"] {
+  color: #07332e;
+  background: linear-gradient(120deg, var(--secondary), var(--secondary-dim));
+  border-color: transparent;
+  box-shadow: 0 0 20px var(--secondary-glow);
+}
+
+.scale-mode__note {
+  margin: 0;
+  max-width: 14rem;
+  font-size: 0.7rem;
+  line-height: 1.3;
+  color: var(--text-dim, rgba(220, 235, 245, 0.55));
+}
+
 .scanline {
   position: absolute;
   left: 0;

@@ -52,6 +52,14 @@ export class SunEntity {
     this.uniforms = null;
   }
 
+  // Swap the Sun's world-space radius (AU). Used by "True scale" mode to collapse
+  // the dramatized glow to the Sun's physically-accurate radius.
+  setSize(size) {
+    if (Number.isFinite(size)) {
+      this.size = size;
+    }
+  }
+
   init(gl) {
     this.program = createProgram(gl, VERTEX_SHADER, FRAGMENT_SHADER);
     this.attribs = {
