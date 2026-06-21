@@ -579,6 +579,88 @@ test("Moon trail traces its Earth-relative rosette (parent + offset), not its he
   assert.ok(Math.hypot(base.ox, base.oy) > 1e-3);
 });
 
+test("setBodyRelativeScale flips the Moon between exaggerated and accurate separation", () => {
+  const instant = new Date(Date.UTC(2000, 0, 1));
+  const earth = bodyHeliocentricPositionAuAtInstant("earth", instant);
+  const delta = bodyEarthRelativePositionAuAtInstant("moon", instant);
+  const exaggerated = 40;
+  const accurate = 1;
+
+  const earthMarker = markerStub();
+  const moonMarker = markerStub();
+  // halfHeight at the coupling reference so the zoom coupling ratio is exactly 1
+  // and the resolved separation equals delta × relativeScale.
+  const camera = {
+    halfHeight: ZOOM_COUPLING_REFERENCE_HALF_HEIGHT,
+    setCenter() {}
+  };
+
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    bodies: [
+      { key: "earth", marker: earthMarker, trail: null },
+      { key: "moon", marker: moonMarker, trail: null, parent: "earth", relativeScale: exaggerated }
+    ],
+    camera
+  });
+
+  controller.init();
+
+  const separation = () => {
+    const moonPos = moonMarker.positions[moonMarker.positions.length - 1];
+    return Math.hypot(moonPos.x - earth.xAu, moonPos.y - earth.yAu);
+  };
+
+  const trueSeparation = Math.hypot(delta.xAu, delta.yAu);
+
+  // Default is exaggerated: separation ≈ true delta × 40.
+  assert.ok(Math.abs(separation() - trueSeparation * exaggerated) < 1e-9);
+
+  // Toggle to accurate: separation collapses to the true (1×) delta.
+  controller.setBodyRelativeScale("moon", accurate);
+  assert.ok(Math.abs(separation() - trueSeparation * accurate) < 1e-9);
+
+  // Toggle back to exaggerated.
+  controller.setBodyRelativeScale("moon", exaggerated);
+  assert.ok(Math.abs(separation() - trueSeparation * exaggerated) < 1e-9);
+});
+
+test("setBodyRelativeScale still respects the live zoom coupling", () => {
+  const instant = new Date(Date.UTC(2000, 0, 1));
+  const delta = bodyEarthRelativePositionAuAtInstant("moon", instant);
+  const earth = bodyHeliocentricPositionAuAtInstant("earth", instant);
+  const exaggerated = 40;
+
+  const earthMarker = markerStub();
+  const moonMarker = markerStub();
+  // Zoomed out 4× from the reference, so the coupling ratio is 0.25.
+  const halfHeight = ZOOM_COUPLING_REFERENCE_HALF_HEIGHT * 4;
+  const expectedCoupling = zoomCouplingRatio(halfHeight);
+  const camera = { halfHeight, setCenter() {} };
+
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    bodies: [
+      { key: "earth", marker: earthMarker, trail: null },
+      { key: "moon", marker: moonMarker, trail: null, parent: "earth", relativeScale: exaggerated }
+    ],
+    camera
+  });
+
+  controller.init();
+  controller.setBodyRelativeScale("moon", exaggerated);
+
+  const moonPos = moonMarker.positions[moonMarker.positions.length - 1];
+  const separation = Math.hypot(moonPos.x - earth.xAu, moonPos.y - earth.yAu);
+  const trueSeparation = Math.hypot(delta.xAu, delta.yAu);
+
+  // Separation = true delta × relativeScale × couplingRatio (coupling still applies).
+  assert.ok(Math.abs(separation - trueSeparation * exaggerated * expectedCoupling) < 1e-9);
+  assert.ok(expectedCoupling < 1);
+});
+
 test("all supported speeds advance timeline correctly", () => {
   for (const speed of [1, 10, 30, 120, 365]) {
     const marker = markerStub();

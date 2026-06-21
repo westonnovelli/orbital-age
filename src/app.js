@@ -197,6 +197,15 @@ const ZOOM_WHEEL_STEP = 1.1;
 // Key of the body the "Zoom to Earth" preset tracks.
 const TRACKED_BODY_KEY = "earth";
 
+// Effective `relativeScale` a parented body (the Moon) collapses to when its
+// exaggeration toggle is switched OFF — its physically-accurate separation. The
+// dramatized value comes from the registry entry's `relativeScale` (40).
+const ACCURATE_RELATIVE_SCALE = 1;
+
+// Short explanation shown beneath the Moon's exaggeration toggle.
+const MOON_EXAGGERATION_NOTE =
+  "True distance ~1/400th of Earth–Sun; exaggerated ~40× for visibility.";
+
 // Marker/trail orbital-ellipse radii. Origin uses a unit circle (radiusY 1).
 const BODY_RADIUS_X = 1;
 const BODY_RADIUS_Y = 1;
@@ -568,6 +577,42 @@ export class OrbitalApp {
       this.timelineController?.setTrackBodyKey(config.key);
     });
     row.append(follow);
+
+    // Exaggeration toggle for parented bodies (the Moon): flips the body's
+    // effective relativeScale between dramatized (registry value, ~40×) and
+    // physically-accurate (1×), keeping the zoom-coupling. Default stays
+    // exaggerated so first-run is unchanged. Inline copy explains the scale.
+    if (config.parent && Number.isFinite(config.relativeScale)) {
+      const exaggeratedScale = config.relativeScale;
+      const wrap = doc.createElement("div");
+      wrap.className = "bodies__exaggeration";
+
+      const label = doc.createElement("label");
+      label.className = "bodies__exaggerate-label";
+
+      const toggle = doc.createElement("input");
+      toggle.type = "checkbox";
+      toggle.className = "bodies__exaggerate-toggle";
+      toggle.checked = true;
+      toggle.dataset.key = config.key;
+      toggle.setAttribute("aria-label", `Exaggerate ${formatBodyName(config.key)} separation`);
+      toggle.addEventListener("change", () => {
+        const scale = toggle.checked ? exaggeratedScale : ACCURATE_RELATIVE_SCALE;
+        this.timelineController?.setBodyRelativeScale(config.key, scale);
+      });
+
+      const text = doc.createElement("span");
+      text.textContent = "Exaggerate distance";
+
+      label.append(toggle, text);
+
+      const note = doc.createElement("p");
+      note.className = "bodies__exaggerate-note";
+      note.textContent = MOON_EXAGGERATION_NOTE;
+
+      wrap.append(label, note);
+      row.append(wrap);
+    }
 
     return row;
   }

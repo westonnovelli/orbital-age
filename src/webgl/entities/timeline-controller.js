@@ -143,6 +143,10 @@ export class TimelineControllerEntity {
       // their heliocentric path directly.
       if (body.parent && typeof trail.precomputeParentedTrail === "function") {
         const scale = body.relativeScale ?? 1;
+        // Remember the relativeScale baked into the rosette's offsets so the
+        // exaggeration toggle can re-scale the trail (without re-sampling the
+        // ephemeris) by the ratio of the live relativeScale to this baked value.
+        body.trailBakedScale = scale;
         trail.precomputeParentedTrail(this.totalDays, (day) => {
           const instant = new Date(birthdayMs + day * MS_PER_DAY);
           const parent = bodyHeliocentricPositionAuAtInstant(body.parent, instant);
@@ -268,6 +272,28 @@ export class TimelineControllerEntity {
     }
   }
 
+  // Set a parented body's effective `relativeScale` (used in pass 2 of
+  // #applyToBodies) and re-resolve immediately so the change is visible even while
+  // paused. Drives the Moon's exaggeration toggle: 40 = dramatized separation,
+  // 1 = physically-accurate. The rosette trail is re-scaled in lockstep via the
+  // baked-scale ratio (see #applyToBodies), so marker and trail stay aligned.
+  setBodyRelativeScale(bodyKey, scale) {
+    const next = Number(scale);
+    if (!Number.isFinite(next)) {
+      return;
+    }
+    let changed = false;
+    for (const body of this.bodies) {
+      if (body.key === bodyKey) {
+        body.relativeScale = next;
+        changed = true;
+      }
+    }
+    if (changed) {
+      this.#applyToBodies();
+    }
+  }
+
   // Re-resolve all bodies for the current instant and camera. Call after a camera
   // change (e.g. zoom) so marker positions, the rosette trail scale, and tracking
   // update immediately even while playback is paused.
@@ -315,8 +341,15 @@ export class TimelineControllerEntity {
       const y = parentPos.y + delta.yAu * scale;
       body.marker.setPosition(x, y);
       // Breathe the rosette trail with the same zoom coupling as the marker so the
-      // trail tracks the marker's separation as the user zooms in and out.
-      body.trail?.setRosetteScale?.(effectiveScaleFactor);
+      // trail tracks the marker's separation as the user zooms in and out. The
+      // rosette's offsets were baked at `trailBakedScale` (the registry
+      // relativeScale at precompute time); when the exaggeration toggle changes
+      // the live relativeScale we re-scale by their ratio so the trail still
+      // matches the marker without re-sampling the ephemeris.
+      const bakedScale = body.trailBakedScale ?? body.relativeScale;
+      const rosetteScale =
+        bakedScale > 0 ? effectiveScaleFactor * (body.relativeScale / bakedScale) : effectiveScaleFactor;
+      body.trail?.setRosetteScale?.(rosetteScale);
       body.trail?.setCursorForDay?.(this.timelineDays);
       resolved.set(body.key, { x, y });
       // The Moon's odometer is its true distance through space (barycentric path),

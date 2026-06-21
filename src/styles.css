@@ -862,6 +862,44 @@ label {
   padding: 0.16rem 0.42rem;
 }
 
+/* Moon exaggeration toggle + explanatory copy. Spans the full row width beneath
+   the body's controls so the explanation has room to read. */
+.bodies__exaggeration {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 0.3rem;
+}
+
+.bodies__exaggerate-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-headline);
+  font-size: 0.56rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted, rgba(255, 255, 255, 0.6));
+  cursor: pointer;
+}
+
+.bodies__exaggerate-toggle {
+  width: 0.8rem;
+  height: 0.8rem;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--secondary);
+}
+
+.bodies__exaggerate-note {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.56rem;
+  line-height: 1.35;
+  color: var(--faint, rgba(255, 255, 255, 0.42));
+}
+
 /* Header master "show all trails" toggle. Sits above the list and fans its
    state out to every per-row toggle. */
 .bodies__master-trails {
