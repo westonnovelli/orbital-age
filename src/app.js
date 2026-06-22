@@ -250,6 +250,14 @@ const ZOOM_BAR_STEPS = 1000;
 // <1 zoom in; the camera clamps the result to the framing limits.
 const ZOOM_WHEEL_STEP = 1.1;
 
+// Per-body label screen offsets (CSS px), folded into each label's translate.
+// The Moon sits right on top of Earth when zoomed out, so its label is pushed
+// below Earth's so "Earth" stays readable; when zoomed in (Earth/Moon far apart
+// on screen) the small offset is unobtrusive. Bodies without an entry use (0,0).
+const LABEL_SCREEN_OFFSETS = {
+  moon: { x: 0, y: 20 }
+};
+
 // Click hit-test tolerance in CSS pixels. A scene click selects the nearest body
 // marker whose projected screen position is within this radius of the pointer, so
 // small/overlapping markers stay clickable without demanding pixel precision.
@@ -634,11 +642,14 @@ export class OrbitalApp {
     };
 
     // Auto-fit is the default framing on load (most zoomed out). User zoom is
-    // clamped between Earth-Moon framing (min) and Auto-fit (max).
+    // clamped between Earth-Moon framing (min) and Auto-fit (max). `fitHalfHeight`
+    // lets the camera grow the max zoom-out on portrait (phone) viewports so the
+    // outermost orbit (Pluto) still fits horizontally; landscape is unchanged.
     this.camera = new OrthoCamera2D({
       halfHeight: AUTO_FIT_HALF_HEIGHT,
       minHalfHeight: EARTH_MOON_HALF_HEIGHT,
-      maxHalfHeight: AUTO_FIT_HALF_HEIGHT
+      maxHalfHeight: AUTO_FIT_HALF_HEIGHT,
+      fitHalfHeight: AUTO_FIT_HALF_HEIGHT
     });
     this.renderer = new WebGLRenderer(canvas, { camera: this.camera });
     this.timelineController = null;
@@ -741,7 +752,9 @@ export class OrbitalApp {
     const introTween = new CameraIntroTweenEntity({
       camera: this.camera,
       fromHalfHeight: INNER_PLANETS_HALF_HEIGHT,
-      toHalfHeight: AUTO_FIT_HALF_HEIGHT,
+      // Use the live max (aspect-adjusted on portrait) so the flythrough settles
+      // fully zoomed out and the outermost orbit fits even on a phone.
+      toHalfHeight: this.camera.maxHalfHeight,
       durationSeconds: INTRO_ZOOM_SECONDS,
       onUpdate: () => {
         this.#syncZoomBar();
@@ -1327,7 +1340,10 @@ export class OrbitalApp {
       const onScreen =
         screen.ndcX >= -1 && screen.ndcX <= 1 && screen.ndcY >= -1 && screen.ndcY <= 1;
       label.style.display = onScreen ? "" : "none";
-      label.style.transform = `translate(${screen.x}px, ${screen.y}px)`;
+      // Fold any per-body label offset (e.g. the Moon, nudged clear of Earth)
+      // into the transform so the per-frame write stays transform-only.
+      const off = LABEL_SCREEN_OFFSETS[key] ?? { x: 0, y: 0 };
+      label.style.transform = `translate(${screen.x + off.x}px, ${screen.y + off.y}px)`;
     }
   }
 
@@ -1819,7 +1835,9 @@ export class OrbitalApp {
       this.camera.setCenter(0, 0);
     } else {
       this.framingMode = "auto-fit";
-      this.camera.setZoom(AUTO_FIT_HALF_HEIGHT);
+      // maxHalfHeight is the aspect-aware fully-zoomed-out frame (grows on
+      // portrait so Pluto fits by width); fall back to the fixed auto-fit value.
+      this.camera.setZoom(this.camera.maxHalfHeight ?? AUTO_FIT_HALF_HEIGHT);
       this.timelineController?.setTrackBodyKey(null);
       this.camera.setCenter(0, 0);
     }

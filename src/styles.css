@@ -1764,14 +1764,20 @@ input[type="range"]::-moz-range-thumb {
     visibility: visible;
   }
 
-  /* Stack the reparented right-sheet controls vertically and let them fill the
-     sheet width. */
+  /* Stack the reparented right-sheet control *clusters* vertically and let them
+     fill the sheet width. The audio toggle is a single button (icon + label), so
+     it keeps its base row direction — it just spans the sheet width via the
+     neutralize rule above. */
   .mobile-sheet--right .scene-controls,
-  .mobile-sheet--right .zoom-cluster,
-  .mobile-sheet--right .audio-toggle {
+  .mobile-sheet--right .zoom-cluster {
     flex-direction: column;
     align-items: stretch;
     gap: 0.5rem;
+  }
+
+  /* The audio toggle spans the sheet width but keeps icon + label on one row. */
+  .mobile-sheet--right .audio-toggle {
+    justify-content: center;
   }
 
   .mobile-sheet--right .zoom-cluster__bar,
@@ -1783,13 +1789,27 @@ input[type="range"]::-moz-range-thumb {
     flex-direction: column;
   }
 
+  /* The ≤1024px tier hides the side data panels (display:none). Once they are
+     reparented into the bottom sheet they must render again — restore each
+     panel's natural display (telemetry = block, bodies = flex column). */
+  .mobile-sheet--bottom .panel--telemetry {
+    display: block;
+  }
+
+  .mobile-sheet--bottom .panel--bodies {
+    display: flex;
+    flex-direction: column;
+  }
+
   /* Space the two stacked data panels inside the bottom sheet. */
   .mobile-sheet--bottom .panel + .panel {
     margin-top: 1rem;
   }
 
-  /* Timeline: pin tight to the bottom edge as a single compact row so it covers
-     as little of the canvas as possible. */
+  /* Timeline: pin tight to the bottom edge and compact it so it covers as little
+     of the canvas as possible. Speed sits inline (right-aligned) with the
+     transport row instead of on its own full-width line, the scrubber label is
+     visually hidden, and tap targets / paddings / the range track shrink. */
   .timeline {
     bottom: 0;
     left: 0;
@@ -1797,11 +1817,59 @@ input[type="range"]::-moz-range-thumb {
     width: 100%;
     transform: none;
     border-radius: 0;
-    padding: 0.55rem 0.75rem calc(0.6rem + env(safe-area-inset-bottom, 0px));
+    padding: 0.4rem 0.65rem calc(0.45rem + env(safe-area-inset-bottom, 0px));
   }
 
+  .timeline__transport {
+    gap: 0.4rem;
+  }
+
+  /* Keep speed inline at the right edge rather than wrapping to a full-width row;
+     transport buttons no longer grow so there is room for it. */
+  .timeline__speed {
+    width: auto;
+    margin-left: auto;
+    justify-content: flex-end;
+  }
+
+  /* Size every button in the transport row uniformly so Play/Pause (.btn--transport)
+     and Reset (.btn--ghost) match. */
+  .timeline__transport .btn {
+    flex: 0 1 auto;
+    min-width: 4rem;
+    min-height: 36px;
+    padding: 0.35rem 0.6rem;
+  }
+
+  .timeline__speed select {
+    min-height: 36px;
+  }
+
+  /* Compress the scrubber row: hide its label (kept for assistive tech), tighten
+     spacing, and use a shorter track than the 44px sheet sliders. */
   .timeline__scrub {
-    margin-top: 0.6rem;
+    margin-top: 0.4rem;
+    gap: 0.25rem;
+  }
+
+  .timeline__scrub-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .timeline input[type="range"] {
+    height: 34px;
+  }
+
+  .timeline__readout {
+    min-height: 1rem;
   }
 }
 

@@ -5,13 +5,18 @@ function clamp(value, min, max) {
 }
 
 export class OrthoCamera2D {
-  constructor({ halfHeight = 1.6, minHalfHeight, maxHalfHeight } = {}) {
+  constructor({ halfHeight = 1.6, minHalfHeight, maxHalfHeight, fitHalfHeight } = {}) {
     // In an orthographic view a SMALLER halfHeight is more zoomed IN. The
     // Auto-fit framing (whole system) is the most zoomed-OUT state, so it is the
     // maximum halfHeight; the Earth-Moon framing is the most zoomed-IN, so it is
     // the minimum halfHeight. Clamp keeps user zoom between those two presets.
     this.maxHalfHeight = maxHalfHeight ?? halfHeight;
     this.minHalfHeight = minHalfHeight ?? halfHeight;
+    // `fitHalfHeight` (optional) frames the system by HEIGHT. When set, the max
+    // zoom-out is recomputed per viewport so a portrait (aspect < 1) screen can
+    // still fit the system by WIDTH — see #updateMaxForAspect. When unset, the
+    // max stays fixed (desktop/landscape behavior is unchanged).
+    this.fitHalfHeight = Number.isFinite(fitHalfHeight) ? fitHalfHeight : null;
     this.halfHeight = clamp(halfHeight, this.minHalfHeight, this.maxHalfHeight);
 
     this.centerX = 0;
@@ -25,7 +30,23 @@ export class OrthoCamera2D {
   setViewport(width, height) {
     this.viewportWidth = Math.max(1, width);
     this.viewportHeight = Math.max(1, height);
+    this.#updateMaxForAspect();
+    // Keep the current zoom within the (possibly aspect-adjusted) limits.
+    this.halfHeight = clamp(this.halfHeight, this.minHalfHeight, this.maxHalfHeight);
     this.#rebuild();
+  }
+
+  // When a fit halfHeight is known, grow the max zoom-out on portrait viewports
+  // so the system fits horizontally: width = halfHeight * aspect, so to contain a
+  // half-extent of `fitHalfHeight` by width we need halfHeight >= fit / aspect.
+  // Landscape/square (aspect >= 1) keeps the height-limited fit unchanged.
+  #updateMaxForAspect() {
+    if (this.fitHalfHeight == null) {
+      return;
+    }
+    const aspect = this.viewportWidth / this.viewportHeight;
+    const widthFactor = aspect < 1 ? 1 / aspect : 1;
+    this.maxHalfHeight = this.fitHalfHeight * widthFactor;
   }
 
   // Set the absolute zoom (camera halfHeight in scene units), clamped between
