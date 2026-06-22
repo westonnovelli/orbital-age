@@ -7,6 +7,7 @@ const timelineControls = modernTimelineControls ?? legacyTimelineControls;
 
 const app = new OrbitalApp({
   root: document.querySelector(".stage"),
+  topbar: document.querySelector(".topbar"),
   form: document.querySelector("#birthday-form"),
   dateInput: document.querySelector("#birthday"),
   validationMessage: document.querySelector("#validation-message"),
@@ -53,7 +54,16 @@ const app = new OrbitalApp({
   telemetryPath: document.querySelector("#telemetry-path"),
   telemetryMetric: document.querySelector("#telemetry-metric"),
   audioElement: document.querySelector("#bg-audio"),
-  audioToggle: document.querySelector("#audio-toggle")
+  audioToggle: document.querySelector("#audio-toggle"),
+  entryPanel: document.querySelector(".panel--entry"),
+  sceneControls: document.querySelector(".scene-controls"),
+  zoomCluster: document.querySelector(".zoom-cluster"),
+  topbarSigil: document.querySelector(".topbar__sigil"),
+  mobileDataToggle: document.querySelector("#mobile-data-toggle"),
+  mobileMenuRight: document.querySelector("#mobile-menu-right"),
+  mobileSheetLeft: document.querySelector("#mobile-sheet-left"),
+  mobileSheetBottom: document.querySelector("#mobile-sheet-bottom"),
+  mobileSheetRight: document.querySelector("#mobile-sheet-right")
 });
 
 app.initialize();

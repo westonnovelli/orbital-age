@@ -482,9 +482,20 @@ export class OrbitalApp {
     telemetryMetric,
     audioElement,
     audioToggle,
+    entryPanel,
+    sceneControls,
+    zoomCluster,
+    topbarSigil,
+    mobileDataToggle,
+    mobileMenuRight,
+    mobileSheetLeft,
+    mobileSheetBottom,
+    mobileSheetRight,
+    topbar,
     root
   }) {
     this.root = root;
+    this.topbar = topbar;
     this.form = form;
     this.dateInput = dateInput;
     this.validationMessage = validationMessage;
@@ -571,6 +582,29 @@ export class OrbitalApp {
     this.audioStarted = false;
     this.audioMuted = false;
 
+    // Phone-tier menu + off-canvas sheets. On a phone width (matchMedia
+    // "(max-width: 480px)") the persistent chrome is reparented into these
+    // sheets: the Chronos/entry panel into the left sheet, scene + zoom controls
+    // into the right sheet, and telemetry + bodies into the bottom sheet. Each
+    // topbar trigger toggles its sheet's `mobile-sheet--open` state (opening one
+    // closes the others) and syncs aria-expanded. On desktop widths the
+    // reparenting routine is a no-op and the DOM is untouched. The cluster
+    // containers themselves are stored so they can be moved as a unit.
+    this.entryPanel = entryPanel;
+    this.sceneControls = sceneControls;
+    this.zoomCluster = zoomCluster;
+    this.topbarSigil = topbarSigil;
+    this.mobileDataToggle = mobileDataToggle;
+    this.mobileMenuRight = mobileMenuRight;
+    this.mobileSheetLeft = mobileSheetLeft;
+    this.mobileSheetBottom = mobileSheetBottom;
+    this.mobileSheetRight = mobileSheetRight;
+    // Remembers each reparented node's original parent so it can be restored to
+    // its desktop position when the viewport leaves the phone tier.
+    this.mobileOriginalParents = new Map();
+    // Whether the chrome is currently reparented into the sheets (phone tier).
+    this.mobileSheetsActive = false;
+
     // Tracks which framing preset is active ("auto-fit" | "inner" | "earth" |
     // "origin") so the buttons can reflect state and zooming toward Earth implies
     // tracking. A manual zoom (wheel/bar/+-) clears it to null (no active preset).
@@ -607,6 +641,7 @@ export class OrbitalApp {
     this.#bindScaleControls();
     this.#bindSceneInteraction();
     this.#bindAudioControls();
+    this.#bindMobileSheets();
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       this.#handleRenderSubmit();
@@ -736,6 +771,13 @@ export class OrbitalApp {
     this.statsHud?.classList.remove("hud--hidden");
     this.#updateTimelineUi(this.timelineController.getState());
     this.root?.classList.add("journey-active");
+    // The topbar is a sibling of the stage (not a descendant), so mirror the class
+    // onto it as well — the phone-tier menu/sigil triggers key off it. Desktop has
+    // no base rule on .journey-active inside the topbar, so the render is unchanged.
+    this.topbar?.classList?.add("journey-active");
+    // Now that a journey is active, collapse the chrome into the phone sheets (the
+    // entry panel moves into the left sheet). No-op off the phone tier.
+    this.#syncMobileSheets();
     // The looping score starts on the first journey and keeps playing across
     // subsequent re-renders (this no-ops once started).
     this.#startAudio();
@@ -1220,6 +1262,152 @@ export class OrbitalApp {
     this.audioToggle.title = label;
     const icon = this.audioMuted ? AUDIO_MUTED_ICON_SVG : AUDIO_ON_ICON_SVG;
     this.audioToggle.innerHTML = `${icon}<span class="audio-toggle__text">${label}</span>`;
+  }
+
+  // True when the viewport matches the phone tier (≤480px). Used to gate the
+  // sheet reparenting so desktop/tablet widths never touch the DOM. Tolerant of
+  // environments without matchMedia (returns false → desktop no-op path).
+  #isPhoneViewport() {
+    const mm = globalThis.matchMedia;
+    if (typeof mm !== "function") {
+      return false;
+    }
+    return Boolean(mm.call(globalThis, "(max-width: 480px)")?.matches);
+  }
+
+  // Whether the first journey has begun (the entry panel only collapses into the
+  // left sheet after this; before it, the Chronos panel stays centered).
+  #journeyStarted() {
+    return Boolean(this.root?.classList?.contains?.("journey-active"));
+  }
+
+  // Wire the three phone-tier topbar triggers and keep the sheets in sync with
+  // the viewport. The triggers always toggle their sheet's open state + aria; the
+  // reparenting itself is gated to the phone tier in #syncMobileSheets so desktop
+  // is untouched. A matchMedia `change` listener re-syncs on rotate/resize.
+  #bindMobileSheets() {
+    // The brand sigil doubles as the Chronos (left) sheet trigger, but only on the
+    // phone tier and only once a journey has begun (before that the Chronos panel
+    // is centered, not in the sheet). On desktop the sigil stays inert/decorative.
+    this.topbarSigil?.addEventListener("click", () => {
+      if (!this.#isPhoneViewport() || !this.#journeyStarted()) {
+        return;
+      }
+      this.#toggleMobileSheet(this.mobileSheetLeft, this.topbarSigil);
+    });
+    this.mobileDataToggle?.addEventListener("click", () => {
+      this.#toggleMobileSheet(this.mobileSheetBottom, this.mobileDataToggle);
+    });
+    this.mobileMenuRight?.addEventListener("click", () => {
+      this.#toggleMobileSheet(this.mobileSheetRight, this.mobileMenuRight);
+    });
+
+    // Each sheet carries a close (✕) button. An open sheet (z-index 60) covers the
+    // topbar trigger (z-index 50), so the in-sheet close is the way back out.
+    for (const sheet of [this.mobileSheetLeft, this.mobileSheetBottom, this.mobileSheetRight]) {
+      const closeBtn = sheet?.querySelector?.(".mobile-sheet__close");
+      closeBtn?.addEventListener?.("click", () => this.#closeMobileSheets());
+    }
+
+    const mm = globalThis.matchMedia;
+    if (typeof mm === "function") {
+      const query = mm.call(globalThis, "(max-width: 480px)");
+      query?.addEventListener?.("change", () => this.#syncMobileSheets());
+    }
+
+    // Initial sync so a page loaded directly at a phone width is laid out right.
+    this.#syncMobileSheets();
+  }
+
+  // Reparent the persistent chrome into the off-canvas sheets when the viewport
+  // is on the phone tier, and restore each node to its original parent otherwise.
+  // The desktop/tablet path is a no-op (nothing reparented), so the DOM and
+  // render stay byte-for-byte identical at every wider width.
+  #syncMobileSheets() {
+    // Only collapse the chrome into sheets on the phone tier AND after a journey
+    // has begun — the opening screen stays a centered Chronos panel over the scene.
+    if (this.#isPhoneViewport() && this.#journeyStarted()) {
+      this.#moveToSheet(this.entryPanel, this.mobileSheetLeft);
+      this.#moveToSheet(this.sceneControls, this.mobileSheetRight);
+      this.#moveToSheet(this.zoomCluster, this.mobileSheetRight);
+      this.#moveToSheet(this.audioToggle, this.mobileSheetRight);
+      this.#moveToSheet(this.telemetryPanel, this.mobileSheetBottom);
+      this.#moveToSheet(this.bodiesPanel, this.mobileSheetBottom);
+      this.mobileSheetsActive = true;
+    } else if (this.mobileSheetsActive) {
+      // Leaving the phone tier: restore every reparented node to its original
+      // parent and clear any open sheet state.
+      this.#restoreFromSheets();
+      this.mobileSheetsActive = false;
+    }
+  }
+
+  // Append `node` into `sheet`, remembering its original parent the first time so
+  // it can be restored later. Skips when either side is missing or the node is
+  // already inside the sheet.
+  #moveToSheet(node, sheet) {
+    if (!node || !sheet || typeof sheet.appendChild !== "function") {
+      return;
+    }
+    if (!this.mobileOriginalParents.has(node)) {
+      this.mobileOriginalParents.set(node, node.parentNode ?? null);
+    }
+    if (node.parentNode === sheet) {
+      return;
+    }
+    sheet.appendChild(node);
+  }
+
+  // Return every reparented node to the parent it had before it was moved into a
+  // sheet, and reset the open/aria state on the triggers + sheets.
+  #restoreFromSheets() {
+    for (const [node, parent] of this.mobileOriginalParents) {
+      if (parent && typeof parent.appendChild === "function" && node.parentNode !== parent) {
+        parent.appendChild(node);
+      }
+    }
+    this.mobileOriginalParents.clear();
+    for (const sheet of [this.mobileSheetLeft, this.mobileSheetBottom, this.mobileSheetRight]) {
+      sheet?.classList?.remove("mobile-sheet--open");
+    }
+    for (const trigger of [this.topbarSigil, this.mobileDataToggle, this.mobileMenuRight]) {
+      trigger?.setAttribute?.("aria-expanded", "false");
+    }
+  }
+
+  // Close every mobile sheet and reset the triggers' aria-expanded. Used by the
+  // in-sheet close (✕) buttons, since an open sheet overlays the topbar triggers.
+  #closeMobileSheets() {
+    for (const sheet of [this.mobileSheetLeft, this.mobileSheetBottom, this.mobileSheetRight]) {
+      sheet?.classList?.remove("mobile-sheet--open");
+    }
+    for (const trigger of [this.topbarSigil, this.mobileDataToggle, this.mobileMenuRight]) {
+      trigger?.setAttribute?.("aria-expanded", "false");
+    }
+  }
+
+  // Toggle one sheet open/closed, closing the others (only one sheet is open at a
+  // time) and syncing every trigger's aria-expanded to its sheet's state.
+  #toggleMobileSheet(sheet, trigger) {
+    if (!sheet) {
+      return;
+    }
+    const willOpen = !sheet.classList.contains("mobile-sheet--open");
+    const sheets = [
+      [this.mobileSheetLeft, this.topbarSigil],
+      [this.mobileSheetBottom, this.mobileDataToggle],
+      [this.mobileSheetRight, this.mobileMenuRight]
+    ];
+    for (const [s, t] of sheets) {
+      if (!s) {
+        continue;
+      }
+      const open = s === sheet && willOpen;
+      s.classList.toggle("mobile-sheet--open", open);
+      t?.setAttribute?.("aria-expanded", String(open));
+    }
+    // Keep aria in sync even when the toggled sheet has no registered trigger.
+    trigger?.setAttribute?.("aria-expanded", String(willOpen));
   }
 
   // Wire the header master "all trails" toggle. Per-row toggles are wired in

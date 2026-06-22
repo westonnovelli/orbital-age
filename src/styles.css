@@ -1404,6 +1404,29 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* ----------------------------------------------------------------------- */
+/* Mobile menu + sheets (phone tier only)                                   */
+/* ----------------------------------------------------------------------- */
+/* New elements only. Every rule here hides a NEW element by default; a new
+   element hidden by default cannot alter any existing desktop element, so the
+   desktop render path is untouched. These are revealed only inside the
+   @media (max-width: 480px) phone tier below. */
+.topbar__menus {
+  display: none;
+}
+
+.topbar__menu {
+  display: none;
+}
+
+.mobile-sheet {
+  display: none;
+}
+
+.mobile-sheet__close {
+  display: none;
+}
+
+/* ----------------------------------------------------------------------- */
 /* Animations                                                               */
 /* ----------------------------------------------------------------------- */
 @keyframes pulse {
@@ -1496,6 +1519,289 @@ input[type="range"]::-moz-range-thumb {
 
   .bracket {
     display: none;
+  }
+}
+
+/* Phone portrait tier (additive over the 720px tablet tier above). Every rule
+   here is a narrow-width-only override; no desktop base rule is edited, so the
+   desktop render path cannot match any of these selectors. */
+@media (max-width: 480px) {
+  /* Topbar: tighten below the 720px values and keep the brand text on one line. */
+  .topbar {
+    padding: 0.7rem 0.85rem;
+    gap: 0.85rem;
+  }
+
+  .topbar__brandtext {
+    white-space: nowrap;
+  }
+
+  .topbar__title {
+    font-size: 1rem;
+    letter-spacing: 0.14em;
+  }
+
+  /* HUD: pull up a touch more and shrink the chip gap for short phone heights. */
+  .hud {
+    top: 8%;
+  }
+
+  .hud__metrics {
+    gap: 0.45rem;
+  }
+
+  /* Entry panel: reuse the viewport clamp idiom so it fits a phone width, with a
+     tighter gutter than the 720px tier. (When a journey is active the panel is
+     reparented into the left sheet, where .mobile-sheet .panel neutralizes this
+     anchoring; before a journey it stays centered as the base rule defines.) */
+  .panel--entry {
+    width: min(370px, calc(100vw - 1.5rem));
+    padding: 1.1rem;
+  }
+
+  /* Timeline transport spacing for phones. The 720px block already drops
+     .timeline__speed margin-left to 0; we keep it and let the speed row sit on
+     its own full-width line. The bottom-edge pinning lives in the menu+sheets
+     block below. */
+  .timeline__transport {
+    gap: 0.5rem;
+  }
+
+  .timeline__speed {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  /* Tap targets: bump interactive controls toward the ~44px touch minimum.
+     CSS-only (design Q5 Option A) — the JS hit radius is unchanged. */
+  .btn {
+    min-height: 44px;
+    padding: 0.65rem 0.9rem;
+  }
+
+  .btn--transport {
+    min-width: 5.5rem;
+    flex: 1 1 auto;
+  }
+
+  .scene-controls,
+  .zoom-cluster {
+    gap: 0.4rem;
+  }
+
+  .scene-controls__btn,
+  .zoom-cluster__step {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .timeline__speed select {
+    min-height: 44px;
+  }
+
+  /* Larger range track + thumb so the scrubber is draggable with a fingertip. */
+  input[type="range"] {
+    height: 44px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+    margin-top: -9px;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* --------------------------------------------------------------------- */
+  /* Menu + sheets architecture (supersedes the floating-cluster relocation) */
+  /* --------------------------------------------------------------------- */
+  /* The Phase-1 floating-cluster relocation (repositioning .scene-controls /
+     .zoom-cluster, the docked-entry lift, and the preset 2-up grid) is removed:
+     once a journey begins those controls/panels are reparented by JS into the
+     off-canvas sheets below, so they no longer float over the canvas. */
+
+  /* Reveal the phone-only topbar menu triggers — but only once a journey is
+     active. Before that the opening screen is just the centered Chronos panel
+     over the scene, with no menu chrome. */
+  .journey-active .topbar__menus {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  /* On the phone tier the brand sigil doubles as the Chronos (left) sheet
+     trigger once a journey is active; give it a tappable affordance + the same
+     active treatment as the menu buttons. (Inert/decorative on desktop.) */
+  .journey-active .topbar__sigil {
+    cursor: pointer;
+  }
+
+  .journey-active .topbar__sigil[aria-expanded="true"] {
+    border-color: var(--secondary);
+    box-shadow: inset 0 0 14px rgba(74, 248, 227, 0.25), 0 0 18px var(--secondary-glow);
+  }
+
+  .topbar__menu {
+    display: grid;
+    place-items: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    font-size: 1.15rem;
+    line-height: 1;
+    color: var(--fg);
+    background: var(--glass);
+    border: 1px solid var(--outline);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .topbar__menu[aria-expanded="true"] {
+    color: #07332e;
+    background: linear-gradient(120deg, var(--secondary), var(--secondary-dim));
+    border-color: transparent;
+    box-shadow: 0 0 18px var(--secondary-glow);
+  }
+
+  /* Off-canvas sheets. Side sheets (left/right) anchor to the full viewport
+     height and translate offscreen; the bottom sheet slides up. Each is revealed
+     by the .mobile-sheet--open state class toggled from its topbar trigger. Reuse
+     the 100vh -> 100dvh fallback so the mobile URL-bar gap is handled. */
+  .mobile-sheet {
+    display: block;
+    position: fixed;
+    z-index: 60;
+    background: var(--glass-strong);
+    backdrop-filter: blur(22px) saturate(1.2);
+    -webkit-backdrop-filter: blur(22px) saturate(1.2);
+    border: 1px solid var(--outline);
+    box-shadow: 0 28px 74px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transition: transform 0.32s ease;
+  }
+
+  /* In-sheet close affordance, pinned top-right. An open sheet (z-index 60)
+     covers the topbar trigger, so this is the way back out. */
+  .mobile-sheet__close {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+    z-index: 1;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: var(--fg);
+    background: var(--glass);
+    border: 1px solid var(--outline);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .mobile-sheet--left,
+  .mobile-sheet--right {
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
+    width: min(320px, calc(100vw - 3rem));
+    padding: 4.75rem 1rem 1.25rem;
+  }
+
+  .mobile-sheet--left {
+    left: 0;
+    border-left: 0;
+    transform: translateX(-100%);
+  }
+
+  .mobile-sheet--right {
+    right: 0;
+    border-right: 0;
+    transform: translateX(100%);
+  }
+
+  .mobile-sheet--bottom {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 70vh;
+    max-height: 70dvh;
+    padding: 3.25rem 1rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+    border-bottom: 0;
+    transform: translateY(100%);
+  }
+
+  .mobile-sheet--left.mobile-sheet--open,
+  .mobile-sheet--right.mobile-sheet--open {
+    transform: translateX(0);
+  }
+
+  .mobile-sheet--bottom.mobile-sheet--open {
+    transform: translateY(0);
+  }
+
+  /* When a control/panel is reparented into a sheet, neutralize its base
+     position:absolute / corner anchoring (and the fixed timeline) so it flows
+     inside the sheet instead of pinning to a viewport corner. The fade-in
+     transition classes still apply; force them visible inside the sheet. */
+  .mobile-sheet .panel,
+  .mobile-sheet .scene-controls,
+  .mobile-sheet .zoom-cluster,
+  .mobile-sheet .audio-toggle {
+    position: static;
+    inset: auto;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Stack the reparented right-sheet controls vertically and let them fill the
+     sheet width. */
+  .mobile-sheet--right .scene-controls,
+  .mobile-sheet--right .zoom-cluster,
+  .mobile-sheet--right .audio-toggle {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .mobile-sheet--right .zoom-cluster__bar,
+  .mobile-sheet--right .zoom-cluster__presets {
+    width: 100%;
+  }
+
+  .mobile-sheet--right .zoom-cluster__presets {
+    flex-direction: column;
+  }
+
+  /* Space the two stacked data panels inside the bottom sheet. */
+  .mobile-sheet--bottom .panel + .panel {
+    margin-top: 1rem;
+  }
+
+  /* Timeline: pin tight to the bottom edge as a single compact row so it covers
+     as little of the canvas as possible. */
+  .timeline {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    transform: none;
+    border-radius: 0;
+    padding: 0.55rem 0.75rem calc(0.6rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .timeline__scrub {
+    margin-top: 0.6rem;
   }
 }
 

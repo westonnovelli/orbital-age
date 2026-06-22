@@ -43,9 +43,50 @@
           <span class="topbar__status-label">Simulation Clock</span>
           <span class="topbar__status-value">Live · real-time</span>
         </div>
+        <!-- Phone-only menu triggers. Hidden by default (display:none) and only
+             revealed once a journey is active inside @media (max-width: 480px);
+             each opens one off-canvas sheet (bottom = data, right = controls). The
+             left Chronos sheet is opened by the brand sigil on the phone tier (see
+             .topbar__sigil), so it has no dedicated button here. The off-canvas
+             sheets are populated by reparenting the existing nodes into them in JS,
+             gated behind matchMedia("(max-width: 480px)"). -->
+        <div class="topbar__menus">
+          <button
+            id="mobile-data-toggle"
+            type="button"
+            class="topbar__menu"
+            aria-expanded="false"
+            aria-label="Open telemetry and bodies data"
+            title="Telemetry & bodies"
+          >▤</button>
+          <button
+            id="mobile-menu-right"
+            type="button"
+            class="topbar__menu"
+            aria-expanded="false"
+            aria-label="Open scene controls"
+            title="Scene controls"
+          >⚙</button>
+        </div>
       </header>
 
       <main class="stage">
+        <!-- Phone-only off-canvas sheets. Empty by default and hidden
+             (display:none); only revealed inside @media (max-width: 480px). On the
+             phone tier, JS reparents the existing chrome into these containers
+             (Chronos -> left, telemetry+bodies -> bottom, scene/zoom controls ->
+             right) and restores them to their original parents on desktop widths,
+             so the desktop DOM/render stays byte-for-byte identical. -->
+        <div id="mobile-sheet-left" class="mobile-sheet mobile-sheet--left" aria-hidden="true">
+          <button type="button" class="mobile-sheet__close" aria-label="Close">✕</button>
+        </div>
+        <div id="mobile-sheet-bottom" class="mobile-sheet mobile-sheet--bottom" aria-hidden="true">
+          <button type="button" class="mobile-sheet__close" aria-label="Close">✕</button>
+        </div>
+        <div id="mobile-sheet-right" class="mobile-sheet mobile-sheet--right" aria-hidden="true">
+          <button type="button" class="mobile-sheet__close" aria-label="Close">✕</button>
+        </div>
+
         <!-- The orrery itself is rendered to the canvas -->
         <section class="viewport" aria-label="Orbital map viewport">
           <canvas id="orbit-canvas" aria-label="Orbital map"></canvas>

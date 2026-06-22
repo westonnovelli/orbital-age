@@ -77,7 +77,22 @@ class FakeElement {
   append(...nodes) {
     for (const node of nodes) {
       this.children.push(node);
+      node.parentNode = this;
     }
+  }
+
+  appendChild(node) {
+    // Mirror DOM appendChild: detach from any current parent, then attach here.
+    const current = node.parentNode;
+    if (current && Array.isArray(current.children)) {
+      const idx = current.children.indexOf(node);
+      if (idx >= 0) {
+        current.children.splice(idx, 1);
+      }
+    }
+    this.children.push(node);
+    node.parentNode = this;
+    return node;
   }
 }
 
@@ -166,13 +181,75 @@ function buildUi() {
     zoomOutButton: new FakeElement({ id: "zoom-out" }),
     zoomBar: new FakeElement({ id: "zoom-bar" }),
     audioElement,
-    audioToggle: new FakeElement({ id: "audio-toggle" })
+    audioToggle: new FakeElement({ id: "audio-toggle" }),
+    entryPanel: new FakeElement(),
+    sceneControls: new FakeElement(),
+    zoomCluster: new FakeElement(),
+    topbarSigil: new FakeElement({ id: "topbar-sigil" }),
+    mobileDataToggle: new FakeElement({ id: "mobile-data-toggle" }),
+    mobileMenuRight: new FakeElement({ id: "mobile-menu-right" }),
+    mobileSheetLeft: new FakeElement({ id: "mobile-sheet-left" }),
+    mobileSheetBottom: new FakeElement({ id: "mobile-sheet-bottom" }),
+    mobileSheetRight: new FakeElement({ id: "mobile-sheet-right" })
   };
   ui.trailsMasterToggle.checked = true;
+  // The real markup ships these collapsed; mirror that initial aria state.
+  for (const trigger of [ui.topbarSigil, ui.mobileDataToggle, ui.mobileMenuRight]) {
+    trigger.setAttribute("aria-expanded", "false");
+  }
+
+  // Original parents for the reparented chrome, mirroring the real DOM layout
+  // (header for the entry panel; stage for the rest) so the desktop path can be
+  // asserted to leave them in place and the restore path can return them here.
+  ui.topbar = new FakeElement({ id: "topbar" });
+  ui.stage = ui.root;
+  ui.topbar.append(ui.entryPanel);
+  ui.stage.append(
+    ui.sceneControls,
+    ui.zoomCluster,
+    ui.telemetryPanel,
+    ui.bodiesPanel
+  );
 
   ui.webglMessage.classList = new FakeClassList(["message--hidden"]);
   ui.speedSelect.value = "30";
   return ui;
+}
+
+// Install a controllable matchMedia on globalThis so tests can flip the phone
+// tier on/off. Returns a restore fn and a setter for the (max-width:480px) match.
+function installMatchMedia(initialPhone = false) {
+  const original = globalThis.matchMedia;
+  let phone = initialPhone;
+  const changeListeners = new Set();
+  globalThis.matchMedia = (query) => {
+    const isPhoneQuery = String(query).includes("max-width: 480px");
+    return {
+      get matches() {
+        return isPhoneQuery ? phone : false;
+      },
+      media: query,
+      addEventListener: (type, cb) => {
+        if (type === "change" && isPhoneQuery) {
+          changeListeners.add(cb);
+        }
+      },
+      removeEventListener: (type, cb) => {
+        changeListeners.delete(cb);
+      }
+    };
+  };
+  return {
+    setPhone(value) {
+      phone = Boolean(value);
+      for (const cb of changeListeners) {
+        cb({ matches: phone });
+      }
+    },
+    restore() {
+      globalThis.matchMedia = original;
+    }
+  };
 }
 
 test("initialize handles unavailable WebGL with an accessible fallback message", (t) => {
@@ -808,6 +885,159 @@ test("labels toggle flips overlay visibility and positions labels", (t) => {
   ui.labelsToggle.dispatch("click");
   assert.equal(app.labelsVisible, false);
   assert.equal(ui.labelsOverlay.classList.contains("scene-labels--hidden"), true);
+});
+
+test("mobile sheet toggles flip open + aria state and are mutually exclusive", (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  // Phone tier so the sigil-driven left sheet is live.
+  const mm = installMatchMedia(true);
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+    mm.restore();
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  // The Chronos (left) sheet is only reachable from the sigil once a journey has
+  // begun; start one so the sigil trigger is active.
+  ui.form.dispatch("submit");
+
+  // Each trigger starts collapsed.
+  assert.equal(ui.topbarSigil.getAttribute("aria-expanded"), "false");
+  assert.equal(ui.mobileSheetLeft.classList.contains("mobile-sheet--open"), false);
+
+  // The brand sigil opens the left (Chronos) sheet.
+  ui.topbarSigil.dispatch("click");
+  assert.equal(ui.mobileSheetLeft.classList.contains("mobile-sheet--open"), true);
+  assert.equal(ui.topbarSigil.getAttribute("aria-expanded"), "true");
+
+  // Opening the right sheet closes the left one (mutually exclusive).
+  ui.mobileMenuRight.dispatch("click");
+  assert.equal(ui.mobileSheetRight.classList.contains("mobile-sheet--open"), true);
+  assert.equal(ui.mobileMenuRight.getAttribute("aria-expanded"), "true");
+  assert.equal(ui.mobileSheetLeft.classList.contains("mobile-sheet--open"), false);
+  assert.equal(ui.topbarSigil.getAttribute("aria-expanded"), "false");
+
+  // The data button opens the bottom sheet and closes the right one.
+  ui.mobileDataToggle.dispatch("click");
+  assert.equal(ui.mobileSheetBottom.classList.contains("mobile-sheet--open"), true);
+  assert.equal(ui.mobileDataToggle.getAttribute("aria-expanded"), "true");
+  assert.equal(ui.mobileSheetRight.classList.contains("mobile-sheet--open"), false);
+
+  // Clicking an open sheet's trigger again closes it.
+  ui.mobileDataToggle.dispatch("click");
+  assert.equal(ui.mobileSheetBottom.classList.contains("mobile-sheet--open"), false);
+  assert.equal(ui.mobileDataToggle.getAttribute("aria-expanded"), "false");
+});
+
+test("mobile sheets reparent chrome after a journey begins and restore it on desktop", (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  // Start on the phone tier so a journey triggers the reparent.
+  const mm = installMatchMedia(true);
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+    mm.restore();
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+  const app = new OrbitalApp(ui);
+  app.initialize();
+
+  // Before a journey the opening screen keeps the Chronos panel centered: nothing
+  // is reparented yet even on the phone tier.
+  assert.equal(ui.entryPanel.parentNode, ui.topbar, "entry stays centered pre-journey");
+  assert.equal(ui.mobileSheetLeft.children.length, 0, "left sheet empty pre-journey");
+
+  // Beginning the journey collapses the chrome into the matching sheets.
+  ui.form.dispatch("submit");
+  assert.equal(ui.entryPanel.parentNode, ui.mobileSheetLeft, "entry -> left sheet");
+  assert.equal(ui.sceneControls.parentNode, ui.mobileSheetRight, "scene controls -> right sheet");
+  assert.equal(ui.zoomCluster.parentNode, ui.mobileSheetRight, "zoom cluster -> right sheet");
+  assert.equal(ui.telemetryPanel.parentNode, ui.mobileSheetBottom, "telemetry -> bottom sheet");
+  assert.equal(ui.bodiesPanel.parentNode, ui.mobileSheetBottom, "bodies -> bottom sheet");
+
+  assert.ok(ui.mobileSheetRight.children.includes(ui.sceneControls));
+  assert.ok(ui.mobileSheetRight.children.includes(ui.zoomCluster));
+  assert.ok(!ui.stage.children.includes(ui.sceneControls), "no duplicate left in stage");
+
+  // Open the Chronos sheet via the sigil, then leave the phone tier: nodes return
+  // to their original parents and any open state is cleared.
+  ui.topbarSigil.dispatch("click");
+  assert.equal(ui.mobileSheetLeft.classList.contains("mobile-sheet--open"), true);
+
+  mm.setPhone(false);
+
+  assert.equal(ui.entryPanel.parentNode, ui.topbar, "entry restored to header");
+  assert.equal(ui.sceneControls.parentNode, ui.stage, "scene controls restored to stage");
+  assert.equal(ui.zoomCluster.parentNode, ui.stage, "zoom cluster restored to stage");
+  assert.equal(ui.telemetryPanel.parentNode, ui.stage, "telemetry restored to stage");
+  assert.equal(ui.bodiesPanel.parentNode, ui.stage, "bodies restored to stage");
+  assert.equal(ui.mobileSheetLeft.classList.contains("mobile-sheet--open"), false, "open state cleared");
+  assert.equal(ui.topbarSigil.getAttribute("aria-expanded"), "false");
+});
+
+test("mobile sheets leave the DOM untouched on desktop widths", (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  // Desktop width throughout.
+  const mm = installMatchMedia(false);
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+    mm.restore();
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+
+  const ui = buildUi();
+  const app = new OrbitalApp(ui);
+  app.initialize();
+
+  // No node is reparented; everything stays at its desktop parent and the sheets
+  // remain empty.
+  assert.equal(ui.entryPanel.parentNode, ui.topbar);
+  assert.equal(ui.sceneControls.parentNode, ui.stage);
+  assert.equal(ui.zoomCluster.parentNode, ui.stage);
+  assert.equal(ui.telemetryPanel.parentNode, ui.stage);
+  assert.equal(ui.bodiesPanel.parentNode, ui.stage);
+  assert.equal(ui.mobileSheetLeft.children.length, 0);
+  assert.equal(ui.mobileSheetBottom.children.length, 0);
+  assert.equal(ui.mobileSheetRight.children.length, 0);
 });
 
 test("keyboard shortcuts drive play/pause, stepping, and follow", (t) => {
