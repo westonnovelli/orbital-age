@@ -255,6 +255,11 @@ const ZOOM_WHEEL_STEP = 1.1;
 // small/overlapping markers stay clickable without demanding pixel precision.
 const CLICK_HIT_RADIUS_PX = 28;
 
+// Touch movement (in CSS pixels) past which a single-finger gesture is treated as
+// a drag-pan rather than a tap-to-follow. A release under this threshold resolves
+// to the existing follow path; over it, the gesture was a pan and does not follow.
+const TOUCH_TAP_MOVE_THRESHOLD_PX = 12;
+
 // Days stepped per arrow-key press (and shift-arrow for a larger jump).
 const KEYBOARD_STEP_DAYS = 1;
 const KEYBOARD_STEP_DAYS_LARGE = 30;
@@ -613,6 +618,20 @@ export class OrbitalApp {
     // The opening flythrough tween (set per journey in #startJourney); null when
     // no journey is running or after it has settled / been cancelled.
     this.introTween = null;
+
+    // Transient touch-gesture state, owned by the additive touch layer
+    // (#handleTouchStart/Move/End). `mode` is null | "pan" | "pinch"; the rest
+    // track the previous frame's finger geometry so each move computes a delta.
+    // Reset on every touchstart/touchend so a desktop mouse never reads it.
+    this.touchGesture = {
+      mode: null,
+      lastX: 0,
+      lastY: 0,
+      startX: 0,
+      startY: 0,
+      moved: 0,
+      lastPinchDist: 0
+    };
 
     // Auto-fit is the default framing on load (most zoomed out). User zoom is
     // clamped between Earth-Moon framing (min) and Auto-fit (max).
@@ -1025,6 +1044,22 @@ export class OrbitalApp {
       this.#handleScenePointer(event);
     });
 
+    // Additive touch gesture layer (pinch-zoom / drag-pan / tap-to-follow). Bound
+    // only in touch/coarse-pointer environments so a desktop mouse never enters
+    // this code path; the existing wheel ({passive:false}) and pointerdown
+    // listeners above are left untouched. touchstart/touchmove use {passive:false}
+    // so the handlers can preventDefault() the browser's native scroll/zoom while
+    // a scene gesture is in progress.
+    if (this.canvas && this.#isTouchEnv()) {
+      this.canvas.addEventListener("touchstart", (event) => this.#handleTouchStart(event), {
+        passive: false
+      });
+      this.canvas.addEventListener("touchmove", (event) => this.#handleTouchMove(event), {
+        passive: false
+      });
+      this.canvas.addEventListener("touchend", (event) => this.#handleTouchEnd(event));
+    }
+
     this.labelsToggle?.addEventListener("click", () => {
       this.#applyLabelsVisible(!this.labelsVisible);
     });
@@ -1047,7 +1082,149 @@ export class OrbitalApp {
       return;
     }
 
+    // Touch input is owned by the additive gesture layer (#bindSceneInteraction
+    // attaches touchstart/move/end only in touch environments), which runs its
+    // own tap-to-follow on touchend. Bailing here for touch pointers prevents a
+    // double-fire (pointerdown + touchend both following). The mouse path below
+    // is byte-identical, so desktop is unchanged.
+    if (event.pointerType === "touch") {
+      return;
+    }
+
     const key = this.#bodyAtPointer(event);
+    if (key) {
+      this.timelineController.setTrackBodyKey(key);
+      this.#updateMechanicsPanel();
+    }
+  }
+
+  // True in touch / coarse-pointer environments. Gates the additive gesture
+  // listeners so a desktop mouse never binds (let alone enters) the touch path.
+  // Tolerant of environments without matchMedia / window (returns false).
+  #isTouchEnv() {
+    if (typeof globalThis.ontouchstart !== "undefined") {
+      return true;
+    }
+    if (Number(globalThis.navigator?.maxTouchPoints) > 0) {
+      return true;
+    }
+    const mm = globalThis.matchMedia;
+    if (typeof mm === "function") {
+      return Boolean(mm.call(globalThis, "(pointer: coarse)")?.matches);
+    }
+    return false;
+  }
+
+  // Distance in CSS pixels between the first two touches of an event.
+  #touchSpread(touches) {
+    const a = touches[0];
+    const b = touches[1];
+    const dx = Number(b.clientX) - Number(a.clientX);
+    const dy = Number(b.clientY) - Number(a.clientY);
+    return Math.hypot(dx, dy);
+  }
+
+  // Begin a touch gesture. One finger arms a tap/pan (resolved on move/release);
+  // two fingers arm a pinch-zoom. preventDefault suppresses the browser's native
+  // pan/zoom so the scene owns the gesture. No-op before a journey (no controller).
+  #handleTouchStart(event) {
+    if (!this.timelineController || !this.canvas) {
+      return;
+    }
+    const touches = event.touches ?? [];
+    if (touches.length >= 2) {
+      event.preventDefault?.();
+      this.touchGesture.mode = "pinch";
+      this.touchGesture.lastPinchDist = this.#touchSpread(touches);
+      return;
+    }
+    if (touches.length === 1) {
+      event.preventDefault?.();
+      const t = touches[0];
+      this.touchGesture.mode = "pan";
+      this.touchGesture.startX = Number(t.clientX);
+      this.touchGesture.startY = Number(t.clientY);
+      this.touchGesture.lastX = Number(t.clientX);
+      this.touchGesture.lastY = Number(t.clientY);
+      this.touchGesture.moved = 0;
+    }
+  }
+
+  // Drive the active gesture. Two fingers → pinch-zoom via the ratio of the
+  // current to the previous finger spread, routed through #applyManualZoom so
+  // framing/timeline/labels re-sync exactly like the wheel. One finger past the
+  // tap threshold → drag-pan via camera.setCenter, converting the CSS-pixel delta
+  // to a scene-space delta with the camera's half-extents (no new camera math).
+  #handleTouchMove(event) {
+    if (!this.timelineController || !this.canvas || !this.touchGesture.mode) {
+      return;
+    }
+    const touches = event.touches ?? [];
+
+    if (this.touchGesture.mode === "pinch" && touches.length >= 2) {
+      event.preventDefault?.();
+      const dist = this.#touchSpread(touches);
+      const prev = this.touchGesture.lastPinchDist;
+      this.touchGesture.lastPinchDist = dist;
+      if (prev > 0 && dist > 0) {
+        // Fingers spreading apart (dist > prev) zooms IN — a smaller halfHeight —
+        // so the zoomBy factor is prev/dist (<1 when spreading).
+        const factor = prev / dist;
+        this.#applyManualZoom(() => this.camera.zoomBy(factor));
+      }
+      return;
+    }
+
+    if (this.touchGesture.mode === "pan" && touches.length === 1) {
+      event.preventDefault?.();
+      const t = touches[0];
+      const x = Number(t.clientX);
+      const y = Number(t.clientY);
+      const dxPx = x - this.touchGesture.lastX;
+      const dyPx = y - this.touchGesture.lastY;
+      this.touchGesture.lastX = x;
+      this.touchGesture.lastY = y;
+      this.touchGesture.moved += Math.hypot(dxPx, dyPx);
+
+      const rect = this.canvas.getBoundingClientRect?.() ?? { width: 1, height: 1 };
+      const width = rect.width || 1;
+      const height = rect.height || 1;
+      // Convert the CSS-pixel finger delta to a scene-space delta using the
+      // camera's half-extents: a full-width drag spans 2*halfWidth scene units.
+      const aspect = width / height;
+      const halfWidth = this.camera.halfHeight * aspect;
+      const sceneDx = (dxPx / width) * (2 * halfWidth);
+      const sceneDy = (dyPx / height) * (2 * this.camera.halfHeight);
+      // Drag-to-pan: moving the finger right pushes the world right, so the
+      // camera center moves left (minus dx). Screen y points down while scene y
+      // points up, so the center moves with +dy.
+      this.camera.setCenter(this.camera.centerX - sceneDx, this.camera.centerY + sceneDy);
+    }
+  }
+
+  // End a touch gesture. A single-finger release that never moved past the tap
+  // threshold resolves to tap-to-follow (the same body-pick + setTrackBodyKey +
+  // mechanics-panel flow #handleScenePointer uses for the mouse). Anything else
+  // (a pan that moved, or a pinch) simply clears the gesture state.
+  #handleTouchEnd(event) {
+    const gesture = this.touchGesture;
+    const wasTap =
+      gesture.mode === "pan" && gesture.moved < TOUCH_TAP_MOVE_THRESHOLD_PX;
+    this.touchGesture = {
+      mode: null,
+      lastX: 0,
+      lastY: 0,
+      startX: 0,
+      startY: 0,
+      moved: 0,
+      lastPinchDist: 0
+    };
+    if (!wasTap || !this.timelineController || !this.canvas) {
+      return;
+    }
+    // The released finger has left event.touches, so reuse its last-known
+    // position for the hit test (mirrors a pointer's clientX/clientY).
+    const key = this.#bodyAtPointer({ clientX: gesture.lastX, clientY: gesture.lastY });
     if (key) {
       this.timelineController.setTrackBodyKey(key);
       this.#updateMechanicsPanel();

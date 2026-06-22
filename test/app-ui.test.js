@@ -1040,6 +1040,215 @@ test("mobile sheets leave the DOM untouched on desktop widths", (t) => {
   assert.equal(ui.mobileSheetRight.children.length, 0);
 });
 
+// Install a touch environment so the additive gesture listeners bind. Sets
+// globalThis.ontouchstart (what #isTouchEnv checks first) and returns a restore fn.
+function installTouchEnv() {
+  const had = Object.prototype.hasOwnProperty.call(globalThis, "ontouchstart");
+  const original = globalThis.ontouchstart;
+  globalThis.ontouchstart = null;
+  return {
+    restore() {
+      if (had) {
+        globalThis.ontouchstart = original;
+      } else {
+        delete globalThis.ontouchstart;
+      }
+    }
+  };
+}
+
+// Boot an app with the standard WebGL stubs and a submitted journey, returning
+// the app + ui. `touch` controls whether the touch gesture layer is bound.
+function bootJourney(t, { touch = false } = {}) {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  const touchEnv = touch ? installTouchEnv() : null;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+    touchEnv?.restore();
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+  ui.canvas.rect = { left: 0, top: 0, width: 200, height: 200 };
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  ui.form.dispatch("submit");
+  return { app, ui };
+}
+
+test("two-finger pinch zooms the camera through zoomBy", (t) => {
+  const { app, ui } = bootJourney(t, { touch: true });
+
+  const zoomByCalls = [];
+  const realZoomBy = app.camera.zoomBy.bind(app.camera);
+  app.camera.zoomBy = (f) => {
+    zoomByCalls.push(f);
+    return realZoomBy(f);
+  };
+
+  // Fingers start 50px apart, then spread to 100px → zoom IN (factor < 1).
+  ui.canvas.dispatch("touchstart", {
+    touches: [
+      { clientX: 75, clientY: 100 },
+      { clientX: 125, clientY: 100 }
+    ]
+  });
+  ui.canvas.dispatch("touchmove", {
+    touches: [
+      { clientX: 50, clientY: 100 },
+      { clientX: 150, clientY: 100 }
+    ]
+  });
+  assert.equal(zoomByCalls.length, 1, "one pinch step applied");
+  assert.ok(zoomByCalls.at(-1) < 1, "spreading fingers zoom in (factor < 1)");
+
+  // Pinching back together (200 → 100) zooms OUT (factor > 1).
+  ui.canvas.dispatch("touchstart", {
+    touches: [
+      { clientX: 0, clientY: 100 },
+      { clientX: 200, clientY: 100 }
+    ]
+  });
+  ui.canvas.dispatch("touchmove", {
+    touches: [
+      { clientX: 50, clientY: 100 },
+      { clientX: 150, clientY: 100 }
+    ]
+  });
+  assert.ok(zoomByCalls.at(-1) > 1, "pinching together zooms out (factor > 1)");
+});
+
+test("single-finger drag pans the camera through setCenter", (t) => {
+  const { app, ui } = bootJourney(t, { touch: true });
+
+  const centerCalls = [];
+  const realSetCenter = app.camera.setCenter.bind(app.camera);
+  app.camera.setCenter = (x, y) => {
+    centerCalls.push([x, y]);
+    return realSetCenter(x, y);
+  };
+
+  ui.canvas.dispatch("touchstart", { touches: [{ clientX: 100, clientY: 100 }] });
+  ui.canvas.dispatch("touchmove", { touches: [{ clientX: 140, clientY: 100 }] });
+
+  assert.equal(centerCalls.length, 1, "drag applied one setCenter");
+  // Dragging right moves the camera center left (the world follows the finger).
+  assert.ok(centerCalls.at(-1)[0] < 0, "rightward drag pans center left");
+});
+
+test("a low-movement tap follows the body under the finger", (t) => {
+  const { app, ui } = bootJourney(t, { touch: true });
+
+  // Frame the inner planets and advance so Earth is off the origin.
+  ui.innerPlanetsButton.dispatch("click");
+  const controller = app.timelineController;
+  controller.render({ deltaSeconds: 120 / controller.speedDaysPerSecond });
+
+  const trackCalls = [];
+  const realTrack = controller.setTrackBodyKey.bind(controller);
+  controller.setTrackBodyKey = (key) => {
+    trackCalls.push(key);
+    return realTrack(key);
+  };
+
+  const earthPos = controller.getBodyPositions().get("earth");
+  const screen = projectToScreen(app.camera, earthPos.x, earthPos.y, 200, 200);
+
+  // A tap: down then up at the same low-movement spot on Earth's projection.
+  ui.canvas.dispatch("touchstart", { touches: [{ clientX: screen.x, clientY: screen.y }] });
+  ui.canvas.dispatch("touchend", { touches: [] });
+  assert.equal(trackCalls.at(-1), "earth", "tap near Earth follows Earth");
+});
+
+test("a drag past the tap threshold does not resolve to follow", (t) => {
+  const { app, ui } = bootJourney(t, { touch: true });
+
+  ui.innerPlanetsButton.dispatch("click");
+  const controller = app.timelineController;
+  controller.render({ deltaSeconds: 120 / controller.speedDaysPerSecond });
+
+  const trackCalls = [];
+  const realTrack = controller.setTrackBodyKey.bind(controller);
+  controller.setTrackBodyKey = (key) => {
+    trackCalls.push(key);
+    return realTrack(key);
+  };
+
+  const earthPos = controller.getBodyPositions().get("earth");
+  const screen = projectToScreen(app.camera, earthPos.x, earthPos.y, 200, 200);
+
+  // Touch down on Earth, drag far away (a pan), then release: no follow fires.
+  ui.canvas.dispatch("touchstart", { touches: [{ clientX: screen.x, clientY: screen.y }] });
+  ui.canvas.dispatch("touchmove", { touches: [{ clientX: screen.x + 80, clientY: screen.y }] });
+  ui.canvas.dispatch("touchend", { touches: [] });
+  assert.equal(trackCalls.length, 0, "a pan drag does not follow");
+});
+
+test("touch gestures do not bind in a non-touch (desktop) environment", (t) => {
+  // bootJourney without touch leaves globalThis.ontouchstart undefined, and the
+  // default matchMedia (pointer: coarse) does not match, so #isTouchEnv is false.
+  const { app, ui } = bootJourney(t, { touch: false });
+
+  const zoomByCalls = [];
+  const centerCalls = [];
+  const realZoomBy = app.camera.zoomBy.bind(app.camera);
+  const realSetCenter = app.camera.setCenter.bind(app.camera);
+  app.camera.zoomBy = (f) => {
+    zoomByCalls.push(f);
+    return realZoomBy(f);
+  };
+  app.camera.setCenter = (x, y) => {
+    centerCalls.push([x, y]);
+    return realSetCenter(x, y);
+  };
+  const controller = app.timelineController;
+  const trackCalls = [];
+  const realTrack = controller.setTrackBodyKey.bind(controller);
+  controller.setTrackBodyKey = (key) => {
+    trackCalls.push(key);
+    return realTrack(key);
+  };
+
+  // No touch listeners were registered, so dispatching them is inert.
+  ui.canvas.dispatch("touchstart", { touches: [{ clientX: 100, clientY: 100 }] });
+  ui.canvas.dispatch("touchmove", { touches: [{ clientX: 140, clientY: 100 }] });
+  ui.canvas.dispatch("touchend", { touches: [] });
+  ui.canvas.dispatch("touchstart", {
+    touches: [
+      { clientX: 75, clientY: 100 },
+      { clientX: 125, clientY: 100 }
+    ]
+  });
+  ui.canvas.dispatch("touchmove", {
+    touches: [
+      { clientX: 50, clientY: 100 },
+      { clientX: 150, clientY: 100 }
+    ]
+  });
+
+  assert.equal(zoomByCalls.length, 0, "no pinch zoom in a mouse environment");
+  assert.equal(centerCalls.length, 0, "no drag-pan in a mouse environment");
+  assert.equal(trackCalls.length, 0, "no tap-to-follow via touch in a mouse environment");
+
+  // The existing mouse pointerdown path is unaffected (byte-identical desktop).
+  ui.canvas.dispatch("touchstart"); // ensure no listener leaked
+  assert.equal(zoomByCalls.length, 0);
+});
+
 test("keyboard shortcuts drive play/pause, stepping, and follow", (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
