@@ -51,7 +51,9 @@ const app = new OrbitalApp({
   telemetrySubject: document.querySelector("#telemetry-subject"),
   telemetryBody: document.querySelector("#telemetry-body"),
   telemetryPath: document.querySelector("#telemetry-path"),
-  telemetryMetric: document.querySelector("#telemetry-metric")
+  telemetryMetric: document.querySelector("#telemetry-metric"),
+  audioElement: document.querySelector("#bg-audio"),
+  audioToggle: document.querySelector("#audio-toggle")
 });
 
 app.initialize();

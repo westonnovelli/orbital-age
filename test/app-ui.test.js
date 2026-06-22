@@ -117,6 +117,21 @@ function buildUi() {
   const doc = new FakeDocument();
   const bodiesList = new FakeElement({ id: "bodies-list", ownerDocument: doc });
 
+  // Fake <audio>: records play/pause so the mute toggle behavior can be asserted.
+  const audioElement = new FakeElement({ id: "bg-audio" });
+  audioElement.paused = true;
+  audioElement.playCount = 0;
+  audioElement.pauseCount = 0;
+  audioElement.play = function play() {
+    this.paused = false;
+    this.playCount += 1;
+    return Promise.resolve();
+  };
+  audioElement.pause = function pause() {
+    this.paused = true;
+    this.pauseCount += 1;
+  };
+
   const ui = {
     root: new FakeElement(),
     form,
@@ -149,7 +164,9 @@ function buildUi() {
     originButton: new FakeElement({ id: "framing-origin" }),
     zoomInButton: new FakeElement({ id: "zoom-in" }),
     zoomOutButton: new FakeElement({ id: "zoom-out" }),
-    zoomBar: new FakeElement({ id: "zoom-bar" })
+    zoomBar: new FakeElement({ id: "zoom-bar" }),
+    audioElement,
+    audioToggle: new FakeElement({ id: "audio-toggle" })
   };
   ui.trailsMasterToggle.checked = true;
 
@@ -245,6 +262,59 @@ test("submit flow enables timeline controls and updates playback UI state", (t) 
   ui.resetButton.dispatch("click");
   assert.equal(ui.timelineDate.textContent, "2000-01-01");
   assert.equal(ui.timelinePlayToggle.textContent, "Play");
+});
+
+test("first journey starts looping audio; mute toggle pauses and resumes it", (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+
+  const app = new OrbitalApp(ui);
+  app.initialize();
+
+  // Primed for looping but silent until the first journey.
+  assert.equal(ui.audioElement.loop, true);
+  assert.equal(ui.audioElement.playCount, 0);
+  assert.equal(ui.audioToggle.getAttribute("aria-pressed"), "false");
+
+  // First Begin Journey starts playback.
+  ui.form.dispatch("submit");
+  assert.equal(ui.audioElement.playCount, 1);
+  assert.equal(ui.audioElement.paused, false);
+
+  // Mute pauses (not just lowers volume) and reflects on the toggle.
+  ui.audioToggle.dispatch("click");
+  assert.equal(ui.audioElement.pauseCount, 1);
+  assert.equal(ui.audioElement.paused, true);
+  assert.equal(ui.audioToggle.getAttribute("aria-pressed"), "true");
+
+  // Unmute resumes playback.
+  ui.audioToggle.dispatch("click");
+  assert.equal(ui.audioElement.playCount, 2);
+  assert.equal(ui.audioElement.paused, false);
+  assert.equal(ui.audioToggle.getAttribute("aria-pressed"), "false");
+
+  // A second journey leaves the already-looping track running (no restart).
+  ui.form.dispatch("submit");
+  assert.equal(ui.audioElement.playCount, 2);
 });
 
 test("submit builds one Bodies-panel row per body and writes distance travelled", (t) => {

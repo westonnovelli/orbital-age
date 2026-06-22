@@ -149,6 +149,28 @@
           </div>
         </div>
 
+        <!-- Bottom-right audio toggle: the looping background score starts on the
+             first Begin Journey click; this button pauses/resumes it (a true
+             mute — playback stops rather than the volume dropping). Revealed
+             with .journey-active alongside the other scene controls. -->
+        <button
+          id="audio-toggle"
+          type="button"
+          class="btn btn--ghost audio-toggle"
+          aria-pressed="false"
+          aria-label="Mute background audio"
+          title="Mute background audio"
+        ></button>
+
+        <!-- Looping background score. Playback is started from JS on the first
+             journey (a user gesture) so browser autoplay policies allow it. -->
+        <audio
+          id="bg-audio"
+          loop
+          preload="auto"
+          src="./Orbital%20Drift%20(0.89x).mp3"
+        ></audio>
+
         <!-- Central metrics HUD (revealed after a birthday is rendered) -->
         <div id="stats-hud" class="hud hud--hidden" aria-live="polite" aria-atomic="true">
           <div class="hud__eyebrow">

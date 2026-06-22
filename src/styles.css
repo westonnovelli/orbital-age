@@ -413,6 +413,43 @@ body {
   box-shadow: 0 0 20px var(--secondary-glow);
 }
 
+/* Bottom-left audio toggle: an icon + label button that pauses/resumes the
+   looping background score. Anchored to the bottom-left corner and fades in with
+   the other scene controls once a journey begins. */
+.audio-toggle {
+  position: absolute;
+  left: 2.5rem;
+  bottom: 1.5rem;
+  z-index: 45;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease, color 0.18s ease,
+    border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.journey-active .audio-toggle {
+  opacity: 1;
+  visibility: visible;
+}
+
+.audio-toggle svg {
+  display: block;
+}
+
+.audio-toggle__text {
+  line-height: 1;
+}
+
+/* Muted state mirrors the dimmed treatment used elsewhere for "off" toggles. */
+.audio-toggle[aria-pressed="true"] {
+  color: var(--muted);
+  border-color: var(--outline);
+}
+
 /* In-scene body labels overlay. Fills the viewport above the canvas but never
    intercepts pointer events (clicks pass through for click-to-follow). Each
    label is positioned per frame via transform translate only — no layout writes

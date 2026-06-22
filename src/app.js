@@ -7,6 +7,7 @@ import { SunEntity } from "./webgl/entities/sun.js";
 import { BodyMarkerEntity } from "./webgl/entities/body-marker.js";
 import { OrbitalTrailEntity } from "./webgl/entities/orbital-trail.js";
 import { TimelineControllerEntity } from "./webgl/entities/timeline-controller.js";
+import { CameraIntroTweenEntity } from "./webgl/entities/camera-intro.js";
 import { BirthdayMarkerEntity } from "./webgl/entities/birthday-markers.js";
 import { StarfieldEntity } from "./webgl/entities/starfield.js";
 import { autoFitHalfHeight, starfieldSpread } from "./webgl/scale.js";
@@ -231,6 +232,10 @@ const EARTH_MOON_HALF_HEIGHT = 0.3;
 const INNER_PLANETS_FRAME_AU = 2.4;
 const INNER_PLANETS_HALF_HEIGHT = autoFitHalfHeight(INNER_PLANETS_FRAME_AU);
 
+// Opening flythrough: a journey begins framed on the inner planets and slowly
+// zooms out to Auto-fit over this many seconds before settling. Tunable.
+const INTRO_ZOOM_SECONDS = 4.5;
+
 // Zoom-bar log mapping bounds. The bar maps a [0,1] slider position to a camera
 // halfHeight logarithmically over the framing range so equal travel == equal zoom
 // RATIO, matching the multiplicative wheel/zoomBy model. These bounds are FIXED to
@@ -269,6 +274,21 @@ const RETICLE_ICON_SVG =
   'stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false">' +
   '<circle cx="8" cy="8" r="4.2" /><path d="M8 0.6v3M8 12.4v3M0.6 8h3M12.4 8h3" ' +
   'stroke-linecap="round" /></svg>';
+
+// Speaker glyphs for the bottom-right audio toggle. The "on" icon shows sound
+// waves; the "muted" icon replaces them with an ✕. currentColor lets CSS drive
+// the tint; aria-hidden because the button carries its own accessible label.
+const AUDIO_ON_ICON_SVG =
+  '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" ' +
+  'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" ' +
+  'aria-hidden="true" focusable="false">' +
+  '<path d="M4 9v6h4l5 4V5L8 9H4z" /><path d="M16.5 8.5a5 5 0 0 1 0 7" />' +
+  '<path d="M19 6a8 8 0 0 1 0 12" /></svg>';
+const AUDIO_MUTED_ICON_SVG =
+  '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" ' +
+  'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" ' +
+  'aria-hidden="true" focusable="false">' +
+  '<path d="M4 9v6h4l5 4V5L8 9H4z" /><path d="M17 9l5 6M22 9l-5 6" /></svg>';
 
 // Copy shown in the top-left Orbital Mechanics panel for each followed body. The
 // panel becomes dynamic: when a body is followed (via the Bodies panel, a scene
@@ -460,6 +480,8 @@ export class OrbitalApp {
     telemetryBody,
     telemetryPath,
     telemetryMetric,
+    audioElement,
+    audioToggle,
     root
   }) {
     this.root = root;
@@ -539,10 +561,24 @@ export class OrbitalApp {
     this.telemetryPath = telemetryPath;
     this.telemetryMetric = telemetryMetric;
 
+    // Background score: a single looping audio track that begins on the first
+    // Begin Journey click. The bottom-right toggle pauses/resumes playback (a
+    // true mute — it stops the audio rather than only lowering its volume).
+    // `audioStarted` ensures the track is only kicked off once; `audioMuted`
+    // holds the user's intent (honored even if toggled before the first start).
+    this.audioElement = audioElement;
+    this.audioToggle = audioToggle;
+    this.audioStarted = false;
+    this.audioMuted = false;
+
     // Tracks which framing preset is active ("auto-fit" | "inner" | "earth" |
     // "origin") so the buttons can reflect state and zooming toward Earth implies
     // tracking. A manual zoom (wheel/bar/+-) clears it to null (no active preset).
     this.framingMode = "auto-fit";
+
+    // The opening flythrough tween (set per journey in #startJourney); null when
+    // no journey is running or after it has settled / been cancelled.
+    this.introTween = null;
 
     // Auto-fit is the default framing on load (most zoomed out). User zoom is
     // clamped between Earth-Moon framing (min) and Auto-fit (max).
@@ -570,6 +606,7 @@ export class OrbitalApp {
     this.#bindTrailControls();
     this.#bindScaleControls();
     this.#bindSceneInteraction();
+    this.#bindAudioControls();
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
       this.#handleRenderSubmit();
@@ -640,8 +677,32 @@ export class OrbitalApp {
       onStateChange: (state) => this.#updateTimelineUi(state)
     });
 
+    this.timelineController = timelineController;
+
+    // Opening flythrough: begin framed on the inner planets and slowly zoom out
+    // to Auto-fit, settling into the Auto-fit preset when the tween completes.
+    // Added as the first scene node so it updates the camera before bodies
+    // resolve and labels project each frame. Manual zoom / framing input cancels
+    // it (see #applyManualZoom and #applyFraming).
+    const introTween = new CameraIntroTweenEntity({
+      camera: this.camera,
+      fromHalfHeight: INNER_PLANETS_HALF_HEIGHT,
+      toHalfHeight: AUTO_FIT_HALF_HEIGHT,
+      durationSeconds: INTRO_ZOOM_SECONDS,
+      onUpdate: () => {
+        this.#syncZoomBar();
+        this.#updateBodyLabels();
+      },
+      onComplete: () => {
+        this.introTween = null;
+        this.#applyFraming("auto-fit");
+      }
+    });
+    this.introTween = introTween;
+
     this.sunEntity = new SunEntity();
     const scene = new Scene()
+      .add(introTween)
       .add(new StarfieldEntity({ spread: STARFIELD_SPREAD }))
       .add(this.sunEntity);
     for (const trail of trails) {
@@ -654,12 +715,16 @@ export class OrbitalApp {
       scene.add(body.marker);
     }
 
-    this.timelineController = timelineController;
     this.renderer.setScene(scene);
     this.renderer.start();
 
-    // Auto-fit is the default framing on (re)load of a journey.
-    this.#applyFraming("auto-fit");
+    // The intro tween opens framed on the inner planets (no active preset, no
+    // tracking) and settles into Auto-fit on completion via its onComplete.
+    this.framingMode = null;
+    this.timelineController.setTrackBodyKey(null);
+    this.camera.setCenter(0, 0);
+    this.#updateFramingButtons();
+    this.#syncZoomBar();
 
     this.#buildBodiesPanel();
     this.#buildBodyLabels();
@@ -671,6 +736,9 @@ export class OrbitalApp {
     this.statsHud?.classList.remove("hud--hidden");
     this.#updateTimelineUi(this.timelineController.getState());
     this.root?.classList.add("journey-active");
+    // The looping score starts on the first journey and keeps playing across
+    // subsequent re-renders (this no-ops once started).
+    this.#startAudio();
   }
 
   // Build one Bodies-panel row per registered body: [swatch][name][distance].
@@ -1093,6 +1161,67 @@ export class OrbitalApp {
     }
   }
 
+  // Wire the bottom-right audio toggle and prime the audio element for looping.
+  // The score itself isn't started here — it begins on the first journey (see
+  // #startAudio) so playback is tied to a user gesture and autoplay is allowed.
+  #bindAudioControls() {
+    if (this.audioElement) {
+      this.audioElement.loop = true;
+    }
+    this.audioToggle?.addEventListener("click", () => this.#toggleAudioMuted());
+    this.#syncAudioButton();
+  }
+
+  // Begin the looping background score. Called on every journey submit but only
+  // ever starts playback once; later journeys leave the already-looping track
+  // running. If the user muted before the first journey, it stays paused until
+  // they unmute.
+  #startAudio() {
+    if (!this.audioElement || this.audioStarted) {
+      return;
+    }
+    this.audioStarted = true;
+    if (!this.audioMuted) {
+      this.#playAudio();
+    }
+  }
+
+  // Resume/play the track, swallowing the autoplay-rejection promise so a
+  // blocked play() never throws (e.g. if invoked outside a user gesture).
+  #playAudio() {
+    const result = this.audioElement?.play?.();
+    if (result && typeof result.catch === "function") {
+      result.catch(() => {});
+    }
+  }
+
+  // Toggle the mute state. Muting PAUSES playback (a true stop, not a volume
+  // change) and unmuting resumes it. Toggling before the score has started just
+  // records the intent so the first journey honors it.
+  #toggleAudioMuted() {
+    this.audioMuted = !this.audioMuted;
+    if (this.audioMuted) {
+      this.audioElement?.pause?.();
+    } else if (this.audioStarted) {
+      this.#playAudio();
+    }
+    this.#syncAudioButton();
+  }
+
+  // Reflect the mute state on the toggle: aria-pressed, label/title, and the
+  // speaker glyph (waves when playing, ✕ when muted).
+  #syncAudioButton() {
+    if (!this.audioToggle) {
+      return;
+    }
+    this.audioToggle.setAttribute("aria-pressed", String(this.audioMuted));
+    const label = this.audioMuted ? "Unmute audio" : "Mute audio";
+    this.audioToggle.setAttribute("aria-label", label);
+    this.audioToggle.title = label;
+    const icon = this.audioMuted ? AUDIO_MUTED_ICON_SVG : AUDIO_ON_ICON_SVG;
+    this.audioToggle.innerHTML = `${icon}<span class="audio-toggle__text">${label}</span>`;
+  }
+
   // Wire the header master "all trails" toggle. Per-row toggles are wired in
   // #createBodyRow as rows are built; this only handles the master fan-out.
   #bindTrailControls() {
@@ -1286,6 +1415,9 @@ export class OrbitalApp {
   // active framing preset, re-resolve bodies so the marker/rosette track the new
   // zoom even while paused, and keep the zoom bar + buttons in sync.
   #applyManualZoom(mutate) {
+    // Manual zoom takes over from the opening flythrough if it is still running.
+    this.introTween?.cancel?.();
+    this.introTween = null;
     mutate();
     this.framingMode = null;
     this.timelineController?.refresh?.();
@@ -1302,6 +1434,10 @@ export class OrbitalApp {
   //   "earth"    — zoom in and track Earth as it orbits
   //   "origin"   — recenter on the Sun (origin), preserving the current zoom
   #applyFraming(mode) {
+    // A framing preset (including the tween's own settle into "auto-fit", which
+    // nulls introTween first) ends the opening flythrough.
+    this.introTween?.cancel?.();
+    this.introTween = null;
     this.framingMode = mode;
 
     if (mode === "earth") {
