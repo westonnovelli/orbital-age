@@ -594,6 +594,10 @@ export class OrbitalApp {
     this.audioToggle = audioToggle;
     this.audioStarted = false;
     this.audioMuted = false;
+    // True while a one-shot retry is armed after a rejected play() (iOS Safari
+    // can reject the first attempt before the media has buffered). See
+    // #armAudioRetry — keeps us from stacking duplicate listeners.
+    this.audioRetryArmed = false;
 
     // Phone-tier menu + off-canvas sheets. On a phone width (matchMedia
     // "(max-width: 480px)") the persistent chrome is reparented into these
@@ -1421,13 +1425,46 @@ export class OrbitalApp {
     }
   }
 
-  // Resume/play the track, swallowing the autoplay-rejection promise so a
-  // blocked play() never throws (e.g. if invoked outside a user gesture).
+  // Resume/play the track. play() returns a promise that can reject when the
+  // browser blocks playback — on iOS Safari this commonly happens on the FIRST
+  // attempt because it ignores preload="auto" and hasn't buffered the file yet
+  // (even though the call sits inside a genuine user gesture, with the silent
+  // switch off). Rather than swallow the rejection, arm a retry so the score
+  // still comes in shortly after.
   #playAudio() {
     const result = this.audioElement?.play?.();
     if (result && typeof result.catch === "function") {
-      result.catch(() => {});
+      result.catch(() => this.#armAudioRetry());
     }
+  }
+
+  // Re-attempt playback after a rejected play(). Fires on whichever comes
+  // first: the element reporting it can play (the file finished buffering) or
+  // the next user gesture anywhere on the page (a fresh activation iOS will
+  // honor). Idempotent — only one set of listeners is ever armed at a time, and
+  // the retry no-ops if the user muted while we waited. If the retry itself is
+  // rejected (still not ready), #playAudio re-arms, so it self-heals.
+  #armAudioRetry() {
+    if (this.audioRetryArmed || !this.audioElement) {
+      return;
+    }
+    this.audioRetryArmed = true;
+    const el = this.audioElement;
+    const retry = () => {
+      cleanup();
+      if (!this.audioMuted) {
+        this.#playAudio();
+      }
+    };
+    const cleanup = () => {
+      this.audioRetryArmed = false;
+      el.removeEventListener("canplay", retry);
+      document.removeEventListener("pointerdown", retry);
+      document.removeEventListener("touchend", retry);
+    };
+    el.addEventListener("canplay", retry, { once: true });
+    document.addEventListener("pointerdown", retry, { once: true });
+    document.addEventListener("touchend", retry, { once: true });
   }
 
   // Toggle the mute state. Muting PAUSES playback (a true stop, not a volume
