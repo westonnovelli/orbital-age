@@ -93,6 +93,7 @@ jobs:
           mkdir -p _site
           cp index.html _site/
           cp -R src _site/src
+          cp orbital-drift.mp3 _site/
           if [ -f CNAME ]; then cp CNAME _site/; fi
           if [ -f favicon.ico ]; then cp favicon.ico _site/; fi
 
