@@ -3,7 +3,7 @@
   "ephemerisSource": {
     "provider": "JPL NAIF / JPL Horizons",
     "kernel": "de442s.bsp",
-    "retrievedOn": "2026-07-11"
+    "retrievedOn": "2026-07-12"
   },
   "frame": "ECLIPJ2000",
   "origin": "SSB",
@@ -13,12 +13,12 @@
   },
   "window": {
     "startUtc": "1926-01-01T00:00:00Z",
-    "endUtc": "2026-07-12T00:00:00Z",
-    "days": 36718
+    "endUtc": "2026-07-13T00:00:00Z",
+    "days": 36719
   },
   "cadence": {
     "step": "P1D",
-    "samplesPerBody": 36718
+    "samplesPerBody": 36719
   },
   "targets": [
     {
