@@ -4,7 +4,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v1",
   "encoder": "json-base64",
-  "generatedOn": "2026-07-22T21:44:17.028018Z",
+  "generatedOn": "2026-07-22T23:59:09.575Z",
   "source": {
     "provider": "JPL NAIF / JPL Horizons",
     "kernel": "de442s.bsp",
