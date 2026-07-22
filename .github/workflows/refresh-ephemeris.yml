@@ -60,10 +60,14 @@ jobs:
           npm run data:ephemeris:refresh -- --fetch --yes --retrieved-on "$TODAY"
 
       - name: Rebuild generated artifacts
-        run: npm run data:ephemeris:rebuild
+        run: |
+          npm run data:ephemeris:rebuild
+          npm run data:ephemeris:rebuild:v2
 
       - name: Verify dataset integrity
-        run: npm run data:ephemeris:verify
+        run: |
+          npm run data:ephemeris:verify
+          npm run data:ephemeris:verify:v2
 
       - name: Run tests
         run: npm test
@@ -77,7 +81,9 @@ jobs:
             data/ephemeris/v1/manifest.json \
             data/ephemeris/v1/snapshots.ndjson \
             data/ephemeris/v1/snapshots.ndjson.gz \
-            src/ephemeris/generated-v1.js
+            data/ephemeris/v2 \
+            src/ephemeris/generated-v1.js \
+            src/ephemeris/generated-v2-index.js
           if git diff --cached --quiet; then
             echo "No dataset changes to commit."
           else
@@ -93,6 +99,8 @@ jobs:
           mkdir -p _site
           cp index.html _site/
           cp -R src _site/src
+          mkdir -p _site/data/ephemeris
+          cp -R data/ephemeris/v2 _site/data/ephemeris/v2
           cp orbital-drift.mp3 _site/
           if [ -f CNAME ]; then cp CNAME _site/; fi
           if [ -f favicon.ico ]; then cp favicon.ico _site/; fi
