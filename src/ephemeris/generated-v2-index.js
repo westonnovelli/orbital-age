@@ -1,0 +1,274 @@
+// Generated from data/ephemeris/v2/manifest.json. Do not edit manually.
+export const EPHEMERIS_V2_INDEX = Object.freeze({
+  "datasetVersion": "2.0.0",
+  "formatVersion": "1.0.0",
+  "chunkSchema": "ephemeris.chunk.v1",
+  "encoder": "json-base64",
+  "generatedOn": "2026-07-22T21:44:17.028018Z",
+  "source": {
+    "provider": "JPL NAIF / JPL Horizons",
+    "kernel": "de442s.bsp",
+    "retrievedOn": "2026-07-22",
+    "canonicalDataset": "data/ephemeris/v1"
+  },
+  "frame": "ECLIPJ2000",
+  "origin": "SSB",
+  "units": {
+    "position": "AU",
+    "time": "UTC"
+  },
+  "cadence": {
+    "step": "P1D",
+    "stepSeconds": 86400
+  },
+  "window": {
+    "startUtc": "1926-01-01T00:00:00Z",
+    "endUtc": "2026-07-23T00:00:00Z",
+    "days": 36729
+  },
+  "streams": {
+    "primary": {
+      "hotWindowYears": 40,
+      "bodyKeys": [
+        "sun",
+        "mercury",
+        "venus",
+        "earth",
+        "mars",
+        "jupiter",
+        "saturn",
+        "uranus",
+        "neptune",
+        "pluto",
+        "moon"
+      ]
+    },
+    "auxiliary": {
+      "hotWindowYears": 20,
+      "bodyKeys": []
+    }
+  },
+  "bodies": {
+    "sun": {
+      "key": "sun",
+      "label": "sun",
+      "naifId": 10,
+      "stream": "primary",
+      "kind": "majorBody",
+      "renderClass": "primary",
+      "hasLabel": true,
+      "hasTrail": true,
+      "parent": null,
+      "relativeTo": null
+    },
+    "mercury": {
+      "key": "mercury",
+      "label": "mercury",
+      "naifId": 199,
+      "stream": "primary",
+      "kind": "majorBody",
+      "renderClass": "primary",
+      "hasLabel": true,
+      "hasTrail": true,
+      "parent": null,
+      "relativeTo": null
+    },
+    "venus": {
+      "key": "venus",
+      "label": "venus",
+      "naifId": 299,
+      "stream": "primary",
+      "kind": "majorBody",
+      "renderClass": "primary",
+      "hasLabel": true,
+      "hasTrail": true,
+      "parent": null,
+      "relativeTo": null
+    },
+    "earth": {
+      "key": "earth",
+      "label": "earth",
+      "naifId": 399,
+      "stream": "primary",
+      "kind": "majorBody",
+      "renderClass": "primary",
+      "hasLabel": true,
+      "hasTrail": true,
+      "parent": null,
+      "relativeTo": null
+    },
+    "mars": {
+      "key": "mars",
+      "label": "mars",
+      "naifId": 499,
+      "stream": "primary",
+      "kind": "majorBody",
+      "renderClass": "primary",
+      "hasLabel": true,
+      "hasTrail": true,
+      "parent": null,
+      "relativeTo": null
+    },
+    "jupiter": {
+      "key": "jupiter",
+      "label": "jupiter",
+      "naifId": 599,
+      "stream": "primary",
+      "kind": "majorBody",
+      "renderClass": "primary",
+      "hasLabel": true,
+      "hasTrail": true,
+      "parent": null,
+      "relativeTo": null
+    },
+    "saturn": {
+      "key": "saturn",
+      "label": "saturn",
+      "naifId": 699,
+      "stream": "primary",
+      "kind": "majorBody",
+      "renderClass": "primary",
+      "hasLabel": true,
+      "hasTrail": true,
+      "parent": null,
+      "relativeTo": null
+    },
+    "uranus": {
+      "key": "uranus",
+      "label": "uranus",
+      "naifId": 799,
+      "stream": "primary",
+      "kind": "majorBody",
+      "renderClass": "primary",
+      "hasLabel": true,
+      "hasTrail": true,
+      "parent": null,
+      "relativeTo": null
+    },
+    "neptune": {
+      "key": "neptune",
+      "label": "neptune",
+      "naifId": 899,
+      "stream": "primary",
+      "kind": "majorBody",
+      "renderClass": "primary",
+      "hasLabel": true,
+      "hasTrail": true,
+      "parent": null,
+      "relativeTo": null
+    },
+    "pluto": {
+      "key": "pluto",
+      "label": "pluto",
+      "naifId": 999,
+      "stream": "primary",
+      "kind": "majorBody",
+      "renderClass": "primary",
+      "hasLabel": true,
+      "hasTrail": true,
+      "parent": null,
+      "relativeTo": null
+    },
+    "moon": {
+      "key": "moon",
+      "label": "moon",
+      "naifId": 301,
+      "stream": "primary",
+      "kind": "majorBody",
+      "renderClass": "primary",
+      "hasLabel": true,
+      "hasTrail": true,
+      "parent": null,
+      "relativeTo": 399
+    }
+  },
+  "chunks": [
+    {
+      "id": "primary-historical-1926-01-01-1977-11-07",
+      "stream": "primary",
+      "kind": "historical",
+      "startUtc": "1926-01-01T00:00:00Z",
+      "endUtc": "1977-11-07T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 18939,
+      "bodyKeys": [
+        "sun",
+        "mercury",
+        "venus",
+        "earth",
+        "mars",
+        "jupiter",
+        "saturn",
+        "uranus",
+        "neptune",
+        "pluto",
+        "moon"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/primary/primary-historical-1926-01-01-1977-11-07.json",
+      "byteLength": 3334116,
+      "sha256": "45ce0d0844963d3f0f7fd1e810c5f2bc6912a877736b98afcece24e7e92fcfc7"
+    },
+    {
+      "id": "primary-historical-1977-11-07-1986-07-23",
+      "stream": "primary",
+      "kind": "historical",
+      "startUtc": "1977-11-07T00:00:00Z",
+      "endUtc": "1986-07-23T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 3181,
+      "bodyKeys": [
+        "sun",
+        "mercury",
+        "venus",
+        "earth",
+        "mars",
+        "jupiter",
+        "saturn",
+        "uranus",
+        "neptune",
+        "pluto",
+        "moon"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/primary/primary-historical-1977-11-07-1986-07-23.json",
+      "byteLength": 560707,
+      "sha256": "7bfd8ca453ce4cd46d74ca20c337a5657602d2d504d807e88921c0d0efd2527d"
+    },
+    {
+      "id": "primary-recent-1986-07-23-2026-07-23",
+      "stream": "primary",
+      "kind": "recent",
+      "startUtc": "1986-07-23T00:00:00Z",
+      "endUtc": "2026-07-23T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 14611,
+      "bodyKeys": [
+        "sun",
+        "mercury",
+        "venus",
+        "earth",
+        "mars",
+        "jupiter",
+        "saturn",
+        "uranus",
+        "neptune",
+        "pluto",
+        "moon"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/primary/primary-recent-1986-07-23-2026-07-23.json",
+      "byteLength": 2572384,
+      "sha256": "05b3a85dc717985aca0b70f04d6b7f732aafca48b0121e251527756459903d40"
+    }
+  ]
+});

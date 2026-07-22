@@ -112,6 +112,25 @@ What `data:ephemeris:rebuild` regenerates:
 - `data/ephemeris/v1/manifest.json`
 - `src/ephemeris/generated-v1.js`
 
+Chunked runtime artifacts are generated separately:
+
+```bash
+npm run data:ephemeris:rebuild:v2
+npm run data:ephemeris:verify:v2
+```
+
+What `data:ephemeris:rebuild:v2` regenerates:
+
+- `data/ephemeris/v2/manifest.json`
+- `data/ephemeris/v2/chunks/**`
+- `src/ephemeris/generated-v2-index.js`
+
+The v2 builder reads the canonical v1 rows, then applies
+`data/ephemeris/v2/build-config.json` byte budgets, stream definitions, hot
+windows, and encoder settings. The initial encoder is `json-base64`; future
+binary/compressed formats should be added behind the same manifest and decoder
+interfaces rather than changing app code directly.
+
 What `data:ephemeris:verify` enforces:
 
 - `manifest.datasetSha256` equals SHA-256 of `snapshots.ndjson`

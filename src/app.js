@@ -1,5 +1,12 @@
 import { validateBirthday } from "./date.js";
-import { SUPPORTED_DATE_RANGE, normalizeToUtcMidnight, parseIsoDateUtc } from "./orbital-time.js";
+import {
+  SUPPORTED_DATE_RANGE,
+  ensureEphemerisLoaded,
+  ephemerisBootPromise,
+  normalizeToUtcMidnight,
+  parseIsoDateUtc,
+  planEphemerisLoad
+} from "./orbital-time.js";
 import { Scene } from "./webgl/scene.js";
 import { WebGLRenderer } from "./webgl/renderer.js";
 import { OrthoCamera2D } from "./webgl/camera.js";
@@ -14,6 +21,7 @@ import { autoFitHalfHeight, starfieldSpread } from "./webgl/scale.js";
 import { orbitsCompleted, currentAge, distanceTraveledKm } from "./stats.js";
 
 const DEFAULT_SPEED_DAYS_PER_SECOND = 120;
+const PRIMARY_EPHEMERIS_STREAM = "primary";
 
 // Declarative registry of rendered bodies. Each entry builds one marker and,
 // when `trail` is provided, one orbital trail. Earth's color reproduces the
@@ -657,6 +665,7 @@ export class OrbitalApp {
     });
     this.renderer = new WebGLRenderer(canvas, { camera: this.camera });
     this.timelineController = null;
+    this.deepTimeLoader = null;
   }
 
   initialize() {
@@ -680,9 +689,13 @@ export class OrbitalApp {
       event.preventDefault();
       this.#handleRenderSubmit();
     });
+    ephemerisBootPromise?.catch?.(() => {
+      // Submit-time loading will surface the actionable message. Boot loading is
+      // only an optimization for recent journeys.
+    });
   }
 
-  #handleRenderSubmit() {
+  async #handleRenderSubmit() {
     const validation = validateBirthday(this.dateInput.value);
     this.validationMessage.textContent = validation.message;
 
@@ -691,6 +704,35 @@ export class OrbitalApp {
     }
 
     this.validationMessage.textContent = "";
+
+    const todayUtc = normalizeToUtcMidnight(new Date());
+    const datasetMaxUtc = parseIsoDateUtc(SUPPORTED_DATE_RANGE.max);
+    const maxTimelineDate = todayUtc < datasetMaxUtc ? todayUtc : datasetMaxUtc;
+    const loadPlan = planEphemerisLoad({
+      startUtc: validation.date,
+      endUtc: maxTimelineDate,
+      streams: [PRIMARY_EPHEMERIS_STREAM]
+    });
+    if (!loadPlan.loaded) {
+      this.#showDeepTimeLoader(validation.date, loadPlan);
+
+      try {
+        await ensureEphemerisLoaded({
+          startUtc: validation.date,
+          endUtc: maxTimelineDate,
+          streams: [PRIMARY_EPHEMERIS_STREAM],
+          priority: "journey",
+          onProgress: (progress) => this.#updateDeepTimeLoader(validation.date, progress)
+        });
+      } catch (error) {
+        this.#hideDeepTimeLoader();
+        this.validationMessage.textContent =
+          error instanceof Error ? error.message : "Could not load orbital telemetry.";
+        return;
+      }
+
+      this.#hideDeepTimeLoader();
+    }
 
     // Build one marker (+ optional trail) per registered body.
     const bodies = [];
@@ -727,9 +769,6 @@ export class OrbitalApp {
       });
     }
 
-    const todayUtc = normalizeToUtcMidnight(new Date());
-    const datasetMaxUtc = parseIsoDateUtc(SUPPORTED_DATE_RANGE.max);
-    const maxTimelineDate = todayUtc < datasetMaxUtc ? todayUtc : datasetMaxUtc;
     const birthdayMarkers = new BirthdayMarkerEntity({
       birthday: validation.date,
       radiusX: BODY_RADIUS_X,
@@ -817,6 +856,77 @@ export class OrbitalApp {
     // The looping score starts on the first journey and keeps playing across
     // subsequent re-renders (this no-ops once started).
     this.#startAudio();
+  }
+
+  #showDeepTimeLoader(birthday, loadPlan) {
+    const doc = this.root?.ownerDocument ?? globalThis.document;
+    if (!doc || !this.root) {
+      return;
+    }
+
+    if (!this.deepTimeLoader) {
+      const overlay = doc.createElement("div");
+      overlay.className = "deep-time-loader";
+      overlay.setAttribute("role", "status");
+      overlay.setAttribute("aria-live", "polite");
+
+      const orbit = doc.createElement("div");
+      orbit.className = "deep-time-loader__orbit";
+      orbit.setAttribute("aria-hidden", "true");
+
+      const copy = doc.createElement("div");
+      copy.className = "deep-time-loader__copy";
+
+      const title = doc.createElement("div");
+      title.className = "deep-time-loader__title";
+
+      const detail = doc.createElement("div");
+      detail.className = "deep-time-loader__detail";
+
+      const progress = doc.createElement("div");
+      progress.className = "deep-time-loader__progress";
+      progress.setAttribute("aria-hidden", "true");
+
+      const bar = doc.createElement("span");
+      bar.className = "deep-time-loader__bar";
+      progress.append(bar);
+
+      copy.append(title, detail, progress);
+      overlay.append(orbit, copy);
+      this.root.append(overlay);
+      this.deepTimeLoader = { overlay, title, detail, bar };
+    }
+
+    this.root.classList.add("stage--loading-ephemeris");
+    this.deepTimeLoader.overlay.classList.add("deep-time-loader--visible");
+    this.#updateDeepTimeLoader(birthday, {
+      loadedChunks: loadPlan.chunks.length - loadPlan.missingChunks.length,
+      totalChunks: loadPlan.chunks.length,
+      chunk: loadPlan.missingChunks[0] ?? null,
+      plan: loadPlan
+    });
+  }
+
+  #updateDeepTimeLoader(birthday, progress) {
+    if (!this.deepTimeLoader) {
+      return;
+    }
+
+    const year = birthday instanceof Date ? birthday.getUTCFullYear() : new Date(birthday).getUTCFullYear();
+    const loaded = Number(progress?.loadedChunks ?? 0);
+    const total = Math.max(1, Number(progress?.totalChunks ?? 1));
+    const chunk = progress?.chunk;
+    const pct = Math.max(0, Math.min(100, (loaded / total) * 100));
+    this.deepTimeLoader.title.textContent = `Retrieving ${year} orbital telemetry`;
+    this.deepTimeLoader.detail.textContent = chunk
+      ? `Decoding ${chunk.startUtc.slice(0, 10)} to ${chunk.endUtc.slice(0, 10)}`
+      : "Aligning primary ephemeris";
+    this.deepTimeLoader.bar.style.width = `${pct}%`;
+  }
+
+  #hideDeepTimeLoader() {
+    this.root?.classList.remove("stage--loading-ephemeris");
+    this.deepTimeLoader?.overlay.classList.remove("deep-time-loader--visible");
   }
 
   // Build one Bodies-panel row per registered body: [swatch][name][distance].

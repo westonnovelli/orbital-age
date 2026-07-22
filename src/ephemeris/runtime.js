@@ -1,13 +1,18 @@
-import {
-  EPHEMERIS_V1,
-  EPHEMERIS_V1_BODY_KEYS,
-  EPHEMERIS_V1_BODY_VECTORS_BASE64,
-  EPHEMERIS_V1_DERIVED_BODY_KEYS,
-  EPHEMERIS_V1_DERIVED_VECTORS_BASE64
-} from "./generated-v1.js";
+import { EPHEMERIS_V2_INDEX } from "./generated-v2-index.js";
 
-const bodyVectorCache = new Map();
-const derivedVectorCache = new Map();
+const DAY_SECONDS = 86400;
+const loadedChunks = new Map();
+const loadingChunks = new Map();
+const cumulativePathCache = new Map();
+const isNodeRuntime = Boolean(globalThis.process?.versions?.node);
+
+export class EphemerisDataMissingError extends Error {
+  constructor(message, loadPlan) {
+    super(message);
+    this.name = "EphemerisDataMissingError";
+    this.loadPlan = loadPlan;
+  }
+}
 
 function decodeBase64ToUint8Array(base64) {
   if (typeof Uint8Array.fromBase64 === "function") {
@@ -50,40 +55,15 @@ function toDateFromInput(input) {
   throw new Error(`Unsupported date input type: ${typeof input}`);
 }
 
-function toUnixSeconds(date) {
-  return date.getTime() / 1000;
+function toUnixSeconds(input) {
+  return toDateFromInput(input).getTime() / 1000;
 }
 
-function getBodyVectors(bodyKey) {
-  if (bodyVectorCache.has(bodyKey)) {
-    return bodyVectorCache.get(bodyKey);
+function normalizeArray(value, fallback) {
+  if (value == null) {
+    return fallback;
   }
-
-  const encoded = EPHEMERIS_V1_BODY_VECTORS_BASE64[bodyKey];
-  if (!encoded) {
-    return null;
-  }
-
-  const bytes = decodeBase64ToUint8Array(encoded);
-  const vectors = new Float32Array(bytes.buffer, bytes.byteOffset, bytes.byteLength / 4);
-  bodyVectorCache.set(bodyKey, vectors);
-  return vectors;
-}
-
-function getDerivedVectors(bodyKey) {
-  if (derivedVectorCache.has(bodyKey)) {
-    return derivedVectorCache.get(bodyKey);
-  }
-
-  const encoded = EPHEMERIS_V1_DERIVED_VECTORS_BASE64?.[bodyKey];
-  if (!encoded) {
-    return null;
-  }
-
-  const bytes = decodeBase64ToUint8Array(encoded);
-  const vectors = new Float32Array(bytes.buffer, bytes.byteOffset, bytes.byteLength / 4);
-  derivedVectorCache.set(bodyKey, vectors);
-  return vectors;
+  return Array.isArray(value) ? value : [value];
 }
 
 function clamp(value, min, max) {
@@ -94,49 +74,219 @@ function interpolate(a, b, t) {
   return a + (b - a) * t;
 }
 
-export const EPHEMERIS_WINDOW = Object.freeze({
-  startUtc: EPHEMERIS_V1.startUtc,
-  endUtc: EPHEMERIS_V1.endUtc
-});
+function bodyStream(bodyKey) {
+  return EPHEMERIS_V2_INDEX.bodies[bodyKey]?.stream ?? null;
+}
 
-const interpolableEndUtc = new Date(
-  Date.parse(EPHEMERIS_V1.endUtc) - EPHEMERIS_V1.stepSeconds * 1000
-).toISOString();
+function bodyKeysForStreams(streams) {
+  return streams.flatMap((stream) => EPHEMERIS_V2_INDEX.streams[stream]?.bodyKeys ?? []);
+}
 
-export const EPHEMERIS_INTERPOLATION_WINDOW = Object.freeze({
-  startUtc: EPHEMERIS_V1.startUtc,
-  endUtc: interpolableEndUtc
-});
+function chunkCovers(chunk, startUnixS, endUnixS) {
+  const chunkStart = Date.parse(chunk.startUtc) / 1000;
+  const chunkEnd = Date.parse(chunk.endUtc) / 1000;
+  return chunkEnd >= startUnixS && chunkStart <= endUnixS;
+}
 
-export const SUPPORTED_PLANET_KEYS = Object.freeze([...EPHEMERIS_V1_BODY_KEYS]);
+function chunkHasAnyBody(chunk, bodyKeys) {
+  if (!bodyKeys || bodyKeys.length === 0) {
+    return true;
+  }
+  return bodyKeys.some((key) => chunk.bodyKeys.includes(key));
+}
 
-// Bodies that additionally carry a derived parent-relative offset blob (e.g. the
-// Moon, stored relative to Earth). These are NOT a substitute for the primary
-// barycentric position — every body, including these, keeps an honest
-// barycentric blob in EPHEMERIS_V1_BODY_VECTORS_BASE64.
-export const SUPPORTED_DERIVED_BODY_KEYS = Object.freeze([
-  ...(EPHEMERIS_V1_DERIVED_BODY_KEYS ?? [])
-]);
+function chunkUrl(chunk) {
+  return new URL(chunk.url, import.meta.url);
+}
 
-// Interpolate a flat [x0,y0,z0, x1,y1,z1, …] Float32Array of daily samples at a
-// given instant. Returns null when the instant is outside the dataset window.
-function interpolateVectorsAtInstant(vectors, dateInput) {
-  const instant = toDateFromInput(dateInput);
-  const startUnixS = Date.parse(EPHEMERIS_V1.startUtc) / 1000;
-  const endUnixS = Date.parse(EPHEMERIS_V1.endUtc) / 1000;
-  const endExclusiveUnixS = endUnixS + EPHEMERIS_V1.stepSeconds;
-  const unixSeconds = toUnixSeconds(instant);
+async function fetchChunkPayload(chunk) {
+  const url = chunkUrl(chunk);
+  if (isNodeRuntime && url.protocol === "file:") {
+    const [{ readFile }, { fileURLToPath }] = await Promise.all([
+      import("node:fs/promises"),
+      import("node:url")
+    ]);
+    return JSON.parse(await readFile(fileURLToPath(url), "utf8"));
+  }
 
-  if (unixSeconds < startUnixS || unixSeconds >= endExclusiveUnixS) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to load ephemeris chunk ${chunk.id}: ${response.status}`);
+  }
+  return response.json();
+}
+
+const decoders = {
+  "json-base64"(payload) {
+    const vectors = {};
+    for (const key of payload.bodyKeys) {
+      const encoded = payload.vectors[key];
+      const bytes = decodeBase64ToUint8Array(encoded);
+      vectors[key] = new Float32Array(bytes.buffer, bytes.byteOffset, bytes.byteLength / 4);
+    }
+    return {
+      id: payload.chunkId,
+      stream: payload.stream,
+      startUtc: payload.startUtc,
+      endUtc: payload.endUtc,
+      startUnixS: Date.parse(payload.startUtc) / 1000,
+      endUnixS: Date.parse(payload.endUtc) / 1000,
+      stepSeconds: payload.stepSeconds,
+      samplesPerBody: payload.samplesPerBody,
+      bodyKeys: payload.bodyKeys,
+      vectors
+    };
+  }
+};
+
+async function loadChunk(chunk) {
+  if (loadedChunks.has(chunk.id)) {
+    return loadedChunks.get(chunk.id);
+  }
+  if (loadingChunks.has(chunk.id)) {
+    return loadingChunks.get(chunk.id);
+  }
+
+  const promise = fetchChunkPayload(chunk)
+    .then((payload) => {
+      const decoder = decoders[chunk.format];
+      if (!decoder) {
+        throw new Error(`Unsupported ephemeris chunk format: ${chunk.format}`);
+      }
+      const decoded = decoder(payload);
+      loadedChunks.set(chunk.id, decoded);
+      cumulativePathCache.clear();
+      return decoded;
+    })
+    .finally(() => {
+      loadingChunks.delete(chunk.id);
+    });
+  loadingChunks.set(chunk.id, promise);
+  return promise;
+}
+
+export function getSupportedDateRange() {
+  const endUtc = new Date(
+    Date.parse(EPHEMERIS_V2_INDEX.window.endUtc) - EPHEMERIS_V2_INDEX.cadence.stepSeconds * 1000
+  ).toISOString();
+  return Object.freeze({
+    min: EPHEMERIS_V2_INDEX.window.startUtc.slice(0, 10),
+    max: endUtc.slice(0, 10)
+  });
+}
+
+export function getBodyRegistry() {
+  return EPHEMERIS_V2_INDEX.bodies;
+}
+
+export function getLoadedCoverage({ stream, bodyKeys } = {}) {
+  const streams = normalizeArray(stream, Object.keys(EPHEMERIS_V2_INDEX.streams));
+  const keys = bodyKeys ? normalizeArray(bodyKeys, []) : null;
+  const chunks = [...loadedChunks.values()].filter(
+    (chunk) => streams.includes(chunk.stream) && (!keys || chunkHasAnyBody(chunk, keys))
+  );
+  if (chunks.length === 0) {
+    return null;
+  }
+  const minStart = Math.min(...chunks.map((chunk) => chunk.startUnixS));
+  const maxEnd = Math.max(...chunks.map((chunk) => chunk.endUnixS));
+  return {
+    startUtc: new Date(minStart * 1000).toISOString().replace(".000Z", "Z"),
+    endUtc: new Date(maxEnd * 1000).toISOString().replace(".000Z", "Z"),
+    chunks: chunks.map((chunk) => chunk.id)
+  };
+}
+
+export function planEphemerisLoad({ startUtc, endUtc, streams, bodyKeys } = {}) {
+  const requestedStreams = normalizeArray(streams, ["primary"]);
+  const requestedBodyKeys = bodyKeys
+    ? normalizeArray(bodyKeys, [])
+    : bodyKeysForStreams(requestedStreams);
+  const startUnixS = toUnixSeconds(startUtc ?? EPHEMERIS_V2_INDEX.window.startUtc);
+  const endUnixS = toUnixSeconds(endUtc ?? EPHEMERIS_V2_INDEX.window.endUtc);
+
+  const chunks = EPHEMERIS_V2_INDEX.chunks.filter(
+    (chunk) =>
+      requestedStreams.includes(chunk.stream) &&
+      chunkCovers(chunk, startUnixS, endUnixS) &&
+      chunkHasAnyBody(chunk, requestedBodyKeys)
+  );
+  const missingChunks = chunks.filter((chunk) => !loadedChunks.has(chunk.id));
+
+  return {
+    startUtc: new Date(startUnixS * 1000).toISOString().replace(".000Z", "Z"),
+    endUtc: new Date(endUnixS * 1000).toISOString().replace(".000Z", "Z"),
+    streams: requestedStreams,
+    bodyKeys: requestedBodyKeys,
+    chunks,
+    missingChunks,
+    loaded: missingChunks.length === 0,
+    totalBytes: chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0),
+    missingBytes: missingChunks.reduce((sum, chunk) => sum + chunk.byteLength, 0)
+  };
+}
+
+export async function ensureEphemerisLoaded({
+  startUtc,
+  endUtc,
+  streams,
+  bodyKeys,
+  priority = "normal",
+  onProgress
+} = {}) {
+  const plan = planEphemerisLoad({ startUtc, endUtc, streams, bodyKeys });
+  if (plan.loaded) {
+    onProgress?.({ loadedChunks: plan.chunks.length, totalChunks: plan.chunks.length, chunk: null, plan, priority });
+    return plan;
+  }
+
+  let loadedCount = plan.chunks.length - plan.missingChunks.length;
+  const totalChunks = plan.chunks.length;
+  for (const chunk of plan.missingChunks) {
+    onProgress?.({ loadedChunks: loadedCount, totalChunks, chunk, plan, priority });
+    await loadChunk(chunk);
+    loadedCount += 1;
+    onProgress?.({ loadedChunks: loadedCount, totalChunks, chunk, plan, priority });
+  }
+
+  return planEphemerisLoad({ startUtc, endUtc, streams, bodyKeys });
+}
+
+function findLoadedChunk(bodyKey, instantUnixS) {
+  const stream = bodyStream(bodyKey);
+  const candidates = [...loadedChunks.values()]
+    .filter(
+      (chunk) =>
+        chunk.stream === stream &&
+        chunk.bodyKeys.includes(bodyKey) &&
+        chunk.startUnixS <= instantUnixS &&
+        instantUnixS < chunk.endUnixS
+    )
+    .sort((a, b) => a.startUnixS - b.startUnixS);
+  if (candidates.length > 0) {
+    return candidates[0];
+  }
+
+  return [...loadedChunks.values()].find(
+    (chunk) =>
+      chunk.stream === stream &&
+      chunk.bodyKeys.includes(bodyKey) &&
+      instantUnixS === chunk.endUnixS
+  );
+}
+
+function interpolateVectorsAtInstant(chunk, bodyKey, dateInput) {
+  const unixSeconds = toUnixSeconds(dateInput);
+  const vectors = chunk.vectors[bodyKey];
+  if (!vectors) {
     return null;
   }
 
-  const lastIndex = EPHEMERIS_V1.samplesPerBody - 1;
-  const indexFloat = (unixSeconds - startUnixS) / EPHEMERIS_V1.stepSeconds;
+  const lastIndex = chunk.samplesPerBody - 1;
+  const indexFloat = (unixSeconds - chunk.startUnixS) / chunk.stepSeconds;
   const lowerIndex = clamp(Math.floor(indexFloat), 0, lastIndex);
   const upperIndex = clamp(lowerIndex + 1, 0, lastIndex);
   const t = clamp(indexFloat - lowerIndex, 0, 1);
-
   const lowerOffset = lowerIndex * 3;
   const upperOffset = upperIndex * 3;
 
@@ -147,94 +297,165 @@ function interpolateVectorsAtInstant(vectors, dateInput) {
   };
 }
 
-// Cumulative path-length tables, keyed by body. cum[i] is the 3D arc length (in
-// AU) travelled along the daily barycentric samples from sample 0 to sample i, so
-// cum[0] is always 0. Built lazily and cached, since the dataset is immutable for
-// the life of the page.
-const cumulativePathCache = new Map();
-
-function getCumulativePathAu(bodyKey) {
-  if (cumulativePathCache.has(bodyKey)) {
-    return cumulativePathCache.get(bodyKey);
-  }
-
-  const vectors = getBodyVectors(bodyKey);
-  if (!vectors) {
-    cumulativePathCache.set(bodyKey, null);
-    return null;
-  }
-
-  const sampleCount = Math.floor(vectors.length / 3);
-  const cumulative = new Float64Array(sampleCount);
-  for (let index = 1; index < sampleCount; index += 1) {
-    const prev = (index - 1) * 3;
-    const curr = index * 3;
-    const dx = vectors[curr] - vectors[prev];
-    const dy = vectors[curr + 1] - vectors[prev + 1];
-    const dz = vectors[curr + 2] - vectors[prev + 2];
-    cumulative[index] = cumulative[index - 1] + Math.hypot(dx, dy, dz);
-  }
-
-  cumulativePathCache.set(bodyKey, cumulative);
-  return cumulative;
+function missingPlanFor(bodyKey, dateInput) {
+  const stream = bodyStream(bodyKey);
+  const iso = toDateFromInput(dateInput).toISOString();
+  return planEphemerisLoad({
+    startUtc: iso,
+    endUtc: iso,
+    streams: stream ? [stream] : ["primary"],
+    bodyKeys: [bodyKey]
+  });
 }
 
-// Cumulative path length (AU) from the dataset start to the given instant, for a
-// prebuilt cumulative table. Linearly interpolated within the daily segment and
-// clamped to the dataset window. Returns null when there is no table.
-function cumulativePathAuAtInstant(cumulative, dateInput) {
-  if (!cumulative || cumulative.length === 0) {
-    return null;
-  }
-
-  const instant = toDateFromInput(dateInput);
-  const startUnixS = Date.parse(EPHEMERIS_V1.startUtc) / 1000;
-  const lastIndex = cumulative.length - 1;
-  const indexFloat = clamp(
-    (toUnixSeconds(instant) - startUnixS) / EPHEMERIS_V1.stepSeconds,
-    0,
-    lastIndex
-  );
-  const lowerIndex = Math.floor(indexFloat);
-  const upperIndex = Math.min(lowerIndex + 1, lastIndex);
-  const t = indexFloat - lowerIndex;
-  return interpolate(cumulative[lowerIndex], cumulative[upperIndex], t);
-}
-
-function pathLengthAuBetween(cumulative, startInput, endInput) {
-  const startCumulative = cumulativePathAuAtInstant(cumulative, startInput);
-  const endCumulative = cumulativePathAuAtInstant(cumulative, endInput);
-  if (startCumulative == null || endCumulative == null) {
-    return null;
-  }
-  return Math.abs(endCumulative - startCumulative);
-}
-
-// Distance (AU) a body travels along its true 3D barycentric path between two
-// instants. Deterministic in the endpoints (independent of playback history), so
-// it stays correct when the timeline is scrubbed or jumped. Returns null for
-// unknown bodies.
-export function bodyPathLengthAuBetween(bodyKey, startInput, endInput) {
-  return pathLengthAuBetween(getCumulativePathAu(bodyKey), startInput, endInput);
+export function hasBodyPosition(bodyKey, instant) {
+  const normalizedBodyKey = String(bodyKey).toLowerCase();
+  return Boolean(findLoadedChunk(normalizedBodyKey, toUnixSeconds(instant)));
 }
 
 export function getBodyPositionAuAtInstant(bodyKey, dateInput) {
-  const vectors = getBodyVectors(bodyKey);
-  if (!vectors) {
+  const normalizedBodyKey = String(bodyKey).toLowerCase();
+  const chunk = findLoadedChunk(normalizedBodyKey, toUnixSeconds(dateInput));
+  if (!chunk) {
+    throw new EphemerisDataMissingError(
+      `Ephemeris data for "${normalizedBodyKey}" is not loaded at ${toDateFromInput(dateInput).toISOString()}.`,
+      missingPlanFor(normalizedBodyKey, dateInput)
+    );
+  }
+  const position = interpolateVectorsAtInstant(chunk, normalizedBodyKey, dateInput);
+  if (!position) {
     throw new Error(`Unsupported body key: ${bodyKey}`);
   }
-
-  return interpolateVectorsAtInstant(vectors, dateInput);
+  return position;
 }
 
-// Return the body's derived parent-relative offset (e.g. Moon relative to Earth)
-// at an instant, interpolated like the primary blobs. Throws for bodies without a
-// derived dataset; returns null when the instant is outside the dataset window.
 export function getBodyDerivedOffsetAuAtInstant(bodyKey, dateInput) {
-  const vectors = getDerivedVectors(bodyKey);
-  if (!vectors) {
+  const normalizedBodyKey = String(bodyKey).toLowerCase();
+  const body = EPHEMERIS_V2_INDEX.bodies[normalizedBodyKey];
+  if (!body?.relativeTo) {
     throw new Error(`No derived dataset for body key: ${bodyKey}`);
   }
+  const parent = Object.values(EPHEMERIS_V2_INDEX.bodies).find(
+    (candidate) => candidate.naifId === body.relativeTo
+  );
+  if (!parent) {
+    throw new Error(`No parent body for derived dataset: ${bodyKey}`);
+  }
+  const position = getBodyPositionAuAtInstant(normalizedBodyKey, dateInput);
+  const parentPosition = getBodyPositionAuAtInstant(parent.key, dateInput);
+  return {
+    xAu: position.xAu - parentPosition.xAu,
+    yAu: position.yAu - parentPosition.yAu,
+    zAu: position.zAu - parentPosition.zAu
+  };
+}
 
-  return interpolateVectorsAtInstant(vectors, dateInput);
+function samplesForBodyBetween(bodyKey, startInput, endInput) {
+  const startUnixS = toUnixSeconds(startInput);
+  const endUnixS = toUnixSeconds(endInput);
+  const stream = bodyStream(bodyKey);
+  const chunks = [...loadedChunks.values()]
+    .filter(
+      (chunk) =>
+        chunk.stream === stream &&
+        chunk.bodyKeys.includes(bodyKey) &&
+        chunk.endUnixS >= startUnixS &&
+        chunk.startUnixS <= endUnixS
+    )
+    .sort((a, b) => a.startUnixS - b.startUnixS);
+
+  const samples = [];
+  const seen = new Set();
+  for (const chunk of chunks) {
+    const vectors = chunk.vectors[bodyKey];
+    for (let index = 0; index < chunk.samplesPerBody; index += 1) {
+      const epochUnixS = chunk.startUnixS + index * chunk.stepSeconds;
+      if (epochUnixS < startUnixS || epochUnixS > endUnixS || seen.has(epochUnixS)) {
+        continue;
+      }
+      const offset = index * 3;
+      samples.push({
+        epochUnixS,
+        xAu: vectors[offset],
+        yAu: vectors[offset + 1],
+        zAu: vectors[offset + 2]
+      });
+      seen.add(epochUnixS);
+    }
+  }
+  return samples.sort((a, b) => a.epochUnixS - b.epochUnixS);
+}
+
+export function bodyPathLengthAuBetween(bodyKey, startInput, endInput) {
+  const normalizedBodyKey = String(bodyKey).toLowerCase();
+  const cacheKey = `${normalizedBodyKey}:${toDateFromInput(startInput).toISOString()}:${toDateFromInput(endInput).toISOString()}`;
+  if (cumulativePathCache.has(cacheKey)) {
+    return cumulativePathCache.get(cacheKey);
+  }
+
+  const startPosition = getBodyPositionAuAtInstant(normalizedBodyKey, startInput);
+  const endPosition = getBodyPositionAuAtInstant(normalizedBodyKey, endInput);
+  const samples = samplesForBodyBetween(normalizedBodyKey, startInput, endInput);
+  if (samples.length === 0) {
+    return null;
+  }
+
+  const points = [
+    { epochUnixS: toUnixSeconds(startInput), ...startPosition },
+    ...samples,
+    { epochUnixS: toUnixSeconds(endInput), ...endPosition }
+  ]
+    .sort((a, b) => a.epochUnixS - b.epochUnixS)
+    .filter((point, index, list) => index === 0 || point.epochUnixS !== list[index - 1].epochUnixS);
+
+  let total = 0;
+  for (let i = 1; i < points.length; i += 1) {
+    const prev = points[i - 1];
+    const curr = points[i];
+    total += Math.hypot(curr.xAu - prev.xAu, curr.yAu - prev.yAu, curr.zAu - prev.zAu);
+  }
+
+  cumulativePathCache.set(cacheKey, total);
+  return total;
+}
+
+export const EPHEMERIS_WINDOW = Object.freeze({
+  startUtc: EPHEMERIS_V2_INDEX.window.startUtc,
+  endUtc: EPHEMERIS_V2_INDEX.window.endUtc
+});
+
+export const EPHEMERIS_INTERPOLATION_WINDOW = Object.freeze({
+  startUtc: `${getSupportedDateRange().min}T00:00:00Z`,
+  endUtc: `${getSupportedDateRange().max}T00:00:00Z`
+});
+
+export const SUPPORTED_PLANET_KEYS = Object.freeze([...EPHEMERIS_V2_INDEX.streams.primary.bodyKeys]);
+export const SUPPORTED_DERIVED_BODY_KEYS = Object.freeze(
+  Object.values(EPHEMERIS_V2_INDEX.bodies)
+    .filter((body) => body.relativeTo !== undefined && body.relativeTo !== null)
+    .map((body) => body.key)
+);
+
+const recentPrimaryChunk = EPHEMERIS_V2_INDEX.chunks.find(
+  (chunk) => chunk.stream === "primary" && chunk.kind === "recent"
+);
+
+export const ephemerisBootPromise = isNodeRuntime
+  ? ensureEphemerisLoaded({
+      streams: ["primary"],
+      startUtc: EPHEMERIS_V2_INDEX.window.startUtc,
+      endUtc: EPHEMERIS_V2_INDEX.window.endUtc,
+      priority: "test"
+    })
+  : ensureEphemerisLoaded({
+      streams: ["primary"],
+      startUtc: recentPrimaryChunk?.startUtc,
+      endUtc: EPHEMERIS_V2_INDEX.window.endUtc,
+      priority: "boot"
+    }).catch((error) => {
+      console.error(error);
+    });
+
+if (isNodeRuntime) {
+  await ephemerisBootPromise;
 }

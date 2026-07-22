@@ -60,7 +60,13 @@ Regeneration commands:
 npm run data:ephemeris:refresh -- --fetch --yes
 npm run data:ephemeris:rebuild
 npm run data:ephemeris:verify
+npm run data:ephemeris:rebuild:v2
+npm run data:ephemeris:verify:v2
 ```
+
+`data/ephemeris/v2` contains the chunked, loader-facing dataset. It is generated
+from the canonical v1 rows and uses `build-config.json` to tune stream hot
+windows, chunk byte budgets, and output format.
 
 ## CI/CD
 
