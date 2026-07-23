@@ -307,6 +307,28 @@ test("timeline controller advances during render while playing and pauses at end
   assert.equal(state.playing, false);
 });
 
+test("timeline controller throttles playback distance recomputation", () => {
+  const marker = markerStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-03",
+    speedDaysPerSecond: 1,
+    bodies: earthBodies(marker)
+  });
+
+  controller.init();
+  const initialDistance = controller.getState().bodyTraveledKm.get("earth");
+
+  controller.render({ deltaSeconds: 0.5 });
+
+  assert.equal(controller.getState().elapsedDays, 0.5);
+  assert.equal(controller.getState().bodyTraveledKm.get("earth"), initialDistance);
+
+  controller.render({ deltaSeconds: 0.5 });
+
+  assert.ok(controller.getState().bodyTraveledKm.get("earth") > initialDistance);
+});
+
 test("timeline controller emits state changes for fractional timeline progress", () => {
   const marker = markerStub();
   const emittedStates = [];

@@ -12,6 +12,7 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 // 1 astronomical unit in kilometres (IAU 2012 definition). Converts each body's
 // AU path length to the kilometres shown in the Bodies panel.
 const KM_PER_AU = 149_597_870.7;
+const PLAYBACK_DISTANCE_UPDATE_SECONDS = 1;
 
 // ─── Parented-body (Moon) tuning knobs ──────────────────────────────────────
 // A parented body (the Moon) is drawn at:
@@ -93,6 +94,7 @@ export class TimelineControllerEntity {
     this.speedDaysPerSecond = speedDaysPerSecond;
     this.onStateChange = onStateChange;
     this.playing = true;
+    this.distanceUpdateElapsedSeconds = 0;
 
     if (this.birthdayUtc > this.maxTimelineUtc) {
       throw new Error("Birthday cannot be after max timeline date.");
@@ -205,7 +207,13 @@ export class TimelineControllerEntity {
 
     this.timelineDays = nextDays;
     this.#syncPlaybackForBounds();
-    this.#applyToBodies();
+    this.distanceUpdateElapsedSeconds += Number(deltaSeconds) || 0;
+    const updateDistances =
+      this.distanceUpdateElapsedSeconds >= PLAYBACK_DISTANCE_UPDATE_SECONDS || !this.playing;
+    if (updateDistances) {
+      this.distanceUpdateElapsedSeconds = 0;
+    }
+    this.#applyToBodies({ updateDistances });
     this.#emitState();
   }
 
@@ -332,7 +340,7 @@ export class TimelineControllerEntity {
     this.#applyToBodies();
   }
 
-  #applyToBodies() {
+  #applyToBodies({ updateDistances = true } = {}) {
     const instant = this.#instantFromTimelineDays();
     // Render position (scene units) resolved for each body this frame, keyed by
     // body key, so parented bodies can read their parent's position.
@@ -349,7 +357,7 @@ export class TimelineControllerEntity {
       body.trail?.setCursorForDay?.(this.timelineDays);
       resolved.set(body.key, { x: position.xAu, y: position.yAu });
       this.bodyRenderPositions.set(body.key, { x: position.xAu, y: position.yAu });
-      if (body.trackDistance !== false) {
+      if (updateDistances && body.trackDistance !== false) {
         this.bodyTraveledKm.set(body.key, this.#traveledKmForBody(body.key, instant));
       }
       if (this.trackBodyKey && body.key === this.trackBodyKey) {
@@ -390,7 +398,7 @@ export class TimelineControllerEntity {
       // The Moon's odometer is its true distance through space (barycentric path),
       // the same uniform metric as every other body — not the zoom-coupled render
       // offset and not its small path around Earth.
-      if (body.trackDistance !== false) {
+      if (updateDistances && body.trackDistance !== false) {
         this.bodyTraveledKm.set(body.key, this.#traveledKmForBody(body.key, instant));
       }
       if (this.trackBodyKey && body.key === this.trackBodyKey) {
