@@ -422,8 +422,9 @@ test("submit builds one Bodies-panel row per body and writes distance travelled"
 
   ui.form.dispatch("submit");
 
-  // Nine top-level rows (the Moon nests under Earth as a sub-body).
-  const rows = ui.bodiesList.children;
+  // Nine top-level rows (the Moon nests under Earth as a sub-body); category
+  // dividers are also present in the roster list.
+  const rows = ui.bodiesList.children.filter((row) => /bodies__row/.test(row.className));
   assert.equal(rows.length, 9);
   assert.ok(!rows.some((row) => row.dataset.key === "moon"), "moon is not top-level");
 
@@ -443,17 +444,14 @@ test("submit builds one Bodies-panel row per body and writes distance travelled"
   // Each row carries [swatch][name][distance] children.
   const earthName = earthRow.children.find((c) => c.className === "bodies__name");
   const earthDistance = earthRow.children.find((c) => c.className === "bodies__distance");
-  const earthVisibility = earthRow.children.find((c) => c.className === "bodies__visibility");
   assert.equal(earthName.textContent, "Earth");
-  assert.ok(earthVisibility, "every attached body exposes a Visible control");
-  const earthVisibilityToggle = earthVisibility.children.find((c) => c.className === "bodies__visibility-toggle");
-  assert.equal(earthVisibilityToggle.checked, true, "Earth starts visible");
-  earthVisibilityToggle.checked = false;
-  earthVisibilityToggle.dispatch("change");
-  assert.equal(app.bodyMarkers.get("earth").visible, false, "Visible control hides the body marker");
-  earthVisibilityToggle.checked = true;
-  earthVisibilityToggle.dispatch("change");
-  assert.equal(app.bodyMarkers.get("earth").visible, true, "Visible control shows the body marker again");
+  assert.equal(earthRow.getAttribute("role"), "switch", "the complete row is the visibility control");
+  assert.equal(earthRow.getAttribute("aria-checked"), "true", "Earth starts visible");
+  earthRow.dispatch("click");
+  assert.equal(app.bodyMarkers.get("earth").visible, false, "row click hides the body marker");
+  assert.equal(earthRow.getAttribute("aria-checked"), "false");
+  earthRow.dispatch("click");
+  assert.equal(app.bodyMarkers.get("earth").visible, true, "row click shows the body marker again");
 
   // At the birthdate nothing has travelled yet.
   assert.equal(earthDistance.textContent, "0 km");

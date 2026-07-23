@@ -44,6 +44,7 @@ const app = new OrbitalApp({
   zoomBar: document.querySelector("#zoom-bar"),
   bodiesPanel: document.querySelector(".panel--bodies"),
   bodiesList: document.querySelector("#bodies-list"),
+  bodiesCount: document.querySelector("#bodies-count"),
   trailsMasterToggle: document.querySelector("#bodies-master-trails"),
   trueScaleToggle: document.querySelector("#true-scale-toggle"),
   labelsToggle: document.querySelector("#labels-toggle"),

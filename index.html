@@ -276,16 +276,18 @@
           </dl>
         </aside>
 
-        <!-- Bodies panel: per-body distance-travelled readouts (rows built in JS) -->
-        <aside class="panel panel--bodies" aria-label="Bodies">
+        <!-- Bodies panel: a compact flight roster (rows built in JS) -->
+        <aside class="panel panel--bodies" aria-label="Flight roster">
           <h2 class="bodies__heading">
             <span class="bodies__pulse" aria-hidden="true"></span>
-            Bodies
+            Flight roster
+            <span id="bodies-count" class="bodies__count" aria-label="0 tracked bodies">00</span>
           </h2>
-          <p class="bodies__caption">Distance travelled since birth</p>
+          <p class="bodies__caption">Object telemetry · km since origin</p>
           <label class="bodies__master-trails">
             <input type="checkbox" id="bodies-master-trails" class="bodies__master-toggle" checked />
-            Show all trails
+            <span class="bodies__master-icon" aria-hidden="true">⌁</span>
+            Orbital paths
           </label>
           <ul id="bodies-list" class="bodies__list" aria-live="polite"></ul>
         </aside>

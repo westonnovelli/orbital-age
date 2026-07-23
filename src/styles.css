@@ -961,7 +961,7 @@ label {
   color: var(--fg);
 }
 
-/* Bodies panel: per-body distance readouts (right edge) */
+/* Flight roster: compact spacecraft-HUD telemetry on the right edge. */
 .panel--bodies {
   right: 2.5rem;
   /* Anchored top-right below the scene-controls strip. The max-height reserves
@@ -969,7 +969,7 @@ label {
      never overlap, and the body list scrolls internally when capped so it never
      spills off-screen. */
   top: 10.5rem;
-  width: min(280px, calc(100vw - 5rem));
+  width: min(304px, calc(100vw - 5rem));
   max-height: calc(100vh - 23.5rem);
   display: flex;
   flex-direction: column;
@@ -988,8 +988,8 @@ label {
 .bodies__heading {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  margin: 0 0 0.55rem;
+  gap: 0.5rem;
+  margin: 0 0 0.35rem;
   font-family: var(--font-headline);
   font-size: 0.72rem;
   font-weight: 600;
@@ -998,10 +998,22 @@ label {
   color: var(--primary);
 }
 
-.bodies__caption {
-  margin: -0.3rem 0 0.65rem;
-  font-size: 0.62rem;
+.bodies__count {
+  margin-left: auto;
+  padding: 0.1rem 0.34rem;
+  border: 1px solid var(--outline);
+  color: var(--secondary);
+  font-family: var(--mono);
+  font-size: 0.58rem;
   letter-spacing: 0.08em;
+  line-height: 1.2;
+}
+
+.bodies__caption {
+  margin: 0 0 0.55rem 0.98rem;
+  font-family: var(--mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted, rgba(255, 255, 255, 0.55));
 }
@@ -1020,7 +1032,7 @@ label {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.22rem;
   /* Scroll within the capped panel rather than overflowing the viewport. */
   min-height: 0;
   overflow-y: auto;
@@ -1029,26 +1041,86 @@ label {
   scrollbar-width: thin;
 }
 
-/* Two-row grid. Top line: swatch + name + trail toggle + follow, all aligned.
-   Second line: the distance metric spanning the full width beneath them. The
-   controls sit in fixed columns on row 1, so the distance text changing width
-   on row 2 can never jitter them as the odometer counts up. */
+/* Category dividers come from each body's ephemeris `kind`, giving the roster
+   structure without competing with the individual telemetry rows. */
+.bodies__group {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.66rem 0 0.18rem;
+  color: var(--faint);
+  font-family: var(--font-headline);
+  font-size: 0.48rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.bodies__group::before,
+.bodies__group::after {
+  content: "";
+  height: 1px;
+}
+
+.bodies__group::before {
+  width: 0.42rem;
+  background: var(--secondary);
+  box-shadow: 0 0 7px var(--secondary-glow);
+}
+
+.bodies__group::after {
+  flex: 1;
+  background: var(--outline-soft);
+}
+
+.bodies__group:first-child {
+  margin-top: 0.08rem;
+}
+
+/* Each row is an instrument strip: status light, object name + odometer, then
+   orbital-path and target commands. Clicking the strip toggles its visibility. */
 .bodies__row {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: 0.72rem minmax(0, 1fr) 1.45rem 1.45rem;
   grid-template-rows: auto auto;
   align-items: center;
-  column-gap: 0.7rem;
-  row-gap: 0.1rem;
-  padding: 0.18rem 0;
+  column-gap: 0.35rem;
+  row-gap: 0.04rem;
+  min-height: 2.55rem;
+  padding: 0.28rem 0.12rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.045);
+  cursor: pointer;
+  transition: opacity 0.18s ease, background-color 0.18s ease;
+}
+
+.bodies__row:first-child {
+  border-top: 0;
+}
+
+.bodies__row:hover {
+  background: linear-gradient(90deg, rgba(199, 153, 255, 0.08), transparent 84%);
+}
+
+.bodies__row:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.bodies__row--inactive {
+  opacity: 0.43;
+}
+
+.bodies__row--inactive:hover {
+  opacity: 0.72;
 }
 
 .bodies__swatch {
   grid-column: 1;
   grid-row: 1;
   align-self: center;
-  width: 0.72rem;
-  height: 0.72rem;
+  width: 0.58rem;
+  height: 0.58rem;
   border-radius: 50%;
   box-shadow: 0 0 6px rgba(255, 255, 255, 0.18);
 }
@@ -1058,79 +1130,98 @@ label {
   grid-row: 1;
   align-self: center;
   font-family: var(--font-headline);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
+  overflow: hidden;
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   text-transform: uppercase;
   color: var(--fg);
 }
 
-/* Distance: a full second line of the row, indented to align under the name. */
+/* The live odometer occupies a quiet second line, separate from the controls. */
 .bodies__distance {
-  grid-column: 2 / -1;
+  grid-column: 2;
   grid-row: 2;
   align-self: start;
   font-family: var(--font-headline);
-  font-size: 0.64rem;
-  letter-spacing: 0.04em;
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.01em;
   color: var(--secondary);
   white-space: nowrap;
 }
 
-/* Nested sub-bodies (e.g. the Moon under Earth). The sublist spans the parent
-   row's full width and indents with a tree guide; child rows are slightly
-   smaller to read as subordinate. */
+/* Nested sub-bodies (moons, probes) keep the same command bank but gain a
+   restrained hierarchy guide. */
 .bodies__sublist {
   grid-column: 1 / -1;
   grid-row: 3;
   list-style: none;
-  margin: 0.3rem 0 0 0.34rem;
-  padding: 0 0 0 0.6rem;
+  margin: 0.12rem 0 0 0.26rem;
+  padding: 0 0 0 0.48rem;
   border-left: 1px solid var(--outline, rgba(255, 255, 255, 0.14));
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0;
 }
 
 .bodies__row--child .bodies__swatch {
-  width: 0.6rem;
-  height: 0.6rem;
+  width: 0.48rem;
+  height: 0.48rem;
 }
 
 .bodies__row--child .bodies__name,
 .bodies__row--child .bodies__distance {
-  font-size: 0.66rem;
   opacity: 0.85;
 }
 
-/* Per-row trail control: a labeled checkbox ("Trail") that hides/shows that
-   body's trail. Pinned to the top line in its own grid column so it never moves
-   as the distance line changes. */
+.bodies__row--child .bodies__name {
+  font-size: 0.58rem;
+}
+
+.bodies__row--child .bodies__distance {
+  font-size: 0.52rem;
+}
+
+/* The orbital-path toggle is kept as a dedicated command in the row's compact
+   control bank. */
 .bodies__trail {
-  grid-column: 3;
-  grid-row: 1;
   align-self: center;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
+  display: inline-grid;
+  place-items: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  color: var(--faint);
+  border: 1px solid var(--outline-soft);
+  border-radius: 3px;
   cursor: pointer;
-  font-family: var(--font-headline);
-  font-size: 0.5rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted, rgba(255, 255, 255, 0.55));
+  transition: color 0.18s ease, border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+  grid-column: 3;
+  grid-row: 1 / span 2;
 }
 
 .bodies__trail-toggle {
-  width: 0.9rem;
-  height: 0.9rem;
-  margin: 0;
-  cursor: pointer;
-  accent-color: var(--secondary);
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
 }
 
-.bodies__row--child .bodies__trail-toggle {
-  width: 0.8rem;
-  height: 0.8rem;
+.bodies__trail:has(input:checked) {
+  color: var(--secondary);
+  border-color: rgba(74, 248, 227, 0.42);
+  background: rgba(74, 248, 227, 0.08);
+  box-shadow: inset 0 0 9px rgba(74, 248, 227, 0.08), 0 0 8px rgba(74, 248, 227, 0.08);
+}
+
+.bodies__trail:has(input:focus-visible) {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 /* Per-row follow control: a compact square reticle (crosshair) button that
@@ -1139,7 +1230,7 @@ label {
    for the hover/active tint. */
 .bodies__follow {
   grid-column: 4;
-  grid-row: 1;
+  grid-row: 1 / span 2;
   align-self: center;
   justify-self: end;
   display: inline-flex;
@@ -1148,7 +1239,7 @@ label {
   width: 1.45rem;
   height: 1.45rem;
   padding: 0;
-  color: var(--muted, rgba(255, 255, 255, 0.55));
+  color: var(--faint);
   background: transparent;
   border: 1px solid var(--outline, rgba(199, 153, 255, 0.16));
   border-radius: 4px;
@@ -1166,32 +1257,32 @@ label {
   transform: scale(0.94);
 }
 
-.bodies__row--child .bodies__follow {
-  width: 1.3rem;
-  height: 1.3rem;
-}
-
-/* Header master "show all trails" toggle. Sits above the list and fans its
-   state out to every per-row toggle. */
+/* Header master "show all trails" toggle. */
 .bodies__master-trails {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  margin: 0 0 0.5rem;
+  gap: 0.35rem;
+  margin: 0 0 0.45rem;
   font-family: var(--font-headline);
   font-size: 0.6rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--muted, rgba(255, 255, 255, 0.6));
+  color: var(--faint);
   cursor: pointer;
 }
 
 .bodies__master-toggle {
-  width: 0.9rem;
-  height: 0.9rem;
+  width: 0.78rem;
+  height: 0.78rem;
   margin: 0;
   cursor: pointer;
   accent-color: var(--secondary);
+}
+
+.bodies__master-icon {
+  color: var(--secondary);
+  font-size: 0.9rem;
+  line-height: 0.7;
 }
 
 /* ----------------------------------------------------------------------- */

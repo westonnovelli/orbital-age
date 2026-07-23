@@ -16,7 +16,6 @@ import { BodyMarkerEntity } from "./webgl/entities/body-marker.js";
 import { OrbitalTrailEntity } from "./webgl/entities/orbital-trail.js";
 import { TimelineControllerEntity } from "./webgl/entities/timeline-controller.js";
 import { CameraIntroTweenEntity } from "./webgl/entities/camera-intro.js";
-import { BirthdayMarkerEntity } from "./webgl/entities/birthday-markers.js";
 import { StarfieldEntity } from "./webgl/entities/starfield.js";
 import { autoFitHalfHeight, starfieldSpread } from "./webgl/scale.js";
 import { orbitsCompleted, currentAge, distanceTraveledKm } from "./stats.js";
@@ -248,6 +247,7 @@ export function manifestRenderConfigs(dataset, bodyRegistry = getBodyRegistry(),
     .map((body) => ({
       key: body.key,
       label: body.label,
+      kind: body.kind,
       stream: body.dataset ?? body.stream,
       color: body.render.color,
       size: body.render.size,
@@ -347,6 +347,34 @@ const RETICLE_ICON_SVG =
   'stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false">' +
   '<circle cx="8" cy="8" r="4.2" /><path d="M8 0.6v3M8 12.4v3M0.6 8h3M12.4 8h3" ' +
   'stroke-linecap="round" /></svg>';
+
+const TRAIL_ICON_SVG =
+  '<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" ' +
+  'stroke-width="1.35" aria-hidden="true" focusable="false"><ellipse cx="8" cy="8" rx="6.3" ry="3.1" />' +
+  '<circle cx="11.8" cy="6.2" r="1.15" fill="currentColor" stroke="none" /></svg>';
+
+// The ephemeris catalog classifies each object by `kind`. Keep this translation
+// deliberately small and stable so newly-added body types remain visible even
+// before they receive a dedicated roster treatment.
+const ROSTER_GROUPS = {
+  planet: { key: "planets", label: "Major planets" },
+  dwarfPlanet: { key: "dwarf-planets", label: "Dwarf planets" },
+  asteroid: { key: "asteroids", label: "Asteroids" },
+  nearEarthAsteroid: { key: "asteroids", label: "Asteroids" },
+  comet: { key: "comets", label: "Comets" },
+  moon: { key: "satellites", label: "Natural satellites" },
+  spacecraft: { key: "spacecraft", label: "Spacecraft" }
+};
+const ROSTER_GROUP_ORDER = ["planets", "dwarf-planets", "asteroids", "comets", "satellites", "spacecraft", "other"];
+
+function rosterGroupFor(config) {
+  const legacyKinds = {
+    mercury: "planet", venus: "planet", earth: "planet", mars: "planet", jupiter: "planet",
+    saturn: "planet", uranus: "planet", neptune: "planet", pluto: "dwarfPlanet", moon: "moon",
+    ceres: "dwarfPlanet", vesta: "asteroid", eros: "nearEarthAsteroid", halley: "comet", "67p": "comet"
+  };
+  return ROSTER_GROUPS[config.kind ?? legacyKinds[config.key]] ?? { key: "other", label: "Other tracked bodies" };
+}
 
 // Speaker glyphs for the bottom-right audio toggle. The "on" icon shows sound
 // waves; the "muted" icon replaces them with an ✕. currentColor lets CSS drive
@@ -548,6 +576,7 @@ export class OrbitalApp {
     zoomBar,
     bodiesPanel,
     bodiesList,
+    bodiesCount,
     trailsMasterToggle,
     trueScaleToggle,
     labelsToggle,
@@ -610,6 +639,7 @@ export class OrbitalApp {
     // updates in #updateTimelineUi().
     this.bodiesPanel = bodiesPanel;
     this.bodiesList = bodiesList;
+    this.bodiesCount = bodiesCount;
     this.bodyDistanceOutputs = new Map();
     // key -> OrbitalTrailEntity for the body's trail, populated by the build
     // loop. Drives the per-row and master Bodies-panel trail toggles.
@@ -832,11 +862,6 @@ export class OrbitalApp {
       });
     }
 
-    const birthdayMarkers = new BirthdayMarkerEntity({
-      birthday: validation.date,
-      radiusX: BODY_RADIUS_X,
-      radiusY: BODY_RADIUS_Y
-    });
     const timelineController = new TimelineControllerEntity({
       birthday: validation.date,
       maxTimelineDate,
@@ -881,9 +906,7 @@ export class OrbitalApp {
     for (const trail of trails) {
       scene.add(trail);
     }
-    scene
-      .add(birthdayMarkers)
-      .add(timelineController);
+    scene.add(timelineController);
     for (const body of bodies) {
       scene.add(body.marker);
     }
@@ -1113,8 +1136,12 @@ export class OrbitalApp {
 
     this.bodyDistanceOutputs = new Map();
     this.bodyTrailToggles = new Map();
-    this.bodyVisibilityToggles = new Map();
     this.bodiesList.textContent = "";
+    if (this.bodiesCount) {
+      const count = this.activeBodyConfigs.length;
+      this.bodiesCount.textContent = String(count).padStart(2, "0");
+      this.bodiesCount.setAttribute("aria-label", `${count} tracked bodies`);
+    }
 
     const doc = this.bodiesList.ownerDocument ?? globalThis.document;
     if (!doc || typeof doc.createElement !== "function") {
@@ -1134,23 +1161,44 @@ export class OrbitalApp {
     }
 
     const placedChildKeys = new Set();
+    const topLevelGroups = new Map();
     for (const config of this.activeBodyConfigs) {
       if (config.parent) {
         continue;
       }
 
-      const row = this.#createBodyRow(doc, config);
-      this.bodiesList.append(row);
+      const group = rosterGroupFor(config);
+      const groupedConfigs = topLevelGroups.get(group.key) ?? { ...group, configs: [] };
+      groupedConfigs.configs.push(config);
+      topLevelGroups.set(group.key, groupedConfigs);
+    }
 
-      const children = childrenByParent.get(config.key);
-      if (children && children.length > 0) {
-        const subList = doc.createElement("ul");
-        subList.className = "bodies__sublist";
-        for (const child of children) {
-          subList.append(this.#createBodyRow(doc, child, { isChild: true }));
-          placedChildKeys.add(child.key);
+    for (const groupKey of ROSTER_GROUP_ORDER) {
+      const group = topLevelGroups.get(groupKey);
+      if (!group) {
+        continue;
+      }
+
+      const divider = doc.createElement("li");
+      divider.className = "bodies__group";
+      divider.setAttribute("role", "presentation");
+      divider.textContent = group.label;
+      this.bodiesList.append(divider);
+
+      for (const config of group.configs) {
+        const row = this.#createBodyRow(doc, config);
+        this.bodiesList.append(row);
+
+        const children = childrenByParent.get(config.key);
+        if (children && children.length > 0) {
+          const subList = doc.createElement("ul");
+          subList.className = "bodies__sublist";
+          for (const child of children) {
+            subList.append(this.#createBodyRow(doc, child, { isChild: true }));
+            placedChildKeys.add(child.key);
+          }
+          row.append(subList);
         }
-        row.append(subList);
       }
     }
 
@@ -1158,6 +1206,15 @@ export class OrbitalApp {
     // root so it never silently disappears.
     for (const config of this.activeBodyConfigs) {
       if (config.parent && !placedChildKeys.has(config.key)) {
+        const group = rosterGroupFor(config);
+        if (!topLevelGroups.has(group.key)) {
+          const divider = doc.createElement("li");
+          divider.className = "bodies__group";
+          divider.setAttribute("role", "presentation");
+          divider.textContent = group.label;
+          this.bodiesList.append(divider);
+          topLevelGroups.set(group.key, { ...group, configs: [] });
+        }
         this.bodiesList.append(this.#createBodyRow(doc, config));
       }
     }
@@ -1189,24 +1246,40 @@ export class OrbitalApp {
 
     row.append(swatch, name);
 
-    const visibilityLabel = doc.createElement("label");
-    visibilityLabel.className = "bodies__visibility";
-    const visibilityToggle = doc.createElement("input");
-    visibilityToggle.type = "checkbox";
-    visibilityToggle.className = "bodies__visibility-toggle";
-    visibilityToggle.checked = this.bodyMarkers.get(config.key)?.visible !== false;
-    visibilityToggle.setAttribute("aria-label", `Show ${this.#bodyDisplayName(config.key)}`);
-    visibilityToggle.dataset.key = config.key;
-    visibilityToggle.addEventListener("change", () => {
-      this.bodyMarkers.get(config.key)?.setVisible(visibilityToggle.checked);
-      config.visible = visibilityToggle.checked;
+    // The complete instrument strip is the visibility switch. This makes a
+    // crowded roster faster to scan and operate than a separate control in every
+    // row, while the orbit and target actions remain their own command buttons.
+    const setVisible = (visible) => {
+      const show = Boolean(visible);
+      this.bodyMarkers.get(config.key)?.setVisible(show);
+      config.visible = show;
+      row.classList.toggle("bodies__row--inactive", !show);
+      row.dataset.visible = String(show);
+      row.setAttribute("aria-checked", String(show));
+    };
+    const toggleVisible = () => setVisible(this.bodyMarkers.get(config.key)?.visible === false);
+    const bodyName = this.#bodyDisplayName(config.key);
+    row.setAttribute("role", "switch");
+    row.setAttribute("tabindex", "0");
+    row.setAttribute("aria-label", `Toggle ${bodyName} visibility`);
+    setVisible(this.bodyMarkers.get(config.key)?.visible !== false);
+    row.addEventListener("click", (event) => {
+      const nearestRow = event.target?.closest?.(".bodies__row");
+      if (nearestRow && nearestRow !== row) {
+        return;
+      }
+      if (event.target?.closest?.(".bodies__trail, .bodies__follow")) {
+        return;
+      }
+      toggleVisible();
     });
-    const visibilityText = doc.createElement("span");
-    visibilityText.className = "bodies__visibility-text";
-    visibilityText.textContent = "Visible";
-    visibilityLabel.append(visibilityToggle, visibilityText);
-    row.append(visibilityLabel);
-    this.bodyVisibilityToggles.set(config.key, visibilityToggle);
+    row.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+      event.preventDefault();
+      toggleVisible();
+    });
     if (config.distanceEnabled !== false) {
       row.append(distance);
       this.bodyDistanceOutputs.set(config.key, distance);
@@ -1236,8 +1309,8 @@ export class OrbitalApp {
       });
 
       const trailText = doc.createElement("span");
-      trailText.className = "bodies__trail-text";
-      trailText.textContent = "Trail";
+      trailText.className = "bodies__trail-icon";
+      trailText.innerHTML = TRAIL_ICON_SVG;
 
       trailLabel.append(toggle, trailText);
       row.append(trailLabel);
