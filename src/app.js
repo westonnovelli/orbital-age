@@ -242,9 +242,9 @@ const TRUE_SCALE_MIN_HALF_HEIGHT = 0.0006;
 
 // Auto-fit framing: the camera halfHeight is derived from the outermost tracked
 // orbit (Neptune ~30 AU) rather than the old hardcoded 2.2 tuned for Earth.
-function manifestRenderConfigs(dataset) {
-  const configured = Object.values(getBodyRegistry())
-    .filter((body) => (body.dataset ?? body.stream) === dataset && body.render?.enabled && body.render.defaultVisible)
+export function manifestRenderConfigs(dataset, bodyRegistry = getBodyRegistry(), { fallbackToLegacy = true, includeHidden = false } = {}) {
+  const configured = Object.values(bodyRegistry)
+    .filter((body) => (body.dataset ?? body.stream) === dataset && body.capabilities?.canRender && (includeHidden || body.capabilities?.canShowByDefault))
     .map((body) => ({
       key: body.key,
       label: body.label,
@@ -254,12 +254,13 @@ function manifestRenderConfigs(dataset) {
       orbitRadiusAu: body.render.orbitRadiusAu,
       parent: body.parent,
       relativeScale: body.render.relativeScale,
-      cameraFit: body.render.cameraFit,
-      labelEnabled: body.render.label?.enabled,
+      visible: body.capabilities.canShowByDefault,
+      cameraFit: body.capabilities.canFitCamera,
+      labelEnabled: body.capabilities.canShowLabel,
       labelOffset: body.render.label?.offset,
-      followEnabled: body.render.follow?.enabled,
-      distanceEnabled: body.render.distance?.enabled,
-      trail: body.render.trail?.enabled ? {
+      followEnabled: body.capabilities.canFollow,
+      distanceEnabled: body.capabilities.canShowDistance,
+      trail: body.capabilities.canToggleTrail ? {
         ...BASE_TRAIL,
         color: body.render.trail.color,
         hueStart: body.render.trail.hueStart,
@@ -267,6 +268,7 @@ function manifestRenderConfigs(dataset) {
       } : null
     }));
   if (configured.length > 0) return configured;
+  if (!fallbackToLegacy) return [];
   return dataset === PRIMARY_EPHEMERIS_STREAM ? LEGACY_PRIMARY_RENDERED_BODIES : LEGACY_AUXILIARY_RENDERED_BODIES;
 }
 
@@ -721,7 +723,7 @@ export class OrbitalApp {
     this.timelineController = null;
     this.deepTimeLoader = null;
     this.scene = null;
-    this.activeBodyConfigs = [...manifestRenderConfigs(PRIMARY_EPHEMERIS_STREAM)];
+    this.activeBodyConfigs = [...manifestRenderConfigs(PRIMARY_EPHEMERIS_STREAM, getBodyRegistry(), { includeHidden: true })];
     this.auxiliaryBodiesAttached = false;
   }
 
@@ -761,7 +763,7 @@ export class OrbitalApp {
     }
 
     this.validationMessage.textContent = "";
-    this.activeBodyConfigs = [...manifestRenderConfigs(PRIMARY_EPHEMERIS_STREAM)];
+    this.activeBodyConfigs = [...manifestRenderConfigs(PRIMARY_EPHEMERIS_STREAM, getBodyRegistry(), { includeHidden: true })];
     this.auxiliaryBodiesAttached = false;
 
     const todayUtc = normalizeToUtcMidnight(new Date());
@@ -805,6 +807,7 @@ export class OrbitalApp {
         color: config.color,
         size: config.size
       });
+      marker.setVisible(config.visible);
       this.bodyMarkers.set(config.key, marker);
       let trail = null;
       if (config.trail) {
@@ -926,7 +929,7 @@ export class OrbitalApp {
     }
 
     const bodyRegistry = getBodyRegistry();
-    const auxiliaryConfigs = manifestRenderConfigs(AUXILIARY_EPHEMERIS_STREAM)
+    const auxiliaryConfigs = manifestRenderConfigs(AUXILIARY_EPHEMERIS_STREAM, bodyRegistry, { includeHidden: true })
       .filter((config) => bodyRegistry[config.key]);
     if (auxiliaryConfigs.length === 0 || this.auxiliaryBodiesAttached) {
       return;
@@ -965,6 +968,7 @@ export class OrbitalApp {
         color: config.color,
         size: config.size
       });
+      marker.setVisible(config.visible);
       this.bodyMarkers.set(config.key, marker);
 
       let trail = null;
@@ -1109,6 +1113,7 @@ export class OrbitalApp {
 
     this.bodyDistanceOutputs = new Map();
     this.bodyTrailToggles = new Map();
+    this.bodyVisibilityToggles = new Map();
     this.bodiesList.textContent = "";
 
     const doc = this.bodiesList.ownerDocument ?? globalThis.document;
@@ -1183,6 +1188,25 @@ export class OrbitalApp {
     distance.textContent = "--";
 
     row.append(swatch, name);
+
+    const visibilityLabel = doc.createElement("label");
+    visibilityLabel.className = "bodies__visibility";
+    const visibilityToggle = doc.createElement("input");
+    visibilityToggle.type = "checkbox";
+    visibilityToggle.className = "bodies__visibility-toggle";
+    visibilityToggle.checked = this.bodyMarkers.get(config.key)?.visible !== false;
+    visibilityToggle.setAttribute("aria-label", `Show ${this.#bodyDisplayName(config.key)}`);
+    visibilityToggle.dataset.key = config.key;
+    visibilityToggle.addEventListener("change", () => {
+      this.bodyMarkers.get(config.key)?.setVisible(visibilityToggle.checked);
+      config.visible = visibilityToggle.checked;
+    });
+    const visibilityText = doc.createElement("span");
+    visibilityText.className = "bodies__visibility-text";
+    visibilityText.textContent = "Visible";
+    visibilityLabel.append(visibilityToggle, visibilityText);
+    row.append(visibilityLabel);
+    this.bodyVisibilityToggles.set(config.key, visibilityToggle);
     if (config.distanceEnabled !== false) {
       row.append(distance);
       this.bodyDistanceOutputs.set(config.key, distance);

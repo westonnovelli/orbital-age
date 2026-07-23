@@ -443,7 +443,17 @@ test("submit builds one Bodies-panel row per body and writes distance travelled"
   // Each row carries [swatch][name][distance] children.
   const earthName = earthRow.children.find((c) => c.className === "bodies__name");
   const earthDistance = earthRow.children.find((c) => c.className === "bodies__distance");
+  const earthVisibility = earthRow.children.find((c) => c.className === "bodies__visibility");
   assert.equal(earthName.textContent, "Earth");
+  assert.ok(earthVisibility, "every attached body exposes a Visible control");
+  const earthVisibilityToggle = earthVisibility.children.find((c) => c.className === "bodies__visibility-toggle");
+  assert.equal(earthVisibilityToggle.checked, true, "Earth starts visible");
+  earthVisibilityToggle.checked = false;
+  earthVisibilityToggle.dispatch("change");
+  assert.equal(app.bodyMarkers.get("earth").visible, false, "Visible control hides the body marker");
+  earthVisibilityToggle.checked = true;
+  earthVisibilityToggle.dispatch("change");
+  assert.equal(app.bodyMarkers.get("earth").visible, true, "Visible control shows the body marker again");
 
   // At the birthdate nothing has travelled yet.
   assert.equal(earthDistance.textContent, "0 km");

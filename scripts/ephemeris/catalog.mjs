@@ -40,11 +40,12 @@ export function validateCatalog(catalog) {
     naifIds.add(body.naifId);
     if (body.synthetic !== "origin" && !body.horizonsCommand && !body.naifId) fail(`${body.key} requires a Horizons source`);
     const render = body.render ?? {};
-    if (render.enabled && (!Array.isArray(render.color) || render.color.length !== 3 || !Number.isFinite(render.size))) fail(`${body.key} render.enabled requires RGB color and size`);
+    // `enabled` is deliberately the sole body-level kill switch. A disabled
+    // body may retain any rendering/capability settings for later reuse; none
+    // of those settings can make it into a generated manifest or the app.
+    // The remaining checks validate values, not feature combinations.
+    if (body.enabled !== false && render.enabled && (!Array.isArray(render.color) || render.color.length !== 3 || !Number.isFinite(render.size))) fail(`${body.key} render.enabled requires RGB color and size`);
     for (const value of render.color ?? []) if (!Number.isFinite(value) || value < 0 || value > 1) fail(`${body.key} color channels must be 0..1`);
-    if (render.trail?.enabled && !render.enabled) fail(`${body.key} trail requires render.enabled`);
-    if (render.label?.enabled && !render.enabled) fail(`${body.key} label requires render.enabled`);
-    if (render.follow?.enabled && !render.enabled) fail(`${body.key} follow requires render.enabled`);
   }
   for (const body of catalog.bodies) if (body.relativeTo && !keys.has(body.relativeTo)) fail(`${body.key} references unknown parent '${body.relativeTo}'`);
   return catalog;
@@ -52,21 +53,33 @@ export function validateCatalog(catalog) {
 
 export function normalizedBody(body) {
   const render = body.render ?? {};
-  const hasLabel = Boolean(render.label?.enabled);
-  const hasTrail = Boolean(render.trail?.enabled);
+  const enabled = body.enabled !== false;
+  // The application consumes these names. Their YAML sources remain next to
+  // their rendering options, making each knob independently configurable.
+  const capabilities = {
+    canRender: enabled && Boolean(render.enabled),
+    canShowByDefault: enabled && Boolean(render.defaultVisible),
+    canFitCamera: enabled && Boolean(render.cameraFit),
+    canShowLabel: enabled && Boolean(render.label?.enabled),
+    canToggleTrail: enabled && Boolean(render.trail?.enabled),
+    canFollow: enabled && Boolean(render.follow?.enabled),
+    canShowDistance: enabled && Boolean(render.distance?.enabled)
+  };
+  const hasLabel = capabilities.canShowLabel;
+  const hasTrail = capabilities.canToggleTrail;
   return {
     key: body.key, label: body.label ?? body.key, kind: body.kind ?? "smallBody", naifId: body.naifId,
     horizonsCommand: body.horizonsCommand ?? String(body.naifId), dataset: body.dataset, stream: body.dataset,
-    enabled: body.enabled !== false, parent: body.relativeTo ?? null, relativeTo: body.relativeTo ?? null,
+    enabled, parent: body.relativeTo ?? null, relativeTo: body.relativeTo ?? null,
     // Compatibility aliases retained for consumers of manifest 2.0.
-    hasLabel, hasTrail,
+    hasLabel, hasTrail, capabilities,
     layers: body.layers ?? [], render: {
-      enabled: Boolean(render.enabled), defaultVisible: Boolean(render.defaultVisible), color: render.color ?? null,
+      enabled: capabilities.canRender, defaultVisible: capabilities.canShowByDefault, color: render.color ?? null,
       size: render.size ?? null, trueSizeAu: render.trueSizeAu ?? null, orbitRadiusAu: render.orbitRadiusAu ?? null,
-      cameraFit: Boolean(render.cameraFit), relativeScale: render.relativeScale ?? null,
-      label: { enabled: Boolean(render.label?.enabled), offset: render.label?.offset ?? [0, 0] },
-      trail: { enabled: Boolean(render.trail?.enabled), defaultVisible: Boolean(render.trail?.defaultVisible), color: render.trail?.color ?? null, hueStart: render.trail?.hueStart ?? 0 },
-      follow: { enabled: Boolean(render.follow?.enabled) }, distance: { enabled: Boolean(render.distance?.enabled) }
+      cameraFit: capabilities.canFitCamera, relativeScale: render.relativeScale ?? null,
+      label: { enabled: capabilities.canShowLabel, offset: render.label?.offset ?? [0, 0] },
+      trail: { enabled: capabilities.canToggleTrail, defaultVisible: Boolean(render.trail?.defaultVisible), color: render.trail?.color ?? null, hueStart: render.trail?.hueStart ?? 0 },
+      follow: { enabled: capabilities.canFollow }, distance: { enabled: capabilities.canShowDistance }
     }
   };
 }

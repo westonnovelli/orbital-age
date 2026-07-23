@@ -72,6 +72,10 @@ capabilities, coordinate/time constraints, dataset load policies, chunks, and
 integrity metadata. The builder packages canonical v1 rows according to the
 catalog's dataset hot windows, byte budgets, and output format.
 
+The precise body availability and capability contract, including the
+top-level `enabled` kill switch, is documented in
+[`docs/body-catalog-capabilities.md`](docs/body-catalog-capabilities.md).
+
 ## CI/CD
 
 GitHub Actions CI and Pages deployment setup instructions are documented in

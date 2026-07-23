@@ -37,6 +37,8 @@ datasets:
     hotWindowYears: 20
     maxUncompressedBytesPerChunk: 3500000
     maxEncodedBytesPerChunk: 5000000
+# `enabled` is the body kill switch. The render flags below independently map
+# to manifest capabilities; see docs/body-catalog-capabilities.md.
 bodies:
   - key: sun
     label: Sun

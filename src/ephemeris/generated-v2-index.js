@@ -4,7 +4,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v1",
   "encoder": "json-base64",
-  "generatedOn": "2026-07-23T00:15:39.478658Z",
+  "generatedOn": "2026-07-23T14:56:19.858Z",
   "compatibility": {
     "manifestSchema": "ephemeris.manifest.v2",
     "requiredFrame": "ECLIPJ2000",
@@ -127,6 +127,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": false,
       "hasTrail": false,
+      "capabilities": {
+        "canRender": false,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
       "layers": [],
       "render": {
         "enabled": false,
@@ -171,6 +180,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
       "layers": [],
       "render": {
         "enabled": true,
@@ -224,6 +242,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
       "layers": [],
       "render": {
         "enabled": true,
@@ -277,6 +304,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
       "layers": [],
       "render": {
         "enabled": true,
@@ -330,6 +366,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
       "layers": [],
       "render": {
         "enabled": true,
@@ -383,6 +428,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
       "layers": [],
       "render": {
         "enabled": true,
@@ -436,6 +490,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
       "layers": [],
       "render": {
         "enabled": true,
@@ -489,6 +552,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
       "layers": [],
       "render": {
         "enabled": true,
@@ -542,6 +614,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
       "layers": [],
       "render": {
         "enabled": true,
@@ -595,6 +676,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
       "layers": [],
       "render": {
         "enabled": true,
@@ -648,6 +738,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": "earth",
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
       "layers": [],
       "render": {
         "enabled": true,
@@ -701,6 +800,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": false
+      },
       "layers": [
         "featured",
         "asteroidBelt"
@@ -757,6 +865,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": false
+      },
       "layers": [
         "asteroidBelt"
       ],
@@ -812,6 +929,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": false
+      },
       "layers": [
         "featured",
         "asteroidBelt"
@@ -868,6 +994,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": false,
       "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": true,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
       "layers": [
         "asteroidBelt"
       ],
@@ -918,6 +1053,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": false,
       "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": true,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
       "layers": [
         "asteroidBelt"
       ],
@@ -968,6 +1112,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": false
+      },
       "layers": [
         "featured",
         "nearEarth"
@@ -1024,6 +1177,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": false,
       "hasTrail": false,
+      "capabilities": {
+        "canRender": false,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
       "layers": [
         "nearEarth"
       ],
@@ -1070,6 +1232,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": false,
       "hasTrail": false,
+      "capabilities": {
+        "canRender": false,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
       "layers": [
         "nearEarth"
       ],
@@ -1116,6 +1287,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": false,
       "hasTrail": false,
+      "capabilities": {
+        "canRender": false,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
       "layers": [
         "nearEarth"
       ],
@@ -1162,6 +1342,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": false
+      },
       "layers": [
         "featured",
         "comets"
@@ -1218,6 +1407,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": true,
       "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": true,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": false
+      },
       "layers": [
         "featured",
         "comets"
@@ -1274,6 +1472,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": false,
       "hasTrail": false,
+      "capabilities": {
+        "canRender": false,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
       "layers": [
         "dwarfPlanets"
       ],
@@ -1320,6 +1527,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "relativeTo": null,
       "hasLabel": false,
       "hasTrail": false,
+      "capabilities": {
+        "canRender": false,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
       "layers": [
         "dwarfPlanets"
       ],

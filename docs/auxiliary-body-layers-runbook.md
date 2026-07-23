@@ -25,6 +25,13 @@ The larger auxiliary dataset can still include additional bodies such as Pallas,
 Hygiea, Psyche, Bennu, Ryugu, Apophis, Eris, and Makemake. They should remain in
 the data registry until we expose them through an explicit layer.
 
+## Current Runtime Limitation
+
+The application attaches every `canRender: true` body and exposes a Visible
+checkbox in the Bodies panel. `canShowByDefault` only determines that
+checkbox's initial state. The capabilities are derived from `render.enabled`
+and `render.defaultVisible` in the catalog.
+
 ## Add or Change an Auxiliary Body
 
 `data/bodies.yaml` is the only hand-maintained body configuration. Do not edit
@@ -38,8 +45,8 @@ the generated manifest, index, or chunk files directly.
    - a `render` block with visual settings and independent `label`, `trail`,
      `follow`, and `distance` capability flags.
 
-   Set `render.defaultVisible: false` for bodies that should be available only
-   after their layer is enabled. Keep `distance.enabled: false` and
+   Set `render.defaultVisible: false` for bodies that should start hidden but
+   remain available from the Bodies panel. Keep `distance.enabled: false` and
    `trail.defaultVisible: false` for cheap auxiliary defaults.
 
 2. Validate the catalog and preview the exact Horizons requests before fetching:
@@ -138,6 +145,11 @@ dramatically and can make the core planetary experience feel sparse.
 ## Test Checklist
 
 Add or update tests when introducing a layer:
+
+- Run `mise exec -- node --test test/body-catalog-application-contract.test.js`.
+  It enforces catalog-to-manifest parity and that `defaultVisible`, visual
+  settings, trail defaults, and label/follow/distance capabilities reach the
+  application's default render configuration.
 
 - Loading one auxiliary body does not mark unrelated bodies in the same chunk as
   loaded.
