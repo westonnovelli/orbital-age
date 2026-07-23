@@ -11,6 +11,7 @@ import {
   earthHeliocentricPositionAuAtInstant,
   earthPositionOnUnitOrbitAtInstant,
   earthPositionOnUnitOrbit,
+  ensureEphemerisLoaded,
   normalizeToUtcMidnight,
   parseIsoDateUtc
 } from "../src/orbital-time.js";
@@ -175,6 +176,21 @@ test("bodyHeliocentricPositionAuAtInstant supports multiple planets", () => {
     () => bodyHeliocentricPositionAuAtInstant("nibiru", "1926-01-01T00:00:00Z"),
     /Unsupported body/
   );
+});
+
+test("bodyHeliocentricPositionAuAtInstant supports loaded auxiliary bodies", async () => {
+  await ensureEphemerisLoaded({
+    startUtc: "2020-01-01T00:00:00Z",
+    endUtc: "2026-07-22T00:00:00Z",
+    streams: ["auxiliary"],
+    bodyKeys: ["ceres"]
+  });
+
+  const ceres = bodyHeliocentricPositionAuAtInstant("ceres", "2026-01-01T00:00:00Z");
+  assert.equal(ceres.body, "ceres");
+  assert.ok(Number.isFinite(ceres.xAu));
+  assert.ok(Number.isFinite(ceres.yAu));
+  assert.ok(Number.isFinite(ceres.zAu));
 });
 
 test("Moon resolves to a true barycentric position like every other body", () => {

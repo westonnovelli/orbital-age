@@ -476,6 +476,7 @@ export const EPHEMERIS_INTERPOLATION_WINDOW = Object.freeze({
 });
 
 export const SUPPORTED_PLANET_KEYS = Object.freeze([...EPHEMERIS_V2_INDEX.streams.primary.bodyKeys]);
+export const SUPPORTED_BODY_KEYS = Object.freeze(Object.keys(EPHEMERIS_V2_INDEX.bodies));
 export const SUPPORTED_DERIVED_BODY_KEYS = Object.freeze(
   Object.values(EPHEMERIS_V2_INDEX.bodies)
     .filter((body) => body.relativeTo !== undefined && body.relativeTo !== null)

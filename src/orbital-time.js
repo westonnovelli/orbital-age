@@ -1,6 +1,6 @@
 import {
   EPHEMERIS_INTERPOLATION_WINDOW,
-  SUPPORTED_PLANET_KEYS,
+  SUPPORTED_BODY_KEYS,
   SUPPORTED_DERIVED_BODY_KEYS,
   ensureEphemerisLoaded,
   ephemerisBootPromise,
@@ -214,9 +214,9 @@ export function earthPositionOnUnitOrbitAtInstant(dateInput) {
 
 export function bodyHeliocentricPositionAuAtInstant(bodyKey, dateInput) {
   const normalizedBodyKey = String(bodyKey).toLowerCase();
-  if (!SUPPORTED_PLANET_KEYS.includes(normalizedBodyKey)) {
+  if (!SUPPORTED_BODY_KEYS.includes(normalizedBodyKey)) {
     throw new Error(
-      `Unsupported body "${bodyKey}". Expected one of: ${SUPPORTED_PLANET_KEYS.join(", ")}`
+      `Unsupported body "${bodyKey}". Expected one of: ${SUPPORTED_BODY_KEYS.join(", ")}`
     );
   }
 
@@ -248,9 +248,9 @@ export function earthHeliocentricPositionAuAtInstant(dateInput) {
 // the dataset window.
 export function bodyPathLengthAuBetween(bodyKey, startInput, endInput) {
   const normalizedBodyKey = String(bodyKey).toLowerCase();
-  if (!SUPPORTED_PLANET_KEYS.includes(normalizedBodyKey)) {
+  if (!SUPPORTED_BODY_KEYS.includes(normalizedBodyKey)) {
     throw new Error(
-      `Unsupported body "${bodyKey}". Expected one of: ${SUPPORTED_PLANET_KEYS.join(", ")}`
+      `Unsupported body "${bodyKey}". Expected one of: ${SUPPORTED_BODY_KEYS.join(", ")}`
     );
   }
 
