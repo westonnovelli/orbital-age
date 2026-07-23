@@ -89,4 +89,17 @@ test("auxiliary bodies load on demand", async () => {
 
   const ceres = getBodyPositionAuAtInstant("ceres", "2026-01-01T00:00:00Z");
   assert.ok(Number.isFinite(ceres.xAu));
+
+  const erosPlan = planEphemerisLoad({
+    startUtc: "2020-01-01T00:00:00Z",
+    endUtc: "2026-07-22T00:00:00Z",
+    streams: ["auxiliary"],
+    bodyKeys: ["eros"]
+  });
+  assert.equal(erosPlan.loaded, false);
+  assert.equal(getLoadedCoverage({ stream: "auxiliary", bodyKeys: ["eros"] }), null);
+  assert.throws(
+    () => getBodyPositionAuAtInstant("eros", "2026-01-01T00:00:00Z"),
+    EphemerisDataMissingError
+  );
 });

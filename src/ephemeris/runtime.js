@@ -95,6 +95,30 @@ function chunkHasAnyBody(chunk, bodyKeys) {
   return bodyKeys.some((key) => chunk.bodyKeys.includes(key));
 }
 
+function bodyKeysForChunk(chunk, bodyKeys) {
+  if (!bodyKeys || bodyKeys.length === 0) {
+    return chunk.bodyKeys;
+  }
+  const requested = new Set(bodyKeys);
+  return chunk.bodyKeys.filter((key) => requested.has(key));
+}
+
+function chunkHasLoadedBodies(chunk, bodyKeys) {
+  const loaded = loadedChunks.get(chunk.id);
+  if (!loaded) {
+    return false;
+  }
+  return bodyKeysForChunk(chunk, bodyKeys).every((key) => loaded.bodyKeys.includes(key));
+}
+
+function loadedChunkHasRequestedBodies(chunk, bodyKeys) {
+  if (!bodyKeys || bodyKeys.length === 0) {
+    return true;
+  }
+  const relevantKeys = bodyKeys.filter((key) => bodyStream(key) === chunk.stream);
+  return relevantKeys.length === 0 || relevantKeys.every((key) => chunk.bodyKeys.includes(key));
+}
+
 function chunkUrl(chunk) {
   return new URL(chunk.url, import.meta.url);
 }
@@ -117,9 +141,12 @@ async function fetchChunkPayload(chunk) {
 }
 
 const decoders = {
-  "json-base64"(payload) {
+  "json-base64"(payload, { bodyKeys } = {}) {
+    const keys = bodyKeys?.length
+      ? payload.bodyKeys.filter((key) => bodyKeys.includes(key))
+      : payload.bodyKeys;
     const vectors = {};
-    for (const key of payload.bodyKeys) {
+    for (const key of keys) {
       const encoded = payload.vectors[key];
       const bytes = decodeBase64ToUint8Array(encoded);
       vectors[key] = new Float32Array(bytes.buffer, bytes.byteOffset, bytes.byteLength / 4);
@@ -133,18 +160,36 @@ const decoders = {
       endUnixS: Date.parse(payload.endUtc) / 1000,
       stepSeconds: payload.stepSeconds,
       samplesPerBody: payload.samplesPerBody,
-      bodyKeys: payload.bodyKeys,
+      bodyKeys: keys,
       vectors
     };
   }
 };
 
-async function loadChunk(chunk) {
-  if (loadedChunks.has(chunk.id)) {
+function mergeDecodedChunk(existing, decoded) {
+  if (!existing) {
+    return decoded;
+  }
+  const bodyKeys = [...new Set([...existing.bodyKeys, ...decoded.bodyKeys])];
+  return {
+    ...existing,
+    bodyKeys,
+    vectors: {
+      ...existing.vectors,
+      ...decoded.vectors
+    }
+  };
+}
+
+async function loadChunk(chunk, { bodyKeys } = {}) {
+  const requestedBodyKeys = bodyKeysForChunk(chunk, bodyKeys);
+  if (chunkHasLoadedBodies(chunk, requestedBodyKeys)) {
     return loadedChunks.get(chunk.id);
   }
-  if (loadingChunks.has(chunk.id)) {
-    return loadingChunks.get(chunk.id);
+
+  const loadingKey = `${chunk.id}:${requestedBodyKeys.join(",")}`;
+  if (loadingChunks.has(loadingKey)) {
+    return loadingChunks.get(loadingKey);
   }
 
   const promise = fetchChunkPayload(chunk)
@@ -153,15 +198,16 @@ async function loadChunk(chunk) {
       if (!decoder) {
         throw new Error(`Unsupported ephemeris chunk format: ${chunk.format}`);
       }
-      const decoded = decoder(payload);
-      loadedChunks.set(chunk.id, decoded);
+      const decoded = decoder(payload, { bodyKeys: requestedBodyKeys });
+      const merged = mergeDecodedChunk(loadedChunks.get(chunk.id), decoded);
+      loadedChunks.set(chunk.id, merged);
       cumulativePathCache.clear();
-      return decoded;
+      return merged;
     })
     .finally(() => {
-      loadingChunks.delete(chunk.id);
+      loadingChunks.delete(loadingKey);
     });
-  loadingChunks.set(chunk.id, promise);
+  loadingChunks.set(loadingKey, promise);
   return promise;
 }
 
@@ -183,7 +229,7 @@ export function getLoadedCoverage({ stream, bodyKeys } = {}) {
   const streams = normalizeArray(stream, Object.keys(EPHEMERIS_V2_INDEX.streams));
   const keys = bodyKeys ? normalizeArray(bodyKeys, []) : null;
   const chunks = [...loadedChunks.values()].filter(
-    (chunk) => streams.includes(chunk.stream) && (!keys || chunkHasAnyBody(chunk, keys))
+    (chunk) => streams.includes(chunk.stream) && loadedChunkHasRequestedBodies(chunk, keys)
   );
   if (chunks.length === 0) {
     return null;
@@ -211,7 +257,7 @@ export function planEphemerisLoad({ startUtc, endUtc, streams, bodyKeys } = {}) 
       chunkCovers(chunk, startUnixS, endUnixS) &&
       chunkHasAnyBody(chunk, requestedBodyKeys)
   );
-  const missingChunks = chunks.filter((chunk) => !loadedChunks.has(chunk.id));
+  const missingChunks = chunks.filter((chunk) => !chunkHasLoadedBodies(chunk, requestedBodyKeys));
 
   return {
     startUtc: new Date(startUnixS * 1000).toISOString().replace(".000Z", "Z"),
@@ -244,7 +290,7 @@ export async function ensureEphemerisLoaded({
   const totalChunks = plan.chunks.length;
   for (const chunk of plan.missingChunks) {
     onProgress?.({ loadedChunks: loadedCount, totalChunks, chunk, plan, priority });
-    await loadChunk(chunk);
+    await loadChunk(chunk, { bodyKeys: plan.bodyKeys });
     loadedCount += 1;
     onProgress?.({ loadedChunks: loadedCount, totalChunks, chunk, plan, priority });
   }

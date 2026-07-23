@@ -190,18 +190,10 @@ const RENDERED_BODIES = [
 
 const AUXILIARY_RENDERED_BODIES = [
   { key: "ceres", color: [0.72, 0.66, 0.58], size: 0.026, orbitRadiusAu: 2.98, hueStart: 0.09 },
-  { key: "pallas", color: [0.66, 0.68, 0.72], size: 0.02, orbitRadiusAu: 3.41, hueStart: 0.18 },
   { key: "vesta", color: [0.88, 0.78, 0.62], size: 0.022, orbitRadiusAu: 2.57, hueStart: 0.12 },
-  { key: "hygiea", color: [0.58, 0.62, 0.64], size: 0.018, orbitRadiusAu: 3.51, hueStart: 0.2 },
-  { key: "psyche", color: [0.78, 0.58, 0.46], size: 0.018, orbitRadiusAu: 3.33, hueStart: 0.04 },
   { key: "eros", color: [0.95, 0.52, 0.36], size: 0.016, orbitRadiusAu: 1.78, hueStart: 0.01 },
-  { key: "bennu", color: [0.72, 0.72, 0.68], size: 0.014, orbitRadiusAu: 1.36, hueStart: 0.64 },
-  { key: "ryugu", color: [0.56, 0.6, 0.58], size: 0.014, orbitRadiusAu: 1.42, hueStart: 0.42 },
-  { key: "apophis", color: [1.0, 0.48, 0.34], size: 0.016, orbitRadiusAu: 1.1, hueStart: 0.0 },
   { key: "halley", color: [0.62, 0.92, 1.0], size: 0.02, orbitRadiusAu: 35.1, hueStart: 0.52 },
-  { key: "67p", color: [0.64, 0.82, 0.9], size: 0.017, orbitRadiusAu: 5.68, hueStart: 0.56 },
-  { key: "eris", color: [0.78, 0.84, 0.96], size: 0.026, orbitRadiusAu: 97.5, hueStart: 0.68 },
-  { key: "makemake", color: [0.86, 0.72, 0.62], size: 0.024, orbitRadiusAu: 53.1, hueStart: 0.08 }
+  { key: "67p", color: [0.64, 0.82, 0.9], size: 0.017, orbitRadiusAu: 5.68, hueStart: 0.56 }
 ].map((config) => ({
   ...config,
   stream: AUXILIARY_EPHEMERIS_STREAM,
