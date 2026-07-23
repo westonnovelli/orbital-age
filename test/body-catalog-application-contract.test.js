@@ -3,9 +3,24 @@ import assert from "node:assert/strict";
 import { loadCatalog, normalizedBody } from "../scripts/ephemeris/catalog.mjs";
 import { EPHEMERIS_V2_INDEX } from "../src/ephemeris/generated-v2-index.js";
 import { manifestRenderConfigs } from "../src/app.js";
+import { BODY_MECHANICS } from "../src/body-mechanics.js";
 
 const catalog = loadCatalog();
 const manifest = EPHEMERIS_V2_INDEX;
+
+test("Spec: every enabled followable body has Orbital Mechanics copy", () => {
+  const followable = catalog.bodies.filter((body) =>
+    body.enabled !== false && body.render?.follow?.enabled === true
+  );
+
+  assert.equal(Object.keys(BODY_MECHANICS).length, followable.length);
+  for (const body of followable) {
+    const mechanics = BODY_MECHANICS[body.key];
+    assert.ok(mechanics, `${body.key} mechanics entry`);
+    assert.ok(mechanics.path, `${body.key} orbit path`);
+    assert.ok(mechanics.body, `${body.key} orbit description`);
+  }
+});
 
 function byKey(items) {
   return new Map(items.map((item) => [item.key, item]));

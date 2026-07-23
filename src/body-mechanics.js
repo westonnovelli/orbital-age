@@ -1,0 +1,48 @@
+// Short, deliberately approximate descriptions for the bodies that can be
+// followed from the flight roster. Orbital periods and distances are rounded
+// so the copy remains useful without pretending to be an osculating element.
+export const BODY_MECHANICS = {
+  mercury: { path: "Elliptical", body: "Mercury races around the Sun every 88 days on the most eccentric, fastest planetary orbit." },
+  venus: { path: "Near-circular", body: "Venus traces a nearly circular orbit at ~0.72 AU, completing a year every 225 days." },
+  earth: { path: "Elliptical", body: "Earth orbits the Sun at an average distance of ~150M km, completing one revolution each year." },
+  mars: { path: "Elliptical", body: "Mars orbits at ~1.52 AU on a noticeably eccentric path, taking about 687 days per year." },
+  jupiter: { path: "Elliptical", body: "Jupiter, the largest planet, orbits at ~5.2 AU and takes nearly 12 years to lap the Sun." },
+  saturn: { path: "Elliptical", body: "Saturn orbits at ~9.6 AU, completing one slow, ringed revolution roughly every 29 years." },
+  uranus: { path: "Elliptical", body: "Uranus orbits at ~19 AU on its tipped axis, taking about 84 years to circle the Sun." },
+  neptune: { path: "Near-circular", body: "Neptune, the outermost planet, orbits at ~30 AU and takes ~165 years for one revolution." },
+  pluto: { path: "Eccentric", body: "Pluto's eccentric, inclined orbit ranges from ~30 to ~49 AU over a 248-year journey." },
+  moon: { path: "Geocentric", body: "The Moon orbits Earth every ~27 days while riding along Earth's own path around the Sun." },
+
+  eros: { path: "Near-Earth ellipse", body: "Eros is a stony near-Earth asteroid that circles the Sun in about 1.76 years." },
+  bennu: { path: "Near-Earth ellipse", body: "Bennu is a near-Earth asteroid with a ~1.2-year solar orbit that brings it close to Earth's neighborhood." },
+  ryugu: { path: "Near-Earth ellipse", body: "Ryugu completes an orbit around the Sun in about 1.3 years on a path that crosses Earth's orbital region." },
+  apophis: { path: "Near-Earth ellipse", body: "Apophis is a near-Earth asteroid with an approximately 324-day solar orbit." },
+  halley: { path: "Highly eccentric", body: "Halley's Comet swings from the inner solar system to beyond Neptune, returning about every 76 years." },
+  "67p": { path: "Highly eccentric", body: "Comet 67P/Churyumov–Gerasimenko follows a ~6.45-year ellipse between ~1.2 and ~5.7 AU." },
+  encke: { path: "Highly eccentric", body: "Comet Encke has one of the shortest known cometary periods, returning to the Sun about every 3.3 years." },
+  "tempel-1": { path: "Highly eccentric", body: "Comet Tempel 1 follows an elongated ~5.5-year orbit between the inner solar system and Jupiter's region." },
+  "wild-2": { path: "Highly eccentric", body: "Comet Wild 2 completes a solar orbit in roughly 6.4 years after a gravity-altered journey through the giant-planet region." },
+  "hartley-2": { path: "Highly eccentric", body: "Comet Hartley 2 returns about every 6.5 years on an elongated orbit that reaches beyond Jupiter." },
+  eris: { path: "Distant eccentric", body: "Eris follows a highly eccentric Kuiper Belt orbit and takes roughly 558 years to circle the Sun." },
+  makemake: { path: "Kuiper Belt ellipse", body: "Makemake travels around the Sun at about 43 AU and completes a revolution in roughly 306 years." },
+  haumea: { path: "Kuiper Belt ellipse", body: "Haumea orbits near 43 AU and takes about 285 years to complete one trip around the Sun." },
+  quaoar: { path: "Kuiper Belt ellipse", body: "Quaoar follows a relatively modest-eccentricity Kuiper Belt orbit near 44 AU, lasting about 288 years." },
+  orcus: { path: "Resonant ellipse", body: "Orcus is a trans-Neptunian object on an eccentric ~30–48 AU orbit that takes about 246 years." },
+
+  io: { path: "Jovian orbit", body: "Io circles Jupiter every 1.77 days on the innermost of the four large Galilean moon orbits." },
+  europa: { path: "Jovian orbit", body: "Europa completes a nearly circular orbit around Jupiter every 3.55 days." },
+  ganymede: { path: "Jovian orbit", body: "Ganymede, the solar system's largest moon, orbits Jupiter once every 7.15 days." },
+  callisto: { path: "Jovian orbit", body: "Callisto follows the outer Galilean orbit around Jupiter, completing a circuit in about 16.7 days." },
+  enceladus: { path: "Saturnian orbit", body: "Enceladus completes a close orbit around Saturn every 1.37 days." },
+  rhea: { path: "Saturnian orbit", body: "Rhea circles Saturn in about 4.52 days on a nearly circular mid-distance orbit." },
+  titan: { path: "Saturnian orbit", body: "Titan, Saturn's largest moon, takes about 15.95 days to complete one orbit." },
+  ariel: { path: "Uranian orbit", body: "Ariel follows a close, nearly circular orbit around Uranus every 2.52 days." },
+  titania: { path: "Uranian orbit", body: "Titania, Uranus's largest moon, completes an orbit in roughly 8.7 days." },
+  miranda: { path: "Uranian orbit", body: "Miranda circles Uranus every 1.41 days on the innermost major Uranian moon orbit." },
+  triton: { path: "Retrograde orbit", body: "Triton travels around Neptune in 5.88 days on a rare large-moon retrograde orbit." },
+  larissa: { path: "Neptunian orbit", body: "Larissa is a small inner moon of Neptune, completing an orbit in about 13.3 hours." },
+  proteus: { path: "Neptunian orbit", body: "Proteus circles Neptune roughly every 1.12 days on a close, prograde orbit." },
+  charon: { path: "Binary orbit", body: "Charon and Pluto orbit their shared barycenter every 6.39 days, rather than Charon simply circling Pluto's center." },
+  nix: { path: "Plutonian orbit", body: "Nix is a small outer moon of Pluto, completing an orbit in about 24.9 days." },
+  hydra: { path: "Plutonian orbit", body: "Hydra is Pluto's outermost named moon in this roster, orbiting the Pluto–Charon system in about 38.2 days." }
+};

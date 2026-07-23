@@ -19,6 +19,7 @@ import { CameraIntroTweenEntity } from "./webgl/entities/camera-intro.js";
 import { StarfieldEntity } from "./webgl/entities/starfield.js";
 import { autoFitHalfHeight, starfieldSpread } from "./webgl/scale.js";
 import { orbitsCompleted, currentAge, distanceTraveledKm } from "./stats.js";
+import { BODY_MECHANICS } from "./body-mechanics.js";
 
 const DEFAULT_SPEED_DAYS_PER_SECOND = 120;
 const PRIMARY_EPHEMERIS_STREAM = "primary";
@@ -404,49 +405,6 @@ const SUN_MECHANICS = {
     "The Sun sits at the system's center. Follow a body — click it, use a Bodies-panel control, or press f — to read its orbit here."
 };
 
-const BODY_MECHANICS = {
-  mercury: {
-    path: "Elliptical",
-    body: "Mercury races around the Sun every 88 days on the most eccentric, fastest planetary orbit."
-  },
-  venus: {
-    path: "Near-circular",
-    body: "Venus traces a nearly circular orbit at ~0.72 AU, completing a year every 225 days."
-  },
-  earth: {
-    path: "Elliptical",
-    body: "Earth orbits the Sun at an average distance of ~150M km, completing one revolution each year."
-  },
-  mars: {
-    path: "Elliptical",
-    body: "Mars orbits at ~1.52 AU on a noticeably eccentric path, taking about 687 days per year."
-  },
-  jupiter: {
-    path: "Elliptical",
-    body: "Jupiter, the largest planet, orbits at ~5.2 AU and takes nearly 12 years to lap the Sun."
-  },
-  saturn: {
-    path: "Elliptical",
-    body: "Saturn orbits at ~9.6 AU, completing one slow, ringed revolution roughly every 29 years."
-  },
-  uranus: {
-    path: "Elliptical",
-    body: "Uranus orbits at ~19 AU on its tipped axis, taking about 84 years to circle the Sun."
-  },
-  neptune: {
-    path: "Near-circular",
-    body: "Neptune, the outermost planet, orbits at ~30 AU and takes ~165 years for one revolution."
-  },
-  pluto: {
-    path: "Eccentric",
-    body: "Pluto's eccentric, inclined orbit ranges from ~30 to ~49 AU over a 248-year journey."
-  },
-  moon: {
-    path: "Geocentric",
-    body: "The Moon orbits Earth every ~27 days while riding along Earth's own path around the Sun."
-  }
-};
-
 // Marker/trail orbital-ellipse radii. Origin uses a unit circle (radiusY 1).
 const BODY_RADIUS_X = 1;
 const BODY_RADIUS_Y = 1;
@@ -826,6 +784,13 @@ export class OrbitalApp {
       this.#hideDeepTimeLoader();
     }
 
+    // Auxiliary bodies are rendered in the opening scene too. Load and decode
+    // them before starting the renderer so background parsing cannot interrupt
+    // the intro tween and make satellites appear halfway through the flythrough.
+    const auxiliaryConfigs = await this.#loadAuxiliaryBodies(validation.date, maxTimelineDate);
+    this.activeBodyConfigs = [...this.activeBodyConfigs, ...auxiliaryConfigs];
+    this.auxiliaryBodiesAttached = auxiliaryConfigs.length > 0;
+
     // Build one marker (+ optional trail) per registered body.
     const bodies = [];
     const trails = [];
@@ -875,6 +840,7 @@ export class OrbitalApp {
     });
 
     this.timelineController = timelineController;
+    this.#expandAutoFitForActiveBodies();
 
     // Opening flythrough: begin framed on the inner planets and slowly zoom out
     // to Auto-fit, settling into the Auto-fit preset when the tween completes.
@@ -932,6 +898,9 @@ export class OrbitalApp {
     this.#setTimelineEnabled(true);
     this.statsHud?.classList.remove("hud--hidden");
     this.#updateTimelineUi(this.timelineController.getState());
+    // Keep the startup loader over synchronous marker/trail initialization, too;
+    // otherwise decoding can finish while scene setup still blocks the intro.
+    this.#hideDeepTimeLoader();
     this.root?.classList.add("journey-active");
     // The topbar is a sibling of the stage (not a descendant), so mirror the class
     // onto it as well — the phone-tier menu/sigil triggers key off it. Desktop has
@@ -943,38 +912,46 @@ export class OrbitalApp {
     // The looping score starts on the first journey and keeps playing across
     // subsequent re-renders (this no-ops once started).
     this.#startAudio();
-    this.#loadAuxiliaryBodies(validation.date, maxTimelineDate);
   }
 
   async #loadAuxiliaryBodies(birthday, maxTimelineDate) {
     if (typeof window === "undefined") {
-      return;
+      return [];
     }
 
     const bodyRegistry = getBodyRegistry();
     const auxiliaryConfigs = manifestRenderConfigs(AUXILIARY_EPHEMERIS_STREAM, bodyRegistry, { includeHidden: true })
       .filter((config) => bodyRegistry[config.key]);
     if (auxiliaryConfigs.length === 0 || this.auxiliaryBodiesAttached) {
-      return;
+      return auxiliaryConfigs;
     }
+
+    const loadPlan = planEphemerisLoad({
+      startUtc: birthday,
+      endUtc: maxTimelineDate,
+      streams: [AUXILIARY_EPHEMERIS_STREAM],
+      bodyKeys: auxiliaryConfigs.map((config) => config.key)
+    });
 
     try {
-      await ensureEphemerisLoaded({
-        startUtc: birthday,
-        endUtc: maxTimelineDate,
-        streams: [AUXILIARY_EPHEMERIS_STREAM],
-        bodyKeys: auxiliaryConfigs.map((config) => config.key),
-        priority: "background"
-      });
+      if (!loadPlan.loaded) {
+        this.#showDeepTimeLoader(birthday, loadPlan);
+        await ensureEphemerisLoaded({
+          startUtc: birthday,
+          endUtc: maxTimelineDate,
+          streams: [AUXILIARY_EPHEMERIS_STREAM],
+          bodyKeys: auxiliaryConfigs.map((config) => config.key),
+          priority: "journey",
+          onProgress: (progress) => this.#updateDeepTimeLoader(birthday, progress)
+        });
+      }
     } catch (error) {
       console.warn("Could not load auxiliary ephemeris bodies.", error);
-      return;
+      this.#hideDeepTimeLoader();
+      return [];
     }
 
-    if (!this.timelineController || !this.scene) {
-      return;
-    }
-    this.#attachAuxiliaryBodies(auxiliaryConfigs);
+    return auxiliaryConfigs;
   }
 
   #attachAuxiliaryBodies(configs) {
