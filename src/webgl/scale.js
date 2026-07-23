@@ -15,7 +15,7 @@ export const AUTO_FIT_MARGIN = 1.1;
 
 // How far the starfield should extend beyond the framed region so the
 // background still covers the corners at wide aspect ratios.
-export const STARFIELD_MARGIN = 1.5;
+export const STARFIELD_MARGIN = 3.75;
 
 // Compute the camera halfHeight needed to frame a body at the given maximum
 // orbital radius (in AU). The radius is converted to scene units and padded by

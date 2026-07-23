@@ -273,7 +273,15 @@ export function manifestRenderConfigs(dataset, bodyRegistry = getBodyRegistry(),
   return dataset === PRIMARY_EPHEMERIS_STREAM ? LEGACY_PRIMARY_RENDERED_BODIES : LEGACY_AUXILIARY_RENDERED_BODIES;
 }
 
-const MAX_ORBIT_RADIUS_AU = Math.max(...manifestRenderConfigs(PRIMARY_EPHEMERIS_STREAM).map((b) => b.orbitRadiusAu ?? 0));
+// The background and initial camera framing must account for every rendered
+// dataset, not only the eager planets. Auxiliary outer bodies can extend well
+// beyond Pluto, so sizing the starfield from the primary stream leaves the
+// expanded view without enough background coverage.
+const MAX_ORBIT_RADIUS_AU = Math.max(
+  ...[PRIMARY_EPHEMERIS_STREAM, AUXILIARY_EPHEMERIS_STREAM].flatMap((stream) =>
+    manifestRenderConfigs(stream).map((body) => body.orbitRadiusAu ?? 0)
+  )
+);
 const AUTO_FIT_HALF_HEIGHT = autoFitHalfHeight(MAX_ORBIT_RADIUS_AU);
 const STARFIELD_SPREAD = starfieldSpread(AUTO_FIT_HALF_HEIGHT);
 
@@ -1168,6 +1176,11 @@ export class OrbitalApp {
       this.activeBodiesTab = groups[0].key;
     }
     const selectedGroup = groups.find((group) => group.key === this.activeBodiesTab) ?? groups[0];
+    const selectedConfigs = selectedGroup.key === "asteroids"
+      ? [...selectedGroup.configs].sort(
+          (a, b) => Number(b.followEnabled === true) - Number(a.followEnabled === true)
+        )
+      : selectedGroup.configs;
 
     for (const group of groups) {
       const tab = doc.createElement("button");
@@ -1193,7 +1206,7 @@ export class OrbitalApp {
     const tabBodyKeys = this.#bodyKeysForRosterGroup(selectedGroup.configs, childrenByParent);
     this.#buildRosterTabControls(doc, selectedGroup, tabBodyKeys);
 
-    for (const config of selectedGroup.configs) {
+    for (const config of selectedConfigs) {
       const row = this.#createBodyRow(doc, config);
       this.bodiesList.append(row);
       const children = childrenByParent.get(config.key);
