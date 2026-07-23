@@ -1211,6 +1211,7 @@ export class OrbitalApp {
       this.bodiesTabs?.append(tab);
     }
     this.bodiesList.setAttribute("aria-labelledby", `bodies-tab-${selectedGroup.key}`);
+    this.bodiesList.setAttribute("data-category", selectedGroup.key);
 
     const tabBodyKeys = this.#bodyKeysForRosterGroup(selectedGroup.configs, childrenByParent);
     this.#buildRosterTabControls(doc, selectedGroup, tabBodyKeys);
@@ -1266,26 +1267,36 @@ export class OrbitalApp {
       return "MIXED";
     };
 
-    const objectsControl = doc.createElement("button");
-    objectsControl.type = "button";
+    const objectsControl = doc.createElement("label");
     objectsControl.className = "bodies__tab-control";
-    objectsControl.textContent = `Objects ${stateLabel(visibleCount, bodyKeys.length)}`;
-    objectsControl.setAttribute("aria-label", `Toggle all ${group.label} visibility`);
-    objectsControl.setAttribute("aria-pressed", String(visibleCount === bodyKeys.length));
-    objectsControl.addEventListener("click", () => {
+    objectsControl.dataset.state = stateLabel(visibleCount, bodyKeys.length).toLowerCase();
+    const objectsCheckbox = doc.createElement("input");
+    objectsCheckbox.type = "checkbox";
+    objectsCheckbox.checked = bodyKeys.length > 0 && visibleCount === bodyKeys.length;
+    objectsCheckbox.indeterminate = visibleCount > 0 && visibleCount < bodyKeys.length;
+    objectsCheckbox.setAttribute("aria-label", `Toggle all ${group.label} visibility`);
+    objectsCheckbox.addEventListener("change", () => {
       this.#setBodiesVisible(bodyKeys, visibleCount !== bodyKeys.length);
     });
+    const objectsText = doc.createElement("span");
+    objectsText.textContent = `Objects ${stateLabel(visibleCount, bodyKeys.length)}`;
+    objectsControl.append(objectsCheckbox, objectsText);
 
-    const pathsControl = doc.createElement("button");
-    pathsControl.type = "button";
+    const pathsControl = doc.createElement("label");
     pathsControl.className = "bodies__tab-control";
-    pathsControl.textContent = `Paths ${stateLabel(visibleTrailCount, trailKeys.length)}`;
-    pathsControl.setAttribute("aria-label", `Toggle all ${group.label} orbital paths`);
-    pathsControl.setAttribute("aria-pressed", String(trailKeys.length > 0 && visibleTrailCount === trailKeys.length));
-    pathsControl.disabled = trailKeys.length === 0;
-    pathsControl.addEventListener("click", () => {
+    pathsControl.dataset.state = stateLabel(visibleTrailCount, trailKeys.length).toLowerCase();
+    const pathsCheckbox = doc.createElement("input");
+    pathsCheckbox.type = "checkbox";
+    pathsCheckbox.checked = trailKeys.length > 0 && visibleTrailCount === trailKeys.length;
+    pathsCheckbox.indeterminate = visibleTrailCount > 0 && visibleTrailCount < trailKeys.length;
+    pathsCheckbox.disabled = trailKeys.length === 0;
+    pathsCheckbox.setAttribute("aria-label", `Toggle all ${group.label} orbital paths`);
+    pathsCheckbox.addEventListener("change", () => {
       this.#setBodyTrailsVisible(trailKeys, visibleTrailCount !== trailKeys.length);
     });
+    const pathsText = doc.createElement("span");
+    pathsText.textContent = `Paths ${stateLabel(visibleTrailCount, trailKeys.length)}`;
+    pathsControl.append(pathsCheckbox, pathsText);
 
     this.bodiesTabControls.append(objectsControl, pathsControl);
   }
@@ -1362,6 +1373,10 @@ export class OrbitalApp {
       row.classList.toggle("bodies__row--inactive", !show);
       row.dataset.visible = String(show);
       row.setAttribute("aria-checked", String(show));
+      const label = this.bodyLabels.get(config.key);
+      if (label) {
+        label.style.display = show ? "" : "none";
+      }
     };
     const toggleVisible = () => setVisible(this.bodyMarkers.get(config.key)?.visible === false);
     const bodyName = this.#bodyDisplayName(config.key);
@@ -1845,7 +1860,8 @@ export class OrbitalApp {
       // names don't pile up at the edges.
       const onScreen =
         screen.ndcX >= -1 && screen.ndcX <= 1 && screen.ndcY >= -1 && screen.ndcY <= 1;
-      label.style.display = onScreen ? "" : "none";
+      const visible = this.bodyMarkers.get(key)?.visible !== false;
+      label.style.display = onScreen && visible ? "" : "none";
       // Fold any per-body label offset (e.g. the Moon, nudged clear of Earth)
       // into the transform so the per-frame write stays transform-only.
       const config = this.#bodyConfig(key);
