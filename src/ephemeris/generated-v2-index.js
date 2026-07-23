@@ -4,7 +4,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v2",
   "encoder": "binary-f32-gzip",
-  "generatedOn": "2026-07-23T18:49:33.265Z",
+  "generatedOn": "2026-07-23T21:18:27.133Z",
   "compatibility": {
     "manifestSchema": "ephemeris.manifest.v2",
     "requiredFrame": "ECLIPJ2000",
@@ -16,7 +16,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
     "provider": "JPL NAIF / JPL Horizons",
     "kernel": "de442s.bsp",
     "retrievedOn": "2026-07-23",
-    "canonicalDataset": "data/ephemeris/v1"
+    "canonicalDataset": "data/ephemeris/v2/source.json"
   },
   "frame": "ECLIPJ2000",
   "origin": "SSB",

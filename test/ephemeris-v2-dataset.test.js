@@ -24,6 +24,20 @@ test("v2 manifest carries tunable format metadata", () => {
   assert.equal(manifest.chunks.every((chunk) => chunk.vectorEncoding === "float32-le"), true);
 });
 
+test("v2 has a sharded primary source contract below GitHub's file limit", () => {
+  const source = readJson("source.json");
+  const limit = 100 * 1024 * 1024;
+
+  assert.equal(source.schemaVersion, "ephemeris.source.v2");
+  assert.equal(source.frame, "ECLIPJ2000");
+  assert.equal(source.origin, "SSB");
+  for (const target of source.targets.filter((target) => target.synthetic !== "origin")) {
+    const rawPath = path.join(DATA_DIR, "raw-horizons-primary", `${target.naifId}.json`);
+    assert.ok(fs.existsSync(rawPath), `missing primary source payload for ${target.key}`);
+    assert.ok(fs.statSync(rawPath).size < limit, `${target.key} payload exceeds GitHub's file limit`);
+  }
+});
+
 test("v2 primary stream has a recent hot chunk and historical chunks", () => {
   const manifest = readJson("manifest.json");
   const primaryChunks = manifest.chunks.filter((chunk) => chunk.stream === "primary");

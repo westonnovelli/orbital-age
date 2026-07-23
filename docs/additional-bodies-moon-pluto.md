@@ -6,8 +6,8 @@ upstream source.
 
 ## Current Dataset Coverage
 
-`data/ephemeris/v1` currently tracks the **Sun + 8 planets + Pluto** (see
-[header.json](../data/ephemeris/v1/header.json) `targets`):
+`data/ephemeris/v2` tracks the **Sun + 8 planets + Pluto** (see
+[source.json](../data/ephemeris/v2/source.json) `targets`):
 
 | Body | NAIF ID |
 |------|---------|
@@ -35,24 +35,24 @@ everything else is planetary (plus Pluto).
 ## Are Moon and Pluto Available?
 
 **Yes.** The refresh pipeline pulls live from the JPL Horizons API
-([refresh-v1.mjs](../scripts/ephemeris/refresh-v1.mjs)), and Horizons (backed by
+([refresh-primary-v2.mjs](../scripts/ephemeris/refresh-primary-v2.mjs)), and Horizons (backed by
 the DE44x kernel family) has full coverage of both. **Pluto (NAIF 999) and the
 Moon (NAIF 301) are both now in the dataset.**
 
 | Body | NAIF ID (Horizons `COMMAND`) | Notes |
 |------|------------------------------|-------|
-| Earth's Moon | **301** | In `targets` as `moon` / `301`. Fetched and stored barycentric like every other body (`CENTER=500@0`); a *separate derived dataset* additionally holds its per-epoch Earth-relative offset (`delta = moon_ssb − earth_ssb`, annotated `relativeTo: 399`) for the render layer. Integral to the DE ephemeris, so it is exact, not interpolated. |
+| Earth's Moon | **301** | In `targets` as `moon` / `301`. It is fetched barycentrically (`CENTER=500@0`); the runtime derives its Earth-relative offset from the Moon and Earth v2 chunk vectors. |
 | Pluto | **999** (body center) or **9** (Pluto system barycenter) | In `targets` as `pluto` / `999` (the planet body itself). |
 
 ## What Adding Them Would Involve
 
-Mechanically straightforward: the refresh script iterates `header.targets` and
+Mechanically straightforward: the refresh script iterates `source.json` targets and
 issues one Horizons request per `naifId` using the existing config
 (`CENTER=500@0`, `ECLIPTIC`, `J2000`, `1 d` step). Steps:
 
-1. Add the new entries to `header.targets` in `header.json`.
+1. Add the new entries to `data/bodies.yaml` and `source.json`.
 2. `npm run data:ephemeris:refresh -- --fetch --yes` (network required — no
-   cached `raw-horizons/` data exists locally yet).
+   cached primary raw data exists locally yet).
 3. `npm run data:ephemeris:rebuild`
 4. `npm run data:ephemeris:verify`
 5. `npm test`

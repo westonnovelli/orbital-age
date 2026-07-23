@@ -5,8 +5,8 @@ import { createInterface } from "node:readline/promises";
 import { enabledBodies, loadCatalog } from "./catalog.mjs";
 
 const HORIZONS_API_URL = "https://ssd.jpl.nasa.gov/api/horizons.api";
-const DEFAULT_DATA_DIR = "data/ephemeris/v1";
-const RAW_DIR_NAME = "raw-horizons";
+const DEFAULT_DATA_DIR = "data/ephemeris/v2";
+const RAW_DIR_NAME = "raw-horizons-primary";
 
 function parseArgs(argv) {
   const flags = new Set(argv);
@@ -33,7 +33,7 @@ function parseArgs(argv) {
     retrievedOn: values.get("--retrieved-on") ?? null,
     startUtc: values.get("--start-utc") ?? null,
     endUtc: values.get("--end-utc") ?? null,
-    dataDir: values.get("--data-dir") ?? process.env.EPHEMERIS_DATA_DIR ?? DEFAULT_DATA_DIR
+    dataDir: values.get("--data-dir") ?? process.env.EPHEMERIS_V2_DATA_DIR ?? DEFAULT_DATA_DIR
   };
 }
 
@@ -251,7 +251,7 @@ async function askForConfirmation() {
   });
 
   try {
-    const answer = await rl.question("This will overwrite header.json and snapshots.ndjson. Continue? [y/N] ");
+    const answer = await rl.question("This will overwrite v2 source metadata and primary raw payloads. Continue? [y/N] ");
     return answer.trim().toLowerCase() === "y";
   } finally {
     rl.close();
@@ -262,24 +262,27 @@ async function main() {
   const options = parseArgs(process.argv.slice(2));
   const cwd = process.cwd();
   const dataDir = path.resolve(cwd, options.dataDir);
-  const headerPath = path.join(dataDir, "header.json");
-  const snapshotsPath = path.join(dataDir, "snapshots.ndjson");
+  const headerPath = path.join(dataDir, "source.json");
   const rawDir = path.join(dataDir, RAW_DIR_NAME);
 
   const header = JSON.parse(fs.readFileSync(headerPath, "utf8"));
-  // Fixture/custom datasets remain self-contained. The repository's canonical
-  // v1 dataset is the only target list generated from the body catalog.
+  // The v2 source contract derives its primary target list from the body catalog.
   if (path.resolve(dataDir) === path.resolve(cwd, DEFAULT_DATA_DIR)) {
     const catalog = loadCatalog(cwd);
     const primaryBodies = enabledBodies(catalog, "primary");
     const naifByKey = new Map(primaryBodies.map((body) => [body.key, body.naifId]));
-    header.schemaVersion = catalog.schemaVersion;
+    const existingTargets = new Map(header.targets.map((target) => [target.key, target]));
+    header.schemaVersion = "ephemeris.source.v2";
     header.frame = catalog.ephemeris.frame;
     header.origin = catalog.ephemeris.origin;
     header.units = catalog.ephemeris.units;
     header.targets = primaryBodies.map((body) => ({
       key: body.key,
       naifId: body.naifId,
+      ...(body.synthetic ? { synthetic: body.synthetic } : {}),
+      ...(existingTargets.get(body.key)?.coverageStartUtc
+        ? { coverageStartUtc: existingTargets.get(body.key).coverageStartUtc }
+        : {}),
       ...(body.relativeTo ? { relativeTo: naifByKey.get(body.relativeTo) } : {})
     }));
   }
@@ -350,6 +353,9 @@ async function main() {
         effectiveStartDate = earliest;
       }
       const destination = path.join(rawDir, `${target.naifId}.json`);
+      if (options.incremental && fs.existsSync(destination)) {
+        payloads.unshift(JSON.parse(fs.readFileSync(destination, "utf8")));
+      }
       fs.writeFileSync(destination, `${JSON.stringify(mergeHorizonsPayloads(payloads, target), null, 2)}\n`);
       coverageStartByNaifId.set(target.naifId, `${effectiveStartDate}T00:00:00Z`);
       console.log(`Merged ${target.key} -> ${path.relative(cwd, destination)} (${payloads.length} segment${payloads.length === 1 ? "" : "s"})`);
@@ -379,9 +385,7 @@ async function main() {
     const rows = parseHorizonsCsvRows(payload.result, target);
     const targetCoverageStart =
       coverageStartByNaifId.get(target.naifId) ?? target.coverageStartUtc ?? header.window.startUtc;
-    const expectedRows = options.incremental
-      ? Math.round((Date.parse(header.window.endUtc) - Date.parse(`${currentEndUtc}`)) / MS_PER_DAY)
-      : Math.round((Date.parse(header.window.endUtc) - Date.parse(targetCoverageStart)) / MS_PER_DAY) + 1;
+    const expectedRows = Math.round((Date.parse(header.window.endUtc) - Date.parse(targetCoverageStart)) / MS_PER_DAY) + 1;
     if (rows.length !== expectedRows) {
       throw new Error(
         `Row count mismatch for ${target.key} (${target.naifId}): expected ${expectedRows}, got ${rows.length}`
@@ -430,9 +434,7 @@ async function main() {
       sunTarget
     );
 
-    const expectedRows = options.incremental
-      ? Math.round((Date.parse(header.window.endUtc) - Date.parse(currentEndUtc)) / MS_PER_DAY)
-      : header.cadence.samplesPerBody;
+    const expectedRows = header.cadence.samplesPerBody;
     if (sunRows.length !== expectedRows) {
       throw new Error(
         `Row count mismatch for sun (${sunTarget.naifId}): expected ${expectedRows}, got ${sunRows.length}`
@@ -444,45 +446,13 @@ async function main() {
   }
 
   for (const target of header.targets) {
-    const coverageStartUtc = coverageStartByNaifId.get(target.naifId) ?? header.window.startUtc;
+    const coverageStartUtc = coverageStartByNaifId.get(target.naifId) ?? target.coverageStartUtc ?? header.window.startUtc;
     if (coverageStartUtc === header.window.startUtc) {
       delete target.coverageStartUtc;
     } else {
       target.coverageStartUtc = coverageStartUtc;
     }
   }
-
-  if (options.incremental) {
-    const appendedRows = [];
-    for (let index = 0; index < referenceEpochs.length; index += 1) {
-      const epochUnixS = referenceEpochs[index];
-      for (const target of header.targets) {
-        const row = rowsByNaifId.get(target.naifId)?.[index];
-        if (row) appendedRows.push(row);
-      }
-    }
-    const serializedAppend = appendedRows.map((row) => `${JSON.stringify(row)}\n`).join("");
-    fs.appendFileSync(snapshotsPath, serializedAppend);
-    fs.writeFileSync(headerPath, `${JSON.stringify(header, null, 2)}\n`);
-    console.log(`Appended ${appendedRows.length} rows to ${path.relative(cwd, snapshotsPath)}`);
-    console.log(`Updated ${path.relative(cwd, headerPath)} through ${header.window.endUtc}`);
-    return;
-  }
-
-  const rowMapsByNaifId = new Map(
-    [...rowsByNaifId.entries()].map(([naifId, targetRows]) => [naifId, new Map(targetRows.map((row) => [row.epochUnixS, row]))])
-  );
-
-  const rows = [];
-  for (const epochUnixS of referenceEpochs) {
-      for (const target of header.targets) {
-        const row = rowMapsByNaifId.get(target.naifId).get(epochUnixS);
-      if (row) rows.push(row);
-      }
-  }
-
-  const serialized = rows.map((row) => `${JSON.stringify(row)}\n`).join("");
-  fs.writeFileSync(snapshotsPath, serialized);
 
   const retrievedOn = options.retrievedOn ?? new Date().toISOString().slice(0, 10);
   header.ephemerisSource = {
@@ -491,7 +461,7 @@ async function main() {
   };
   fs.writeFileSync(headerPath, `${JSON.stringify(header, null, 2)}\n`);
 
-  console.log(`Wrote ${path.relative(cwd, snapshotsPath)} (${rows.length} rows)`);
+  console.log(`Validated ${referenceEpochs.length} daily primary samples without writing a monolithic snapshot.`);
   console.log(`Updated ${path.relative(cwd, headerPath)} ephemerisSource.retrievedOn=${retrievedOn}`);
   console.log("Next: run `npm run data:ephemeris:rebuild` then `npm run data:ephemeris:verify`.");
 }

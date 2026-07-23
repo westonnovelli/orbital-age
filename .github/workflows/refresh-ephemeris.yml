@@ -55,19 +55,18 @@ jobs:
         run: |
           TODAY="$(date -u +%F)"
           echo "Refreshing ephemeris incrementally through today+1 (retrieved-on=$TODAY)"
-          npm run data:ephemeris:refresh:auxiliary:v2 -- --fetch --incremental --yes
+          npm run data:ephemeris:refresh:auxiliary -- --fetch --incremental --yes
           npm run data:ephemeris:refresh -- --fetch --incremental --yes --retrieved-on "$TODAY"
 
       - name: Rebuild generated artifacts
         run: |
           npm run data:ephemeris:rebuild
-          npm run data:ephemeris:rebuild:v2
-          npm run data:ephemeris:preflight:v2
+          npm run data:ephemeris:preflight
 
       - name: Verify dataset integrity
         run: |
           npm run data:ephemeris:verify
-          npm run data:ephemeris:verify:v2
+          npm run data:ephemeris:check-size
 
       - name: Run tests
         run: npm test
@@ -77,12 +76,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
-            data/ephemeris/v1/header.json \
-            data/ephemeris/v1/manifest.json \
-            data/ephemeris/v1/snapshots.ndjson \
-            data/ephemeris/v1/snapshots.ndjson.gz \
             data/ephemeris/v2 \
-            src/ephemeris/generated-v1.js \
             src/ephemeris/generated-v2-index.js
           if git diff --cached --quiet; then
             echo "No dataset changes to commit."

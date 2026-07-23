@@ -4,8 +4,8 @@ import { enabledBodies, loadCatalog } from "./catalog.mjs";
 
 const HORIZONS_API_URL = "https://ssd.jpl.nasa.gov/api/horizons.api";
 const cwd = process.cwd();
-const v1Dir = path.resolve(cwd, process.env.EPHEMERIS_V1_DATA_DIR ?? "data/ephemeris/v1");
 const v2Dir = path.resolve(cwd, process.env.EPHEMERIS_V2_DATA_DIR ?? "data/ephemeris/v2");
+const sourcePath = path.resolve(cwd, process.env.EPHEMERIS_V2_SOURCE ?? path.join(v2Dir, "source.json"));
 const rawDir = path.join(v2Dir, "raw-horizons-auxiliary");
 const snapshotsPath = path.join(v2Dir, "auxiliary-snapshots.ndjson");
 
@@ -156,7 +156,7 @@ function parseHorizonsCsvRows(resultText, target) {
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
-  const header = JSON.parse(fs.readFileSync(path.join(v1Dir, "header.json"), "utf8"));
+  const header = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
   const auxiliary = enabledBodies(loadCatalog(cwd), "auxiliary");
   const currentEndUtc = header.window.endUtc;
   const requestedStartUtc = options.incremental ? addUtcDays(currentEndUtc, 1) : header.window.startUtc;

@@ -23,3 +23,6 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Verify GitHub file-size limit
+        run: npm run data:ephemeris:check-size

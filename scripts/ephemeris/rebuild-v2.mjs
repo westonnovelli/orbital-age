@@ -7,8 +7,9 @@ import { enabledBodies, loadCatalog, normalizedBody } from "./catalog.mjs";
 import { encodeBinaryChunk } from "../../src/ephemeris/binary-chunk.js";
 
 const cwd = process.cwd();
-const v1Dir = path.resolve(cwd, process.env.EPHEMERIS_V1_DATA_DIR ?? "data/ephemeris/v1");
 const v2Dir = path.resolve(cwd, process.env.EPHEMERIS_V2_DATA_DIR ?? "data/ephemeris/v2");
+const sourcePath = path.resolve(cwd, process.env.EPHEMERIS_V2_SOURCE ?? path.join(v2Dir, "source.json"));
+const primaryRawDir = path.resolve(cwd, process.env.EPHEMERIS_PRIMARY_RAW_DIR ?? path.join(v2Dir, "raw-horizons-primary"));
 const outIndexPath = path.resolve(cwd, process.env.EPHEMERIS_V2_OUTPUT_MODULE ?? "src/ephemeris/generated-v2-index.js");
 
 const DAY_SECONDS = 86400;
@@ -179,36 +180,55 @@ function encodeBinaryGzipChunk({ chunk, targets, header, config }) {
   };
 }
 
-async function readVectors({ header, targetKeys }) {
-  const snapshotsPath = path.join(v1Dir, "snapshots.ndjson");
+function parseHorizonsRows(result, target) {
+  const start = result.indexOf("$$SOE");
+  const end = result.indexOf("$$EOE");
+  if (start === -1 || end === -1 || end <= start) {
+    throw new Error(`Horizons payload for ${target.key} has no vector section.`);
+  }
+  return result.slice(start + 5, end).trim().split(/\r?\n/).filter(Boolean).map((line) => {
+    const columns = line.split(",").map((value) => value.trim());
+    const julianDay = Number(columns[0]);
+    const values = columns.slice(2).map(Number).filter(Number.isFinite);
+    if (!Number.isFinite(julianDay) || values.length < 3) {
+      throw new Error(`Invalid Horizons vector row for ${target.key}.`);
+    }
+    const epochUnixS = Math.round((julianDay - 2440587.5) * DAY_SECONDS);
+    return { epochUnixS, epochUtc: new Date(epochUnixS * 1000).toISOString().replace(".000Z", "Z"), values: values.slice(0, 3) };
+  });
+}
+
+async function readVectors({ source, targetKeys, auxiliaryKeys }) {
   const auxiliarySnapshotsPath = path.join(v2Dir, "auxiliary-snapshots.ndjson");
-  const targetByNaifId = new Map(header.targets.map((target) => [target.naifId, target]));
   const selectedKeys = new Set(targetKeys);
   const vectorsByKey = new Map([...selectedKeys].map((key) => [key, []]));
   const coverageStartByKey = new Map();
   const epochs = [];
-  let currentEpoch = null;
-
-  const lineReader = readline.createInterface({
-    input: fs.createReadStream(snapshotsPath, { encoding: "utf8" }),
-    crlfDelay: Infinity
-  });
-
-  for await (const line of lineReader) {
-    if (!line.trim()) {
-      continue;
+  const primaryTargets = source.targets.filter((target) => target.synthetic !== "origin");
+  for (const target of primaryTargets) {
+    const rawPath = path.join(primaryRawDir, `${target.naifId}.json`);
+    if (!fs.existsSync(rawPath)) throw new Error(`Missing primary Horizons payload: ${rawPath}`);
+    const payload = readJson(rawPath);
+    const rows = parseHorizonsRows(payload.result, target);
+    if (epochs.length === 0) epochs.push(...rows.map((row) => row.epochUnixS));
+    const coverageStartUtc = target.coverageStartUtc ?? source.window.startUtc;
+    const firstIndex = epochs.findIndex((epoch) => epoch * 1000 >= Date.parse(coverageStartUtc));
+    if (firstIndex < 0 || rows.length !== epochs.length - firstIndex) {
+      throw new Error(`Primary payload coverage mismatch for ${target.key}.`);
     }
-    const row = JSON.parse(line);
-    if (row.epochUnixS !== currentEpoch) {
-      currentEpoch = row.epochUnixS;
-      epochs.push(row.epochUnixS);
+    for (let index = 0; index < rows.length; index += 1) {
+      if (rows[index].epochUnixS !== epochs[firstIndex + index]) {
+        throw new Error(`Primary payload epoch mismatch for ${target.key} at sample ${index}.`);
+      }
     }
-    const target = targetByNaifId.get(row.naifId);
-    if (!target || !selectedKeys.has(target.key)) {
-      continue;
+    if (selectedKeys.has(target.key)) {
+      vectorsByKey.set(target.key, rows.flatMap((row) => row.values));
+      coverageStartByKey.set(target.key, rows[0].epochUtc);
     }
-    vectorsByKey.get(target.key).push(row.xAu, row.yAu, row.zAu);
-    coverageStartByKey.set(target.key, coverageStartByKey.get(target.key) ?? row.epochUtc);
+  }
+  for (const target of source.targets.filter((candidate) => candidate.synthetic === "origin" && selectedKeys.has(candidate.key))) {
+    vectorsByKey.set(target.key, new Array(epochs.length * 3).fill(0));
+    coverageStartByKey.set(target.key, source.window.startUtc);
   }
 
   if (fs.existsSync(auxiliarySnapshotsPath)) {
@@ -222,7 +242,7 @@ async function readVectors({ header, targetKeys }) {
         continue;
       }
       const row = JSON.parse(line);
-      if (!selectedKeys.has(row.body)) {
+      if (!auxiliaryKeys.has(row.body)) {
         continue;
       }
       vectorsByKey.get(row.body).push(row.xAu, row.yAu, row.zAu);
@@ -273,7 +293,7 @@ async function main() {
       }
     }
   };
-  const header = readJson(path.join(v1Dir, "header.json"));
+  const source = readJson(sourcePath);
   const formatConfig = config.formats[config.encoder];
   const encoder = ENCODERS[config.encoder];
   if (!encoder || !formatConfig) {
@@ -281,29 +301,33 @@ async function main() {
   }
 
   const catalogTargetsBase = enabledBodies(catalog).map(normalizedBody);
-  const v1TargetsByKey = new Map(header.targets.map((target) => [target.key, target]));
+  const sourceTargetsByKey = new Map(source.targets.map((target) => [target.key, target]));
   const catalogTargets = catalogTargetsBase.map((target) => ({
     ...target,
-    ...(v1TargetsByKey.get(target.key)?.coverageStartUtc
-      ? { coverageStartUtc: v1TargetsByKey.get(target.key).coverageStartUtc }
+    ...(sourceTargetsByKey.get(target.key)?.coverageStartUtc
+      ? { coverageStartUtc: sourceTargetsByKey.get(target.key).coverageStartUtc }
       : {})
   }));
   const primaryTargets = catalogTargets.filter((target) => target.stream === "primary");
   const auxiliaryTargets = catalogTargets.filter((target) => target.stream === "auxiliary");
   for (const target of primaryTargets) {
-    if (!v1TargetsByKey.has(target.key)) {
-      throw new Error(`Primary catalog body ${target.key} is absent from the canonical v1 dataset. Run data:ephemeris:refresh.`);
+    if (!sourceTargetsByKey.has(target.key)) {
+      throw new Error(`Primary catalog body ${target.key} is absent from the v2 source contract. Run data:ephemeris:refresh.`);
     }
   }
 
   const allKeys = [...new Set([...primaryTargets, ...auxiliaryTargets].map((target) => target.key))];
-  const { epochs, vectorsByKey, coverageStartByKey } = await readVectors({ header, targetKeys: allKeys });
-  // Auxiliary bodies are not listed in the canonical v1 header, so their
-  // coverage cannot be copied from header.targets. Derive and publish their
+  const { epochs, vectorsByKey, coverageStartByKey } = await readVectors({
+    source,
+    targetKeys: allKeys,
+    auxiliaryKeys: new Set(auxiliaryTargets.map((target) => target.key))
+  });
+  // Auxiliary bodies are not listed in the primary source contract, so their
+  // coverage cannot be copied from source metadata. Derive and publish their
   // first real sample from the auxiliary snapshot stream instead.
   for (const target of catalogTargets) {
     const coverageStart = coverageStartByKey.get(target.key);
-    if (coverageStart && Date.parse(coverageStart) > Date.parse(header.window.startUtc)) {
+    if (coverageStart && Date.parse(coverageStart) > Date.parse(source.window.startUtc)) {
       target.coverageStartUtc = coverageStart;
     }
   }
@@ -332,9 +356,9 @@ async function main() {
         vectorsByKey,
         coverageStartByKey,
         config,
-        datasetEndUtc: header.window.endUtc
+        datasetEndUtc: source.window.endUtc
       })) {
-      const encoded = encoder({ chunk: planned, targets, header, formatConfig, config });
+      const encoded = encoder({ chunk: planned, targets, header: source, formatConfig, config });
       const relativePath = `chunks/${stream}/${group}/${planned.id}${encoded.extension}`;
       const outPath = path.join(v2Dir, relativePath);
       fs.mkdirSync(path.dirname(outPath), { recursive: true });
@@ -377,18 +401,18 @@ async function main() {
     },
     source: {
       provider: catalog.ephemeris.provider,
-      kernel: catalog.ephemeris.kernel,
-      retrievedOn: header.ephemerisSource.retrievedOn,
-      canonicalDataset: "data/ephemeris/v1"
+      kernel: source.ephemerisSource.kernel,
+      retrievedOn: source.ephemerisSource.retrievedOn,
+      canonicalDataset: "data/ephemeris/v2/source.json"
     },
     frame: catalog.ephemeris.frame,
     origin: catalog.ephemeris.origin,
     units: catalog.ephemeris.units,
     cadence: {
-      step: header.cadence.step,
+      step: source.cadence.step,
       stepSeconds: DAY_SECONDS
     },
-    window: header.window,
+    window: source.window,
     datasets: Object.fromEntries(Object.entries(config.datasets).map(([key, dataset]) => [key, {
       ...dataset,
       bodyKeys: catalogTargets.filter((body) => body.dataset === key).map((body) => body.key)

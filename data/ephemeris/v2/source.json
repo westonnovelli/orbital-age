@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "ephemeris.source.v2",
   "ephemerisSource": {
     "provider": "JPL NAIF / JPL Horizons",
     "kernel": "de442s.bsp",
@@ -18,12 +18,14 @@
   },
   "cadence": {
     "step": "P1D",
+    "stepSeconds": 86400,
     "samplesPerBody": 94965
   },
   "targets": [
     {
       "key": "sun",
-      "naifId": 10
+      "naifId": 10,
+      "synthetic": "origin"
     },
     {
       "key": "mercury",
@@ -68,9 +70,5 @@
       "naifId": 301,
       "relativeTo": 399
     }
-  ],
-  "ordering": {
-    "primary": "epochUnixS",
-    "secondary": "naifId"
-  }
+  ]
 }

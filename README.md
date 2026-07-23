@@ -50,10 +50,10 @@ Automated reference checks run in `npm test` via `test/positional-fidelity.test.
 
 ## Ephemeris Data Provenance and Regeneration
 
-Canonical dataset and source metadata live in `data/ephemeris/v1`.
+Canonical source metadata and runtime artifacts live in `data/ephemeris/v2`.
 
 - Provenance and contributor workflow: `docs/obj-096-data-provenance-and-regeneration.md`
-- Dataset-level README: `data/ephemeris/v1/README.md`
+- Source contract: `data/ephemeris/v2/source.json`
 
 Regeneration commands:
 
@@ -61,16 +61,15 @@ Regeneration commands:
 npm run data:ephemeris:refresh -- --fetch --yes
 npm run data:ephemeris:rebuild
 npm run data:ephemeris:verify
-npm run data:ephemeris:refresh:auxiliary:v2 -- --fetch --yes
-npm run data:ephemeris:rebuild:v2
-npm run data:ephemeris:verify:v2
+npm run data:ephemeris:refresh:auxiliary -- --fetch --yes
+npm run data:ephemeris:preflight
+npm run data:ephemeris:check-size
 ```
 
-`data/bodies.yaml` is the canonical body catalog. `data/ephemeris/v2` is its
-generated, loader-facing runtime contract: it records supported bodies,
-capabilities, coordinate/time constraints, dataset load policies, chunks, and
-integrity metadata. The builder packages canonical v1 rows according to the
-catalog's dataset hot windows, byte budgets, and output format.
+`data/bodies.yaml` is the canonical body catalog. `data/ephemeris/v2/source.json`
+defines primary source coverage and provenance; sharded primary Horizons payloads
+are stored in `raw-horizons-primary/`. The builder packages those payloads using
+the catalog's dataset hot windows, byte budgets, and output format.
 
 The precise body availability and capability contract, including the
 top-level `enabled` kill switch, is documented in
