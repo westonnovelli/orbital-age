@@ -234,6 +234,27 @@ test("setTrackBodyKey centers on the body without altering camera zoom", () => {
   assert.equal(camera.zoomCalls.length, 0);
 });
 
+test("setTrackBodyKey refreshes positions without recomputing distances", () => {
+  const earthMarker = markerStub();
+  const camera = cameraStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    bodies: [{ key: "earth", marker: earthMarker, trail: null }],
+    camera,
+    trackBodyKey: null
+  });
+
+  controller.init();
+  const distanceBefore = controller.getState().bodyTraveledKm.get("earth");
+
+  controller.render({ deltaSeconds: 0.5 });
+  controller.setTrackBodyKey("earth");
+
+  assert.ok(earthMarker.positions.length >= 3);
+  assert.equal(controller.getState().bodyTraveledKm.get("earth"), distanceBefore);
+});
+
 test("timeline controller supports stepping and normalized scrubbing with bounds", () => {
   const marker = markerStub();
   const controller = new TimelineControllerEntity({

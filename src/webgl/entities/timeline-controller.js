@@ -307,7 +307,7 @@ export class TimelineControllerEntity {
       if (!this.trackBodyKey) {
         this.camera.setCenter(0, 0);
       }
-      this.#applyToBodies();
+      this.#applyToBodies({ updateDistances: false });
     }
   }
 
@@ -329,15 +329,15 @@ export class TimelineControllerEntity {
       }
     }
     if (changed) {
-      this.#applyToBodies();
+      this.#applyToBodies({ updateDistances: false });
     }
   }
 
   // Re-resolve all bodies for the current instant and camera. Call after a camera
   // change (e.g. zoom) so marker positions, the rosette trail scale, and tracking
   // update immediately even while playback is paused.
-  refresh() {
-    this.#applyToBodies();
+  refresh({ updateDistances = false } = {}) {
+    this.#applyToBodies({ updateDistances });
   }
 
   #applyToBodies({ updateDistances = true } = {}) {
