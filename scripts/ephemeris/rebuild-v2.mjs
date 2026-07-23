@@ -153,6 +153,7 @@ function encodeJsonBase64Chunk({ chunk, targets, header, formatConfig }) {
 
 async function readVectors({ header, targetKeys }) {
   const snapshotsPath = path.join(v1Dir, "snapshots.ndjson");
+  const auxiliarySnapshotsPath = path.join(v2Dir, "auxiliary-snapshots.ndjson");
   const targetByNaifId = new Map(header.targets.map((target) => [target.naifId, target]));
   const selectedKeys = new Set(targetKeys);
   const vectorsByKey = new Map([...selectedKeys].map((key) => [key, []]));
@@ -178,6 +179,35 @@ async function readVectors({ header, targetKeys }) {
       continue;
     }
     vectorsByKey.get(target.key).push(row.xAu, row.yAu, row.zAu);
+  }
+
+  if (fs.existsSync(auxiliarySnapshotsPath)) {
+    const auxiliaryLineReader = readline.createInterface({
+      input: fs.createReadStream(auxiliarySnapshotsPath, { encoding: "utf8" }),
+      crlfDelay: Infinity
+    });
+
+    for await (const line of auxiliaryLineReader) {
+      if (!line.trim()) {
+        continue;
+      }
+      const row = JSON.parse(line);
+      if (!selectedKeys.has(row.body)) {
+        continue;
+      }
+      vectorsByKey.get(row.body).push(row.xAu, row.yAu, row.zAu);
+    }
+  }
+
+  for (const key of selectedKeys) {
+    const expectedLength = epochs.length * 3;
+    const actualLength = vectorsByKey.get(key).length;
+    if (actualLength !== expectedLength) {
+      throw new Error(
+        `Vector length mismatch for ${key}: expected ${expectedLength}, got ${actualLength}. ` +
+          "Run the matching refresh script for this stream."
+      );
+    }
   }
 
   return { epochs, vectorsByKey };

@@ -8,6 +8,7 @@
     "data:ephemeris:refresh": "node scripts/ephemeris/refresh-v1.mjs",
     "data:ephemeris:rebuild": "node scripts/ephemeris/rebuild-v1.mjs",
     "data:ephemeris:verify": "node scripts/ephemeris/verify-v1.mjs",
+    "data:ephemeris:refresh:auxiliary:v2": "node scripts/ephemeris/refresh-auxiliary-v2.mjs",
     "data:ephemeris:rebuild:v2": "node scripts/ephemeris/rebuild-v2.mjs",
     "data:ephemeris:verify:v2": "node scripts/ephemeris/verify-v2.mjs"
   }

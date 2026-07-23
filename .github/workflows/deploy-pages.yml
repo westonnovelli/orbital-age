@@ -42,8 +42,9 @@ jobs:
           mkdir -p _site
           cp index.html _site/
           cp -R src _site/src
-          mkdir -p _site/data/ephemeris
-          cp -R data/ephemeris/v2 _site/data/ephemeris/v2
+          mkdir -p _site/data/ephemeris/v2
+          cp data/ephemeris/v2/manifest.json _site/data/ephemeris/v2/
+          cp -R data/ephemeris/v2/chunks _site/data/ephemeris/v2/chunks
           cp orbital-drift.mp3 _site/
           if [ -f CNAME ]; then cp CNAME _site/; fi
           if [ -f favicon.ico ]; then cp favicon.ico _site/; fi

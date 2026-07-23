@@ -3,6 +3,7 @@ import {
   SUPPORTED_DATE_RANGE,
   ensureEphemerisLoaded,
   ephemerisBootPromise,
+  getBodyRegistry,
   normalizeToUtcMidnight,
   parseIsoDateUtc,
   planEphemerisLoad
@@ -22,6 +23,7 @@ import { orbitsCompleted, currentAge, distanceTraveledKm } from "./stats.js";
 
 const DEFAULT_SPEED_DAYS_PER_SECOND = 120;
 const PRIMARY_EPHEMERIS_STREAM = "primary";
+const AUXILIARY_EPHEMERIS_STREAM = "auxiliary";
 
 // Declarative registry of rendered bodies. Each entry builds one marker and,
 // when `trail` is provided, one orbital trail. Earth's color reproduces the
@@ -185,6 +187,31 @@ const RENDERED_BODIES = [
     orbitRadiusAu: 1.02
   }
 ];
+
+const AUXILIARY_RENDERED_BODIES = [
+  { key: "ceres", color: [0.72, 0.66, 0.58], size: 0.026, orbitRadiusAu: 2.98, hueStart: 0.09 },
+  { key: "pallas", color: [0.66, 0.68, 0.72], size: 0.02, orbitRadiusAu: 3.41, hueStart: 0.18 },
+  { key: "vesta", color: [0.88, 0.78, 0.62], size: 0.022, orbitRadiusAu: 2.57, hueStart: 0.12 },
+  { key: "hygiea", color: [0.58, 0.62, 0.64], size: 0.018, orbitRadiusAu: 3.51, hueStart: 0.2 },
+  { key: "psyche", color: [0.78, 0.58, 0.46], size: 0.018, orbitRadiusAu: 3.33, hueStart: 0.04 },
+  { key: "eros", color: [0.95, 0.52, 0.36], size: 0.016, orbitRadiusAu: 1.78, hueStart: 0.01 },
+  { key: "bennu", color: [0.72, 0.72, 0.68], size: 0.014, orbitRadiusAu: 1.36, hueStart: 0.64 },
+  { key: "ryugu", color: [0.56, 0.6, 0.58], size: 0.014, orbitRadiusAu: 1.42, hueStart: 0.42 },
+  { key: "apophis", color: [1.0, 0.48, 0.34], size: 0.016, orbitRadiusAu: 1.1, hueStart: 0.0 },
+  { key: "halley", color: [0.62, 0.92, 1.0], size: 0.02, orbitRadiusAu: 35.1, hueStart: 0.52 },
+  { key: "67p", color: [0.64, 0.82, 0.9], size: 0.017, orbitRadiusAu: 5.68, hueStart: 0.56 },
+  { key: "eris", color: [0.78, 0.84, 0.96], size: 0.026, orbitRadiusAu: 97.5, hueStart: 0.68 },
+  { key: "makemake", color: [0.86, 0.72, 0.62], size: 0.024, orbitRadiusAu: 53.1, hueStart: 0.08 }
+].map((config) => ({
+  ...config,
+  stream: AUXILIARY_EPHEMERIS_STREAM,
+  trail: {
+    ...BASE_TRAIL,
+    color: [...config.color, 0.045],
+    hueStart: config.hueStart,
+    visible: false
+  }
+}));
 
 // Physically-accurate body radii in AU (equatorial radius km ÷ 149,597,870.7),
 // keyed by body. Used only by "True scale" mode, which swaps each marker's
@@ -666,6 +693,9 @@ export class OrbitalApp {
     this.renderer = new WebGLRenderer(canvas, { camera: this.camera });
     this.timelineController = null;
     this.deepTimeLoader = null;
+    this.scene = null;
+    this.activeBodyConfigs = [...RENDERED_BODIES];
+    this.auxiliaryBodiesAttached = false;
   }
 
   initialize() {
@@ -704,6 +734,8 @@ export class OrbitalApp {
     }
 
     this.validationMessage.textContent = "";
+    this.activeBodyConfigs = [...RENDERED_BODIES];
+    this.auxiliaryBodiesAttached = false;
 
     const todayUtc = normalizeToUtcMidnight(new Date());
     const datasetMaxUtc = parseIsoDateUtc(SUPPORTED_DATE_RANGE.max);
@@ -739,7 +771,7 @@ export class OrbitalApp {
     const trails = [];
     this.bodyTrails = new Map();
     this.bodyMarkers = new Map();
-    for (const config of RENDERED_BODIES) {
+    for (const config of this.activeBodyConfigs) {
       const marker = new BodyMarkerEntity({
         radiusX: BODY_RADIUS_X,
         radiusY: BODY_RADIUS_Y,
@@ -826,6 +858,7 @@ export class OrbitalApp {
     }
 
     this.renderer.setScene(scene);
+    this.scene = scene;
     this.renderer.start();
 
     // The intro tween opens framed on the inner planets (no active preset, no
@@ -856,6 +889,91 @@ export class OrbitalApp {
     // The looping score starts on the first journey and keeps playing across
     // subsequent re-renders (this no-ops once started).
     this.#startAudio();
+    this.#loadAuxiliaryBodies(validation.date, maxTimelineDate);
+  }
+
+  async #loadAuxiliaryBodies(birthday, maxTimelineDate) {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const bodyRegistry = getBodyRegistry();
+    const auxiliaryConfigs = AUXILIARY_RENDERED_BODIES.filter((config) => bodyRegistry[config.key]);
+    if (auxiliaryConfigs.length === 0 || this.auxiliaryBodiesAttached) {
+      return;
+    }
+
+    try {
+      await ensureEphemerisLoaded({
+        startUtc: birthday,
+        endUtc: maxTimelineDate,
+        streams: [AUXILIARY_EPHEMERIS_STREAM],
+        bodyKeys: auxiliaryConfigs.map((config) => config.key),
+        priority: "background"
+      });
+    } catch (error) {
+      console.warn("Could not load auxiliary ephemeris bodies.", error);
+      return;
+    }
+
+    if (!this.timelineController || !this.scene) {
+      return;
+    }
+    this.#attachAuxiliaryBodies(auxiliaryConfigs);
+  }
+
+  #attachAuxiliaryBodies(configs) {
+    if (this.auxiliaryBodiesAttached || configs.length === 0) {
+      return;
+    }
+
+    const bodies = [];
+    const trails = [];
+    for (const config of configs) {
+      const marker = new BodyMarkerEntity({
+        radiusX: BODY_RADIUS_X,
+        radiusY: BODY_RADIUS_Y,
+        color: config.color,
+        size: config.size
+      });
+      this.bodyMarkers.set(config.key, marker);
+
+      let trail = null;
+      if (config.trail) {
+        const orbitCircumference = 2 * Math.PI * (config.orbitRadiusAu ?? 1) * BODY_RADIUS_X;
+        trail = new OrbitalTrailEntity({
+          radiusX: BODY_RADIUS_X,
+          radiusY: BODY_RADIUS_Y,
+          huePeriodLength: orbitCircumference / HUE_CYCLES_PER_ORBIT,
+          ...config.trail
+        });
+        trails.push(trail);
+        this.bodyTrails.set(config.key, trail);
+      }
+
+      bodies.push({
+        key: config.key,
+        marker,
+        trail,
+        parent: config.parent ?? null,
+        relativeScale: config.relativeScale
+      });
+    }
+
+    for (const trail of trails) {
+      this.scene.add(trail);
+    }
+    for (const body of bodies) {
+      this.scene.add(body.marker);
+    }
+    this.timelineController.addBodies(bodies);
+    this.activeBodyConfigs = [...this.activeBodyConfigs, ...configs];
+    this.auxiliaryBodiesAttached = true;
+    this.#buildBodiesPanel();
+    this.#buildBodyLabels();
+    this.#syncMasterTrailToggle();
+    this.#applyTrueScale(this.trueScale);
+    this.#updateBodyLabels();
   }
 
   #showDeepTimeLoader(birthday, loadPlan) {
@@ -950,7 +1068,7 @@ export class OrbitalApp {
     // they can be nested beneath the parent row rather than listed at top level.
     // This sets the precedent for future sub-bodies (moons, probes, etc.).
     const childrenByParent = new Map();
-    for (const config of RENDERED_BODIES) {
+    for (const config of this.activeBodyConfigs) {
       if (config.parent) {
         const siblings = childrenByParent.get(config.parent) ?? [];
         siblings.push(config);
@@ -959,7 +1077,7 @@ export class OrbitalApp {
     }
 
     const placedChildKeys = new Set();
-    for (const config of RENDERED_BODIES) {
+    for (const config of this.activeBodyConfigs) {
       if (config.parent) {
         continue;
       }
@@ -981,7 +1099,7 @@ export class OrbitalApp {
 
     // Safety net: surface any sub-body whose parent isn't a top-level row at the
     // root so it never silently disappears.
-    for (const config of RENDERED_BODIES) {
+    for (const config of this.activeBodyConfigs) {
       if (config.parent && !placedChildKeys.has(config.key)) {
         this.bodiesList.append(this.#createBodyRow(doc, config));
       }
@@ -1003,7 +1121,7 @@ export class OrbitalApp {
 
     const name = doc.createElement("span");
     name.className = "bodies__name";
-    name.textContent = formatBodyName(config.key);
+    name.textContent = this.#bodyDisplayName(config.key);
 
     // Distance reads as a subtitle on its own line beneath the name (see CSS
     // grid). Keeping it out of the controls' row means its changing width can
@@ -1022,13 +1140,13 @@ export class OrbitalApp {
       const trail = this.bodyTrails.get(config.key);
       const trailLabel = doc.createElement("label");
       trailLabel.className = "bodies__trail";
-      trailLabel.title = `Show ${formatBodyName(config.key)} trail`;
+      trailLabel.title = `Show ${this.#bodyDisplayName(config.key)} trail`;
 
       const toggle = doc.createElement("input");
       toggle.type = "checkbox";
       toggle.className = "bodies__trail-toggle";
       toggle.checked = trail.visible !== false;
-      toggle.setAttribute("aria-label", `Show ${formatBodyName(config.key)} trail`);
+      toggle.setAttribute("aria-label", `Show ${this.#bodyDisplayName(config.key)} trail`);
       toggle.dataset.key = config.key;
       toggle.addEventListener("change", () => {
         trail.setVisible(toggle.checked);
@@ -1055,8 +1173,8 @@ export class OrbitalApp {
     // the word "Follow" down every row. The accessible name carries the intent.
     follow.innerHTML = RETICLE_ICON_SVG;
     follow.dataset.key = config.key;
-    follow.title = `Follow ${formatBodyName(config.key)}`;
-    follow.setAttribute("aria-label", `Follow ${formatBodyName(config.key)}`);
+    follow.title = `Follow ${this.#bodyDisplayName(config.key)}`;
+    follow.setAttribute("aria-label", `Follow ${this.#bodyDisplayName(config.key)}`);
     follow.addEventListener("click", () => {
       this.timelineController?.setTrackBodyKey(config.key);
       this.#updateMechanicsPanel();
@@ -1083,14 +1201,14 @@ export class OrbitalApp {
   #applyTrueScale(enabled) {
     this.trueScale = Boolean(enabled);
     for (const [key, marker] of this.bodyMarkers) {
-      const config = RENDERED_BODIES.find((body) => body.key === key);
+      const config = this.#bodyConfig(key);
       const trueSize = TRUE_RADIUS_AU[key];
       marker.setSize(this.trueScale && Number.isFinite(trueSize) ? trueSize : config?.size);
     }
     this.sunEntity?.setSize(this.trueScale ? TRUE_RADIUS_AU.sun : SUN_DISPLAY_SIZE);
     // Re-resolve each parented body's separation (the Moon): True scale collapses
     // it to ×1, otherwise it stays at the dramatized registry value.
-    for (const config of RENDERED_BODIES) {
+    for (const config of this.activeBodyConfigs) {
       if (config.parent && Number.isFinite(config.relativeScale)) {
         this.#resolveBodyScale(config.key);
       }
@@ -1114,10 +1232,18 @@ export class OrbitalApp {
     this.#updateMechanicsPanel();
   }
 
+  #bodyConfig(key) {
+    return this.activeBodyConfigs.find((body) => body.key === key);
+  }
+
+  #bodyDisplayName(key) {
+    return this.#bodyConfig(key)?.label ?? formatBodyName(key);
+  }
+
   // Single source of truth for a parented body's effective relativeScale: True
   // scale forces ×1; otherwise the dramatized registry value (~40×) is used.
   #resolveBodyScale(key) {
-    const config = RENDERED_BODIES.find((body) => body.key === key);
+    const config = this.#bodyConfig(key);
     if (!config || !config.parent || !Number.isFinite(config.relativeScale)) {
       return;
     }
@@ -1149,11 +1275,11 @@ export class OrbitalApp {
       return;
     }
 
-    for (const config of RENDERED_BODIES) {
+    for (const config of this.activeBodyConfigs) {
       const label = doc.createElement("span");
       label.className = "scene-label";
       label.dataset.key = config.key;
-      label.textContent = formatBodyName(config.key);
+      label.textContent = this.#bodyDisplayName(config.key);
       label.setAttribute("aria-hidden", "true");
       this.labelsOverlay.append(label);
       this.bodyLabels.set(config.key, label);
@@ -1826,7 +1952,7 @@ export class OrbitalApp {
     const mechanics = trackedKey ? BODY_MECHANICS[trackedKey] : null;
 
     if (this.telemetrySubject) {
-      this.telemetrySubject.textContent = trackedKey ? formatBodyName(trackedKey) : SUN_MECHANICS.name;
+      this.telemetrySubject.textContent = trackedKey ? this.#bodyDisplayName(trackedKey) : SUN_MECHANICS.name;
     }
     if (this.telemetryBody) {
       this.telemetryBody.textContent = mechanics ? mechanics.body : SUN_MECHANICS.body;

@@ -42,6 +42,18 @@ test("v2 primary stream has a recent hot chunk and historical chunks", () => {
   ]);
 });
 
+test("v2 auxiliary stream has named bodies and lazy chunks", () => {
+  const manifest = readJson("manifest.json");
+  const auxiliaryChunks = manifest.chunks.filter((chunk) => chunk.stream === "auxiliary");
+
+  assert.ok(auxiliaryChunks.some((chunk) => chunk.kind === "recent"));
+  assert.ok(auxiliaryChunks.some((chunk) => chunk.kind === "historical"));
+  assert.ok(manifest.streams.auxiliary.bodyKeys.includes("ceres"));
+  assert.ok(manifest.streams.auxiliary.bodyKeys.includes("halley"));
+  assert.equal(manifest.bodies.ceres.hasLabel, true);
+  assert.equal(manifest.bodies.ceres.hasTrail, true);
+});
+
 test("v2 chunk byte and hash metadata matches files", () => {
   const manifest = readJson("manifest.json");
 

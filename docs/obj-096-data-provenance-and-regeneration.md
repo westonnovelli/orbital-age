@@ -115,6 +115,7 @@ What `data:ephemeris:rebuild` regenerates:
 Chunked runtime artifacts are generated separately:
 
 ```bash
+npm run data:ephemeris:refresh:auxiliary:v2 -- --fetch --yes
 npm run data:ephemeris:rebuild:v2
 npm run data:ephemeris:verify:v2
 ```
@@ -130,6 +131,12 @@ The v2 builder reads the canonical v1 rows, then applies
 windows, and encoder settings. The initial encoder is `json-base64`; future
 binary/compressed formats should be added behind the same manifest and decoder
 interfaces rather than changing app code directly.
+
+Auxiliary bodies are fetched from Horizons using
+`data/ephemeris/v2/auxiliary-targets.json`. Raw auxiliary responses and
+`auxiliary-snapshots.ndjson` are re-fetchable intermediates and are ignored by
+git; committed v2 runtime artifacts are the manifest, generated index, and
+chunk files.
 
 What `data:ephemeris:verify` enforces:
 

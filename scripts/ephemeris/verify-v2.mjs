@@ -21,7 +21,13 @@ for (const field of ["datasetVersion", "formatVersion", "chunkSchema", "encoder"
   assert(manifest[field] !== undefined, `manifest is missing ${field}`);
 }
 
+const chunksByStream = new Map();
+
 for (const chunk of manifest.chunks) {
+  const streamChunks = chunksByStream.get(chunk.stream) ?? [];
+  streamChunks.push(chunk);
+  chunksByStream.set(chunk.stream, streamChunks);
+
   const chunkPath = path.resolve(v2Dir, chunk.url.replace("../../data/ephemeris/v2/", ""));
   assert(fs.existsSync(chunkPath), `missing chunk file: ${chunk.url}`);
   const buffer = fs.readFileSync(chunkPath);
@@ -38,6 +44,7 @@ for (const chunk of manifest.chunks) {
 }
 
 for (const body of Object.values(manifest.bodies)) {
+  assert(chunksByStream.has(body.stream), `body ${body.key} references stream with no chunks: ${body.stream}`);
   if (body.renderClass === "beltSample") {
     assert(body.hasLabel === false, `beltSample ${body.key} must not have labels`);
     assert(body.hasTrail === false, `beltSample ${body.key} must not have trails`);

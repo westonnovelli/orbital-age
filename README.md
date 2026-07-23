@@ -60,6 +60,7 @@ Regeneration commands:
 npm run data:ephemeris:refresh -- --fetch --yes
 npm run data:ephemeris:rebuild
 npm run data:ephemeris:verify
+npm run data:ephemeris:refresh:auxiliary:v2 -- --fetch --yes
 npm run data:ephemeris:rebuild:v2
 npm run data:ephemeris:verify:v2
 ```

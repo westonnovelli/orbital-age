@@ -135,40 +135,45 @@ export class TimelineControllerEntity {
   }
 
   #precomputeTrails() {
-    const birthdayMs = this.birthdayUtc.getTime();
     for (const body of this.bodies) {
-      const trail = body.trail;
-      if (!trail || typeof trail.precomputeTrail !== "function") {
-        continue;
-      }
-
-      // Parented bodies (the Moon) trace their parent-relative rosette: the
-      // parent's position plus the Earth-relative offset scaled by `relativeScale`.
-      // The trail stores the parent position and offset separately so it can be
-      // re-scaled by the live zoom coupling each frame (see #applyToBodies), so the
-      // rosette breathes with zoom exactly like the marker. Other bodies trace
-      // their heliocentric path directly.
-      if (body.parent && typeof trail.precomputeParentedTrail === "function") {
-        const scale = body.relativeScale ?? 1;
-        // Remember the relativeScale baked into the rosette's offsets so the
-        // exaggeration toggle can re-scale the trail (without re-sampling the
-        // ephemeris) by the ratio of the live relativeScale to this baked value.
-        body.trailBakedScale = scale;
-        trail.precomputeParentedTrail(this.totalDays, (day) => {
-          const instant = new Date(birthdayMs + day * MS_PER_DAY);
-          const parent = bodyHeliocentricPositionAuAtInstant(body.parent, instant);
-          const delta = bodyEarthRelativePositionAuAtInstant(body.key, instant);
-          return { px: parent.xAu, py: parent.yAu, ox: delta.xAu * scale, oy: delta.yAu * scale };
-        });
-        continue;
-      }
-
-      trail.precomputeTrail(this.totalDays, (day) => {
-        const instant = new Date(birthdayMs + day * MS_PER_DAY);
-        const position = bodyHeliocentricPositionAuAtInstant(body.key, instant);
-        return { x: position.xAu, y: position.yAu };
-      });
+      this.#precomputeTrailForBody(body);
     }
+  }
+
+  #precomputeTrailForBody(body) {
+    const birthdayMs = this.birthdayUtc.getTime();
+    const trail = body.trail;
+    if (!trail || typeof trail.precomputeTrail !== "function") {
+      return;
+    }
+
+    if (body.parent && typeof trail.precomputeParentedTrail === "function") {
+      const scale = body.relativeScale ?? 1;
+      body.trailBakedScale = scale;
+      trail.precomputeParentedTrail(this.totalDays, (day) => {
+        const instant = new Date(birthdayMs + day * MS_PER_DAY);
+        const parent = bodyHeliocentricPositionAuAtInstant(body.parent, instant);
+        const delta = bodyEarthRelativePositionAuAtInstant(body.key, instant);
+        return { px: parent.xAu, py: parent.yAu, ox: delta.xAu * scale, oy: delta.yAu * scale };
+      });
+      return;
+    }
+
+    trail.precomputeTrail(this.totalDays, (day) => {
+      const instant = new Date(birthdayMs + day * MS_PER_DAY);
+      const position = bodyHeliocentricPositionAuAtInstant(body.key, instant);
+      return { x: position.xAu, y: position.yAu };
+    });
+  }
+
+  addBodies(bodies) {
+    const additions = normalizeBodies({ bodies });
+    for (const body of additions) {
+      this.bodies.push(body);
+      this.#precomputeTrailForBody(body);
+    }
+    this.#applyToBodies();
+    this.#emitState(true);
   }
 
   render({ deltaSeconds }) {

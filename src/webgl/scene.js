@@ -2,10 +2,14 @@ export class Scene {
   constructor() {
     this.nodes = [];
     this.isInitialized = false;
+    this.gl = null;
   }
 
   add(node) {
     this.nodes.push(node);
+    if (this.isInitialized && this.gl) {
+      node.init?.(this.gl);
+    }
     return this;
   }
 
@@ -14,6 +18,7 @@ export class Scene {
       return;
     }
 
+    this.gl = gl;
     for (const node of this.nodes) {
       node.init?.(gl);
     }
@@ -31,5 +36,6 @@ export class Scene {
       node.dispose?.(gl);
     }
     this.isInitialized = false;
+    this.gl = null;
   }
 }

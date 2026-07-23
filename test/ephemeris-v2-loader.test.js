@@ -78,3 +78,15 @@ test("unloaded auxiliary body reads throw a load-plan error", () => {
     EphemerisDataMissingError
   );
 });
+
+test("auxiliary bodies load on demand", async () => {
+  await ensureEphemerisLoaded({
+    startUtc: "2020-01-01T00:00:00Z",
+    endUtc: "2026-07-22T00:00:00Z",
+    streams: ["auxiliary"],
+    bodyKeys: ["ceres"]
+  });
+
+  const ceres = getBodyPositionAuAtInstant("ceres", "2026-01-01T00:00:00Z");
+  assert.ok(Number.isFinite(ceres.xAu));
+});
