@@ -76,6 +76,7 @@ export class TimelineControllerEntity {
     onStateChange
   }) {
     this.bodies = normalizeBodies({ bodies, earthMarker, motionTrails });
+    this.trailsPrepared = false;
     if (this.bodies.length === 0) {
       throw new Error("TimelineControllerEntity requires at least one body.");
     }
@@ -131,9 +132,32 @@ export class TimelineControllerEntity {
   }
 
   init() {
-    this.#precomputeTrails();
+    if (!this.trailsPrepared) {
+      this.#precomputeTrails();
+    }
     this.#applyToBodies();
     this.#emitState();
+  }
+
+  async prepareTrails({ signal, onProgress } = {}) {
+    const trailBodies = this.bodies.filter((body) => body.trail);
+    for (let index = 0; index < trailBodies.length; index += 1) {
+      if (signal?.aborted) throw signal.reason ?? new DOMException("Trail preparation cancelled.", "AbortError");
+      const body = trailBodies[index];
+      if (typeof body.trail.precomputeTrailAsync === "function" && !body.parent) {
+        const birthdayMs = this.birthdayUtc.getTime();
+        const coverageMs = body.availableFromUtc ? Date.parse(body.availableFromUtc) : birthdayMs;
+        const trailStartDay = (Math.max(birthdayMs, Number.isFinite(coverageMs) ? coverageMs : birthdayMs) - birthdayMs) / MS_PER_DAY;
+        await body.trail.precomputeTrailAsync(this.totalDays, (day) => {
+          const position = bodyHeliocentricPositionAuAtInstant(body.key, new Date(birthdayMs + day * MS_PER_DAY));
+          return { x: position.xAu, y: position.yAu };
+        }, trailStartDay, { signal });
+      } else {
+        this.#precomputeTrailForBody(body);
+      }
+      onProgress?.((index + 1) / trailBodies.length, body.key);
+    }
+    this.trailsPrepared = true;
   }
 
   #precomputeTrails() {
@@ -148,6 +172,9 @@ export class TimelineControllerEntity {
     if (!trail || typeof trail.precomputeTrail !== "function") {
       return;
     }
+    const coverageMs = body.availableFromUtc ? Date.parse(body.availableFromUtc) : birthdayMs;
+    const trailStartMs = Math.max(birthdayMs, Number.isFinite(coverageMs) ? coverageMs : birthdayMs);
+    const trailStartDay = (trailStartMs - birthdayMs) / MS_PER_DAY;
 
     if (body.parent && typeof trail.precomputeParentedTrail === "function") {
       const scale = body.relativeScale ?? 1;
@@ -157,7 +184,7 @@ export class TimelineControllerEntity {
         const parent = bodyHeliocentricPositionAuAtInstant(body.parent, instant);
         const delta = bodyEarthRelativePositionAuAtInstant(body.key, instant);
         return { px: parent.xAu, py: parent.yAu, ox: delta.xAu * scale, oy: delta.yAu * scale };
-      });
+      }, trailStartDay);
       return;
     }
 
@@ -165,7 +192,7 @@ export class TimelineControllerEntity {
       const instant = new Date(birthdayMs + day * MS_PER_DAY);
       const position = bodyHeliocentricPositionAuAtInstant(body.key, instant);
       return { x: position.xAu, y: position.yAu };
-    });
+    }, trailStartDay);
   }
 
   addBodies(bodies, { precomputeTrails = true } = {}) {
@@ -294,7 +321,12 @@ export class TimelineControllerEntity {
   // the ×relativeScale-exaggerated render distance. Returns NaN if the body has no
   // ephemeris path (the UI then renders "--").
   #traveledKmForBody(bodyKey, instant) {
-    const au = bodyPathLengthAuBetween(bodyKey, this.birthdayUtc, instant);
+    const body = this.bodies.find((candidate) => candidate.key === bodyKey);
+    const bodyStart = body?.availableFromUtc
+      ? new Date(Math.max(this.birthdayUtc.getTime(), Date.parse(body.availableFromUtc)))
+      : this.birthdayUtc;
+    if (instant < bodyStart) return Number.NaN;
+    const au = bodyPathLengthAuBetween(bodyKey, bodyStart, instant);
     return au == null ? Number.NaN : au * KM_PER_AU;
   }
 
@@ -352,6 +384,9 @@ export class TimelineControllerEntity {
       if (body.parent) {
         continue;
       }
+      if (this.#hideUnavailableBody(body, instant)) {
+        continue;
+      }
       const position = bodyHeliocentricPositionAuAtInstant(body.key, instant);
       body.marker.setPosition(position.xAu, position.yAu);
       body.trail?.setCursorForDay?.(this.timelineDays);
@@ -373,10 +408,10 @@ export class TimelineControllerEntity {
       if (!body.parent) {
         continue;
       }
-      const parentPos = resolved.get(body.parent);
-      if (!parentPos) {
+      if (this.#hideUnavailableBody(body, instant) || !resolved.has(body.parent)) {
         continue;
       }
+      const parentPos = resolved.get(body.parent);
       const delta = bodyEarthRelativePositionAuAtInstant(body.key, instant);
       const scale = body.relativeScale * effectiveScaleFactor;
       const x = parentPos.x + delta.xAu * scale;
@@ -409,6 +444,26 @@ export class TimelineControllerEntity {
     if (this.camera && this.trackBodyKey && trackedPosition) {
       this.camera.setCenter(trackedPosition.x, trackedPosition.y);
     }
+  }
+
+  #hideUnavailableBody(body, instant) {
+    const unavailable = body.availableFromUtc && instant.getTime() < Date.parse(body.availableFromUtc);
+    if (unavailable) {
+      if (!body.availabilityHidden) {
+        body.availabilityHidden = true;
+      }
+      body.marker.setAvailable?.(false);
+      body.trail?.setAvailable?.(false);
+      this.bodyRenderPositions.delete(body.key);
+      this.bodyTraveledKm.delete(body.key);
+      return true;
+    }
+    if (body.availabilityHidden) {
+      body.marker.setAvailable?.(true);
+      body.trail?.setAvailable?.(true);
+      body.availabilityHidden = false;
+    }
+    return false;
   }
 
   #syncPlaybackForBounds() {
@@ -449,7 +504,8 @@ function normalizeBodies({ bodies, earthMarker, motionTrails }) {
         // resolved render position using the derived Earth-relative offset.
         parent: body.parent ?? null,
         relativeScale: Number.isFinite(body.relativeScale) ? body.relativeScale : 1,
-        trackDistance: body.trackDistance !== false
+        trackDistance: body.trackDistance !== false,
+        availableFromUtc: body.availableFromUtc ?? null
       };
     });
   }

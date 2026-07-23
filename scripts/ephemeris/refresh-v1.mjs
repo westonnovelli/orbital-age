@@ -1,6 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import { pipeline } from "node:stream/promises";
 import { Readable } from "node:stream";
 import { createInterface } from "node:readline/promises";
 import { enabledBodies, loadCatalog } from "./catalog.mjs";
@@ -28,9 +27,11 @@ function parseArgs(argv) {
 
   return {
     fetch: flags.has("--fetch"),
+    incremental: flags.has("--incremental"),
     yes: flags.has("--yes"),
     printPlan: flags.has("--print-plan"),
     retrievedOn: values.get("--retrieved-on") ?? null,
+    startUtc: values.get("--start-utc") ?? null,
     endUtc: values.get("--end-utc") ?? null,
     dataDir: values.get("--data-dir") ?? process.env.EPHEMERIS_DATA_DIR ?? DEFAULT_DATA_DIR
   };
@@ -41,9 +42,32 @@ function utcDateFromIso(iso) {
 }
 
 const MS_PER_DAY = 86400000;
+const MAX_HORIZONS_DAYS_PER_REQUEST = 40000;
 
 function utcMidnightIso(date) {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())).toISOString().replace(".000Z", "Z");
+}
+
+function addUtcDays(iso, days) {
+  return new Date(Date.parse(iso) + days * MS_PER_DAY).toISOString().replace(".000Z", "Z");
+}
+
+function dateSegments(startDate, stopDate) {
+  const segments = [];
+  let cursor = new Date(`${startDate}T00:00:00Z`);
+  const end = new Date(`${stopDate}T00:00:00Z`);
+  while (cursor <= end) {
+    const segmentEnd = new Date(Math.min(
+      end.getTime(),
+      cursor.getTime() + (MAX_HORIZONS_DAYS_PER_REQUEST - 1) * MS_PER_DAY
+    ));
+    segments.push({
+      startDate: cursor.toISOString().slice(0, 10),
+      stopDate: segmentEnd.toISOString().slice(0, 10)
+    });
+    cursor = new Date(segmentEnd.getTime() + MS_PER_DAY);
+  }
+  return segments;
 }
 
 // The interpolation ceiling at runtime is endUtc - stepSeconds (see runtime.js), so
@@ -167,12 +191,57 @@ function buildSunRows(epochs, target) {
 }
 
 async function fetchRawJson(url, destination) {
-  const response = await fetch(url);
-  if (!response.ok || !response.body) {
-    throw new Error(`Horizons request failed (${response.status}) for ${url}`);
+  let lastError = null;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok || !response.body) {
+        throw new Error(`Horizons request failed (${response.status}) for ${url}`);
+      }
+      const text = await response.text();
+      fs.writeFileSync(destination, text);
+      return JSON.parse(text);
+    } catch (error) {
+      lastError = error;
+      if (attempt < 3) {
+        await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** attempt));
+      }
+    }
   }
+  throw lastError;
+}
 
-  await pipeline(Readable.fromWeb(response.body), fs.createWriteStream(destination));
+function vectorSection(resultText, target) {
+  const start = resultText.indexOf("$$SOE");
+  const end = resultText.indexOf("$$EOE");
+  if (start === -1 || end === -1 || end <= start) {
+    throw new Error(
+      `Horizons returned no vector section for ${target.key} (${target.naifId}). ` +
+      `${resultText.slice(0, 180).trim()}`
+    );
+  }
+  return resultText.slice(start + 5, end).trim();
+}
+
+function extractEarliestAvailableDate(text) {
+  const match = /prior to A\.D\.\s+(\d{4})-([A-Z]{3})-(\d{2})/i.exec(String(text));
+  if (!match) return null;
+  const months = new Map([
+    ["JAN", 0], ["FEB", 1], ["MAR", 2], ["APR", 3], ["MAY", 4], ["JUN", 5],
+    ["JUL", 6], ["AUG", 7], ["SEP", 8], ["OCT", 9], ["NOV", 10], ["DEC", 11]
+  ]);
+  const month = months.get(match[2].toUpperCase());
+  if (month === undefined) return null;
+  return new Date(Date.UTC(Number(match[1]), month, Number(match[3]))).toISOString().slice(0, 10);
+}
+
+function mergeHorizonsPayloads(payloads, target) {
+  const rows = payloads.map((payload) => vectorSection(payload.result, target)).filter(Boolean);
+  return {
+    result: `$$SOE\n${rows.join("\n")}\n$$EOE\n`,
+    signature: payloads[0]?.signature,
+    mergedSegments: payloads.length
+  };
 }
 
 async function askForConfirmation() {
@@ -218,20 +287,31 @@ async function main() {
   // Only extend the window during a live fetch. Cached-raw rebuilds (no --fetch) keep
   // the existing window so their fixed-size raw payloads still line up.
   if (options.fetch) {
+    if (options.startUtc) {
+      header.window.startUtc = utcMidnightIso(new Date(options.startUtc));
+    }
     extendWindowToEnd(header, targetEndUtcIso(options));
   }
 
-  const startDate = utcDateFromIso(header.window.startUtc);
+  const currentEndUtc = JSON.parse(fs.readFileSync(headerPath, "utf8")).window.endUtc;
+  const requestedStartUtc = options.incremental ? addUtcDays(currentEndUtc, 1) : header.window.startUtc;
+  const startDate = utcDateFromIso(requestedStartUtc);
   const stopDate = utcDateFromIso(header.window.endUtc);
+
+  if (options.incremental && Date.parse(requestedStartUtc) > Date.parse(header.window.endUtc)) {
+    console.log(`No ephemeris refresh needed; window already ends ${header.window.endUtc}.`);
+    return;
+  }
 
   const nonSunTargets = header.targets.filter((target) => target.key !== "sun");
   const sunTarget = header.targets.find((target) => target.key === "sun") ?? null;
+  const coverageStartByNaifId = new Map();
 
   const planLines = [
     "Horizons refresh plan:",
     `- data dir: ${path.relative(cwd, dataDir)}`,
     `- raw dir: ${path.relative(cwd, rawDir)}`,
-    `- window: ${startDate}..${stopDate}`,
+    `- window: ${startDate}..${stopDate}${options.incremental ? " (incremental)" : ""}`,
     "- requests:"
   ];
 
@@ -248,11 +328,31 @@ async function main() {
   if (options.fetch) {
     fs.mkdirSync(rawDir, { recursive: true });
     for (const target of nonSunTargets) {
-      const params = horizonsParams({ naifId: target.naifId, startDate, stopDate });
-      const url = buildUrl(params);
+      let effectiveStartDate = startDate;
+      let payloads = [];
+      for (let recoveryAttempt = 0; recoveryAttempt < 2; recoveryAttempt += 1) {
+        const segments = dateSegments(effectiveStartDate, stopDate);
+        payloads = [];
+        for (const segment of segments) {
+          const params = horizonsParams({ naifId: target.naifId, ...segment });
+          const url = buildUrl(params);
+          const destination = path.join(rawDir, `${target.naifId}-${segment.startDate}-${segment.stopDate}.json`);
+          const payload = await fetchRawJson(url, destination);
+          payloads.push(payload);
+          console.log(`Fetched ${target.key} ${segment.startDate}..${segment.stopDate}`);
+        }
+        const unavailablePayload = payloads.find((payload) => payload.result && !payload.result.includes("$$SOE"));
+        const earliest = unavailablePayload ? extractEarliestAvailableDate(`${unavailablePayload.result} ${unavailablePayload.error ?? ""}`) : null;
+        if (!unavailablePayload || !earliest || earliest <= effectiveStartDate) {
+          break;
+        }
+        console.log(`${target.key} unavailable before ${earliest}; retrying from its first available date.`);
+        effectiveStartDate = earliest;
+      }
       const destination = path.join(rawDir, `${target.naifId}.json`);
-      await fetchRawJson(url, destination);
-      console.log(`Fetched ${target.key} -> ${path.relative(cwd, destination)}`);
+      fs.writeFileSync(destination, `${JSON.stringify(mergeHorizonsPayloads(payloads, target), null, 2)}\n`);
+      coverageStartByNaifId.set(target.naifId, `${effectiveStartDate}T00:00:00Z`);
+      console.log(`Merged ${target.key} -> ${path.relative(cwd, destination)} (${payloads.length} segment${payloads.length === 1 ? "" : "s"})`);
     }
   }
 
@@ -277,9 +377,14 @@ async function main() {
     }
 
     const rows = parseHorizonsCsvRows(payload.result, target);
-    if (rows.length !== header.cadence.samplesPerBody) {
+    const targetCoverageStart =
+      coverageStartByNaifId.get(target.naifId) ?? target.coverageStartUtc ?? header.window.startUtc;
+    const expectedRows = options.incremental
+      ? Math.round((Date.parse(header.window.endUtc) - Date.parse(`${currentEndUtc}`)) / MS_PER_DAY)
+      : Math.round((Date.parse(header.window.endUtc) - Date.parse(targetCoverageStart)) / MS_PER_DAY) + 1;
+    if (rows.length !== expectedRows) {
       throw new Error(
-        `Row count mismatch for ${target.key} (${target.naifId}): expected ${header.cadence.samplesPerBody}, got ${rows.length}`
+        `Row count mismatch for ${target.key} (${target.naifId}): expected ${expectedRows}, got ${rows.length}`
       );
     }
 
@@ -295,9 +400,19 @@ async function main() {
       continue;
     }
 
-    for (let i = 0; i < referenceEpochs.length; i += 1) {
-      if (referenceEpochs[i] !== epochs[i]) {
-        throw new Error(`Epoch mismatch for naifId ${target.naifId} at index ${i}`);
+    const targetCoverageStart =
+      coverageStartByNaifId.get(target.naifId) ?? target.coverageStartUtc ?? header.window.startUtc;
+    const firstIndex = referenceEpochs.findIndex(
+      (epochUnixS) => epochUnixS * 1000 >= Date.parse(targetCoverageStart)
+    );
+    if (firstIndex < 0 || epochs.length !== referenceEpochs.length - firstIndex) {
+      throw new Error(
+        `Epoch range mismatch for naifId ${target.naifId}: expected ${referenceEpochs.length - Math.max(0, firstIndex)} samples, got ${epochs.length}`
+      );
+    }
+    for (let i = 0; i < epochs.length; i += 1) {
+      if (referenceEpochs[firstIndex + i] !== epochs[i]) {
+        throw new Error(`Epoch mismatch for naifId ${target.naifId} at index ${firstIndex + i}`);
       }
     }
   }
@@ -315,13 +430,43 @@ async function main() {
       sunTarget
     );
 
-    if (sunRows.length !== header.cadence.samplesPerBody) {
+    const expectedRows = options.incremental
+      ? Math.round((Date.parse(header.window.endUtc) - Date.parse(currentEndUtc)) / MS_PER_DAY)
+      : header.cadence.samplesPerBody;
+    if (sunRows.length !== expectedRows) {
       throw new Error(
-        `Row count mismatch for sun (${sunTarget.naifId}): expected ${header.cadence.samplesPerBody}, got ${sunRows.length}`
+        `Row count mismatch for sun (${sunTarget.naifId}): expected ${expectedRows}, got ${sunRows.length}`
       );
     }
 
     rowsByNaifId.set(sunTarget.naifId, sunRows);
+    coverageStartByNaifId.set(sunTarget.naifId, header.window.startUtc);
+  }
+
+  for (const target of header.targets) {
+    const coverageStartUtc = coverageStartByNaifId.get(target.naifId) ?? header.window.startUtc;
+    if (coverageStartUtc === header.window.startUtc) {
+      delete target.coverageStartUtc;
+    } else {
+      target.coverageStartUtc = coverageStartUtc;
+    }
+  }
+
+  if (options.incremental) {
+    const appendedRows = [];
+    for (let index = 0; index < referenceEpochs.length; index += 1) {
+      const epochUnixS = referenceEpochs[index];
+      for (const target of header.targets) {
+        const row = rowsByNaifId.get(target.naifId)?.[index];
+        if (row) appendedRows.push(row);
+      }
+    }
+    const serializedAppend = appendedRows.map((row) => `${JSON.stringify(row)}\n`).join("");
+    fs.appendFileSync(snapshotsPath, serializedAppend);
+    fs.writeFileSync(headerPath, `${JSON.stringify(header, null, 2)}\n`);
+    console.log(`Appended ${appendedRows.length} rows to ${path.relative(cwd, snapshotsPath)}`);
+    console.log(`Updated ${path.relative(cwd, headerPath)} through ${header.window.endUtc}`);
+    return;
   }
 
   const rowMapsByNaifId = new Map(
@@ -330,13 +475,10 @@ async function main() {
 
   const rows = [];
   for (const epochUnixS of referenceEpochs) {
-    for (const target of header.targets) {
-      const row = rowMapsByNaifId.get(target.naifId).get(epochUnixS);
-      if (!row) {
-        throw new Error(`Missing row for naifId ${target.naifId} at epoch ${epochUnixS}`);
+      for (const target of header.targets) {
+        const row = rowMapsByNaifId.get(target.naifId).get(epochUnixS);
+      if (row) rows.push(row);
       }
-      rows.push(row);
-    }
   }
 
   const serialized = rows.map((row) => `${JSON.stringify(row)}\n`).join("");

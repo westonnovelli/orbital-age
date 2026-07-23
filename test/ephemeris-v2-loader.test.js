@@ -18,7 +18,7 @@ test("v2 boot path loads primary coverage in Node", async () => {
   assert.equal(hasBodyPosition("earth", "2026-07-03T00:00:00Z"), true);
   const coverage = getLoadedCoverage({ stream: "primary", bodyKeys: ["earth"] });
   assert.ok(coverage);
-  assert.equal(coverage.startUtc, "1926-01-01T00:00:00Z");
+  assert.equal(coverage.startUtc, "1766-07-23T00:00:00Z");
 });
 
 test("older primary dates produce a deterministic load plan", () => {

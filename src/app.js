@@ -25,16 +25,25 @@ const DEFAULT_SPEED_DAYS_PER_SECOND = 120;
 const PRIMARY_EPHEMERIS_STREAM = "primary";
 const AUXILIARY_EPHEMERIS_STREAM = "auxiliary";
 
+function waitForLoaderPaint() {
+  if (typeof requestAnimationFrame === "function") {
+    return new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+  }
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 // Declarative registry of rendered bodies. Each entry builds one marker and,
 // when `trail` is provided, one orbital trail. Earth's color reproduces the
 // previous baked-in teal so its appearance is unchanged.
 //
-// Shared trail tuning: daily cadence (minDayDelta 1.0) with a 44000-sample cap
-// keeps the full lifespan within the buffer without front-splicing — so the
-// trail spans the whole timeline instead of only the most recent years. See the
-// TUNING KNOBS notes in OrbitalTrailEntity for alpha/hue behavior.
+// Shared trail tuning: daily cadence with enough capacity for the complete
+// 260-year supported lifespan. The previous 44000-sample cap discarded the
+// earliest portion of a 1766 journey, leaving no visible trail at its starting
+// cursor. See the TUNING KNOBS notes in OrbitalTrailEntity for alpha/hue behavior.
 const BASE_TRAIL = {
-  maxSamples: 44000,
+  maxSamples: 100000,
   historyDays: 0,
   minDayDelta: 1.0,
   minSampleDistance: 0,
@@ -256,8 +265,12 @@ export function manifestRenderConfigs(dataset, bodyRegistry = getBodyRegistry(),
       parent: body.parent,
       relativeScale: body.render.relativeScale,
       visible: body.capabilities.canShowByDefault,
+      availableFromUtc: body.coverageStartUtc ?? null,
       cameraFit: body.capabilities.canFitCamera,
       labelEnabled: body.capabilities.canShowLabel,
+      // Keep the primary scene readable by default: Earth's Moon is part of
+      // the initial story, while auxiliary moon labels are opt-in per body.
+      labelVisible: body.parent === undefined || body.parent === null || body.parent === "earth",
       labelOffset: body.render.label?.offset,
       followEnabled: body.capabilities.canFollow,
       distanceEnabled: body.capabilities.canShowDistance,
@@ -571,6 +584,13 @@ export class OrbitalApp {
     this.topbar = topbar;
     this.form = form;
     this.dateInput = dateInput;
+    // Keep the native date picker constraints synchronized with the generated
+    // manifest. The HTML value is a fallback for first paint; this is the
+    // authoritative runtime range after the ephemeris module is loaded.
+    if (this.dateInput) {
+      this.dateInput.min = SUPPORTED_DATE_RANGE.min;
+      this.dateInput.max = SUPPORTED_DATE_RANGE.max;
+    }
     this.validationMessage = validationMessage;
     this.webglMessage = webglMessage;
     this.canvas = canvas;
@@ -720,6 +740,8 @@ export class OrbitalApp {
     this.renderer = new WebGLRenderer(canvas, { camera: this.camera });
     this.timelineController = null;
     this.deepTimeLoader = null;
+    this.deepTimeLoaderTimer = null;
+    this.journeyAbortController = null;
     this.scene = null;
     this.activeBodyConfigs = [...manifestRenderConfigs(PRIMARY_EPHEMERIS_STREAM, getBodyRegistry(), { includeHidden: true })];
     this.auxiliaryBodiesAttached = false;
@@ -760,7 +782,15 @@ export class OrbitalApp {
     }
 
     this.validationMessage.textContent = "";
-    this.activeBodyConfigs = [...manifestRenderConfigs(PRIMARY_EPHEMERIS_STREAM, getBodyRegistry(), { includeHidden: true })];
+    this.journeyAbortController?.abort(new Error("A newer target date was submitted."));
+    this.journeyAbortController = new AbortController();
+    const journeySignal = this.journeyAbortController.signal;
+    const bodyPreferences = this.#captureBodyPreferences();
+    this.activeBodyConfigs = manifestRenderConfigs(
+      PRIMARY_EPHEMERIS_STREAM,
+      getBodyRegistry(),
+      { includeHidden: true }
+    ).map((config) => this.#restoreBodyPreferences(config, bodyPreferences));
     this.auxiliaryBodiesAttached = false;
 
     const todayUtc = normalizeToUtcMidnight(new Date());
@@ -771,33 +801,65 @@ export class OrbitalApp {
       endUtc: maxTimelineDate,
       streams: [PRIMARY_EPHEMERIS_STREAM]
     });
+    // Data may already be cached, but trail sampling, marker construction, and
+    // scene hydration still run synchronously below. Keep the cinematic loader
+    // visible for that compute phase instead of allowing a post-load freeze to
+    // appear as a hung simulation.
+    this.#showDeepTimeLoader(validation.date, loadPlan);
+    // Let the browser paint the overlay before cached-data computation begins.
+    // Without this yield, recent-date submissions can do all work in one task,
+    // making the app appear frozen even though the loader DOM was updated.
+    await waitForLoaderPaint();
+    if (journeySignal.aborted) {
+      return;
+    }
     if (!loadPlan.loaded) {
-      this.#showDeepTimeLoader(validation.date, loadPlan);
-
       try {
         await ensureEphemerisLoaded({
           startUtc: validation.date,
           endUtc: maxTimelineDate,
           streams: [PRIMARY_EPHEMERIS_STREAM],
           priority: "journey",
+          signal: journeySignal,
           onProgress: (progress) => this.#updateDeepTimeLoader(validation.date, progress)
         });
       } catch (error) {
         this.#hideDeepTimeLoader();
+        if (journeySignal.aborted) {
+          return;
+        }
         this.validationMessage.textContent =
           error instanceof Error ? error.message : "Could not load orbital telemetry.";
         return;
       }
 
-      this.#hideDeepTimeLoader();
     }
 
-    // Auxiliary bodies are rendered in the opening scene too. Load and decode
-    // them before starting the renderer so background parsing cannot interrupt
-    // the intro tween and make satellites appear halfway through the flythrough.
-    const auxiliaryConfigs = await this.#loadAuxiliaryBodies(validation.date, maxTimelineDate);
-    this.activeBodyConfigs = [...this.activeBodyConfigs, ...auxiliaryConfigs];
+    // Decode auxiliary layers before starting the renderer. Their datasets can
+    // be large enough to monopolize the main thread while binary chunks are
+    // unpacked and trails are attached, so keep the loading overlay up until
+    // all simulation inputs are ready.
+    const auxiliaryConfigs = await this.#loadAuxiliaryBodies(
+      validation.date,
+      maxTimelineDate,
+      journeySignal
+    );
+    if (journeySignal.aborted) {
+      return;
+    }
+    this.activeBodyConfigs = [
+      ...this.activeBodyConfigs,
+      ...auxiliaryConfigs.map((config) => this.#restoreBodyPreferences(config, bodyPreferences))
+    ];
     this.auxiliaryBodiesAttached = auxiliaryConfigs.length > 0;
+    this.#updateDeepTimeLoader(validation.date, {
+      loadedChunks: loadPlan.chunks.length,
+      totalChunks: loadPlan.chunks.length,
+      loadedBytes: loadPlan.totalBytes,
+      totalBytes: loadPlan.totalBytes,
+      plan: loadPlan,
+      phase: "Calibrating historical timeline"
+    });
 
     // Build one marker (+ optional trail) per registered body.
     const bodies = [];
@@ -832,6 +894,7 @@ export class OrbitalApp {
         trail,
         parent: config.parent ?? null,
         relativeScale: config.relativeScale,
+        availableFromUtc: config.availableFromUtc,
         trackDistance: config.distanceEnabled !== false
       });
     }
@@ -849,6 +912,21 @@ export class OrbitalApp {
 
     this.timelineController = timelineController;
     this.#expandAutoFitForActiveBodies();
+    await timelineController.prepareTrails({
+      signal: journeySignal,
+      onProgress: (fraction, bodyKey) => {
+        this.#updateDeepTimeLoader(validation.date, {
+          loadedChunks: Math.round(fraction * Math.max(1, bodies.filter((body) => body.trail).length)),
+          totalChunks: Math.max(1, bodies.filter((body) => body.trail).length),
+          phase: "Calibrating historical timeline",
+          chunk: { startUtc: validation.date.toISOString(), endUtc: validation.date.toISOString() },
+          bodyKey
+        });
+      }
+    });
+    if (journeySignal.aborted) {
+      return;
+    }
 
     // Opening flythrough: begin framed on the inner planets and slowly zoom out
     // to Auto-fit, settling into the Auto-fit preset when the tween completes.
@@ -922,7 +1000,34 @@ export class OrbitalApp {
     this.#startAudio();
   }
 
-  async #loadAuxiliaryBodies(birthday, maxTimelineDate) {
+  #captureBodyPreferences() {
+    const preferences = new Map();
+    for (const config of this.activeBodyConfigs ?? []) {
+      const marker = this.bodyMarkers?.get(config.key);
+      const trail = this.bodyTrails?.get(config.key);
+      preferences.set(config.key, {
+        visible: marker?.visible ?? config.visible,
+        trailVisible: trail?.visible ?? config.trail?.visible
+      });
+    }
+    return preferences;
+  }
+
+  #restoreBodyPreferences(config, preferences) {
+    const preference = preferences.get(config.key);
+    if (!preference) {
+      return config;
+    }
+    return {
+      ...config,
+      visible: preference.visible,
+      trail: config.trail
+        ? { ...config.trail, visible: preference.trailVisible }
+        : null
+    };
+  }
+
+  async #loadAuxiliaryBodies(birthday, maxTimelineDate, signal) {
     if (typeof window === "undefined") {
       return [];
     }
@@ -950,14 +1055,18 @@ export class OrbitalApp {
           streams: [AUXILIARY_EPHEMERIS_STREAM],
           bodyKeys: auxiliaryConfigs.map((config) => config.key),
           priority: "journey",
+          signal,
           onProgress: (progress) => this.#updateDeepTimeLoader(birthday, progress)
         });
       }
-    } catch (error) {
-      console.warn("Could not load auxiliary ephemeris bodies.", error);
-      this.#hideDeepTimeLoader();
-      return [];
-    }
+      } catch (error) {
+        console.warn("Could not load auxiliary ephemeris bodies.", error);
+        if (signal?.aborted) {
+          throw signal.reason ?? new DOMException("Ephemeris loading was cancelled.", "AbortError");
+        }
+        this.#hideDeepTimeLoader();
+        return [];
+      }
 
     return auxiliaryConfigs;
   }
@@ -998,6 +1107,7 @@ export class OrbitalApp {
         trail,
         parent: config.parent ?? null,
         relativeScale: config.relativeScale,
+        availableFromUtc: config.availableFromUtc,
         trackDistance: config.distanceEnabled === undefined ? false : config.distanceEnabled
       });
     }
@@ -1072,20 +1182,70 @@ export class OrbitalApp {
       bar.className = "deep-time-loader__bar";
       progress.append(bar);
 
-      copy.append(title, detail, progress);
+      const tasks = doc.createElement("div");
+      tasks.className = "deep-time-loader__tasks";
+      const taskDefinitions = [
+        ["telemetry", "Primary telemetry", "planetary vectors"],
+        ["auxiliary", "Auxiliary layers", "asteroid + satellite field"],
+        ["trails", "Orbital synthesis", "daily flight paths"]
+      ];
+      const taskNodes = new Map();
+      for (const [key, label, caption] of taskDefinitions) {
+        const task = doc.createElement("div");
+        task.className = "deep-time-loader__task";
+        task.dataset.task = key;
+        const taskHead = doc.createElement("div");
+        taskHead.className = "deep-time-loader__task-head";
+        const taskLight = doc.createElement("i");
+        taskLight.className = "deep-time-loader__task-light";
+        taskLight.setAttribute("aria-hidden", "true");
+        const taskLabel = doc.createElement("span");
+        taskLabel.textContent = label;
+        const taskStatus = doc.createElement("span");
+        taskStatus.className = "deep-time-loader__task-status";
+        taskStatus.textContent = "standby";
+        taskHead.append(taskLight, taskLabel, taskStatus);
+        const taskCaption = doc.createElement("small");
+        taskCaption.textContent = caption;
+        const taskBar = doc.createElement("span");
+        taskBar.className = "deep-time-loader__task-bar";
+        taskBar.append(doc.createElement("b"));
+        task.append(taskHead, taskCaption, taskBar);
+        tasks.append(task);
+        taskNodes.set(key, { task, status: taskStatus, bar: taskBar.firstChild });
+      }
+
+      copy.append(title, detail, progress, tasks);
       overlay.append(orbit, copy);
       this.root.append(overlay);
-      this.deepTimeLoader = { overlay, title, detail, bar };
+      this.deepTimeLoader = { overlay, title, detail, bar, taskNodes, phases: [
+        "Locating orbital reference",
+        "Decoding primary planetary vectors",
+        "Synchronizing Earth–Moon telemetry",
+        "Calibrating historical timeline",
+        "Loading asteroid layer"
+      ], phaseIndex: 0 };
     }
 
     this.root.classList.add("stage--loading-ephemeris");
     this.deepTimeLoader.overlay.classList.add("deep-time-loader--visible");
+    const stream = loadPlan.streams?.[0];
+    if (stream === AUXILIARY_EPHEMERIS_STREAM) {
+      this.#setLoaderTask("telemetry", "complete", 1);
+    }
+    this.#setLoaderTask(stream === AUXILIARY_EPHEMERIS_STREAM ? "auxiliary" : "telemetry", "active");
     this.#updateDeepTimeLoader(birthday, {
       loadedChunks: loadPlan.chunks.length - loadPlan.missingChunks.length,
       totalChunks: loadPlan.chunks.length,
       chunk: loadPlan.missingChunks[0] ?? null,
       plan: loadPlan
     });
+    clearInterval(this.deepTimeLoaderTimer);
+    this.deepTimeLoaderTimer = setInterval(() => {
+      if (!this.deepTimeLoader) return;
+      this.deepTimeLoader.phaseIndex = (this.deepTimeLoader.phaseIndex + 1) % this.deepTimeLoader.phases.length;
+      this.#updateDeepTimeLoader(birthday, { plan: loadPlan, chunk: loadPlan.missingChunks[0] ?? null });
+    }, 1800);
   }
 
   #updateDeepTimeLoader(birthday, progress) {
@@ -1097,15 +1257,55 @@ export class OrbitalApp {
     const loaded = Number(progress?.loadedChunks ?? 0);
     const total = Math.max(1, Number(progress?.totalChunks ?? 1));
     const chunk = progress?.chunk;
-    const pct = Math.max(0, Math.min(100, (loaded / total) * 100));
-    this.deepTimeLoader.title.textContent = `Retrieving ${year} orbital telemetry`;
-    this.deepTimeLoader.detail.textContent = chunk
-      ? `Decoding ${chunk.startUtc.slice(0, 10)} to ${chunk.endUtc.slice(0, 10)}`
-      : "Aligning primary ephemeris";
+    const loadedBytes = Number(progress?.loadedBytes ?? 0);
+    const totalBytes = Math.max(1, Number(progress?.totalBytes ?? progress?.plan?.totalBytes ?? 0));
+    const pct = loadedBytes > 0
+      ? Math.max(0, Math.min(100, (loadedBytes / totalBytes) * 100))
+      : Math.max(0, Math.min(100, (loaded / total) * 100));
+    const isComputePhase = String(progress?.phase ?? "").toLowerCase().includes("calibrating");
+    const taskKey = isComputePhase
+      ? "trails"
+      : progress?.chunk?.stream === AUXILIARY_EPHEMERIS_STREAM || progress?.plan?.streams?.includes(AUXILIARY_EPHEMERIS_STREAM)
+        ? "auxiliary"
+        : "telemetry";
+    if (isComputePhase) {
+      this.#setLoaderTask("telemetry", "complete", 1);
+      this.#setLoaderTask("auxiliary", "complete", 1);
+    }
+    const taskLoaded = isComputePhase ? loaded : loaded;
+    const taskTotal = isComputePhase ? total : total;
+    this.#setLoaderTask(taskKey, "active", taskLoaded / taskTotal);
+    if (isComputePhase) {
+      const computeIndex = this.deepTimeLoader.phases.indexOf("Calibrating historical timeline");
+      if (computeIndex >= 0) {
+        this.deepTimeLoader.phaseIndex = computeIndex;
+      }
+    }
+    const phase = progress?.phase && progress.phase !== "complete"
+      ? progress.phase.replaceAll("-", " ")
+      : this.deepTimeLoader.phases[this.deepTimeLoader.phaseIndex];
+    this.deepTimeLoader.title.textContent = `${this.deepTimeLoader.phases[this.deepTimeLoader.phaseIndex]} · ${year}`;
+    this.deepTimeLoader.detail.textContent = isComputePhase
+      ? "Computing orbital trails · preserving daily granularity · preparing the flight path"
+      : chunk
+        ? `${phase} · ${chunk.startUtc.slice(0, 10)} → ${chunk.endUtc.slice(0, 10)} · ${Math.round(pct)}%`
+        : "Aligning primary ephemeris";
     this.deepTimeLoader.bar.style.width = `${pct}%`;
   }
 
+  #setLoaderTask(key, state, fraction = null) {
+    const node = this.deepTimeLoader?.taskNodes?.get(key);
+    if (!node) return;
+    node.task.dataset.state = state;
+    node.status.textContent = state === "active" ? "scanning" : state;
+    if (fraction !== null && Number.isFinite(fraction)) {
+      node.bar.style.width = `${Math.max(0, Math.min(100, fraction * 100))}%`;
+    }
+  }
+
   #hideDeepTimeLoader() {
+    clearInterval(this.deepTimeLoaderTimer);
+    this.deepTimeLoaderTimer = null;
     this.root?.classList.remove("stage--loading-ephemeris");
     this.deepTimeLoader?.overlay.classList.remove("deep-time-loader--visible");
   }
@@ -1120,6 +1320,7 @@ export class OrbitalApp {
 
     this.bodyDistanceOutputs = new Map();
     this.bodyTrailToggles = new Map();
+    this.bodyLabelToggles = new Map();
     this.bodiesList.textContent = "";
     if (this.bodiesTabs) {
       this.bodiesTabs.textContent = "";
@@ -1379,7 +1580,7 @@ export class OrbitalApp {
       if (nearestRow && nearestRow !== row) {
         return;
       }
-      if (event.target?.closest?.(".bodies__trail, .bodies__follow")) {
+      if (event.target?.closest?.(".bodies__label, .bodies__trail, .bodies__follow")) {
         return;
       }
       toggleVisible();
@@ -1394,6 +1595,34 @@ export class OrbitalApp {
     if (config.distanceEnabled !== false) {
       row.append(distance);
       this.bodyDistanceOutputs.set(config.key, distance);
+    }
+
+    // Per-body label toggle. The global Labels control remains the master
+    // switch; this row control only determines whether this body's label is
+    // eligible to appear when the global layer is enabled.
+    if (config.labelEnabled !== false) {
+      const labelControl = doc.createElement("label");
+      labelControl.className = "bodies__label";
+      labelControl.title = `Show ${bodyName} label`;
+      const labelToggle = doc.createElement("input");
+      labelToggle.type = "checkbox";
+      labelToggle.className = "bodies__label-toggle";
+      labelToggle.checked = config.labelVisible !== false;
+      labelToggle.setAttribute("aria-label", `Show ${bodyName} label`);
+      labelToggle.dataset.key = config.key;
+      labelToggle.addEventListener("change", () => {
+        config.labelVisible = labelToggle.checked;
+        const sceneLabel = this.bodyLabels.get(config.key);
+        if (sceneLabel) {
+          sceneLabel.style.display = labelToggle.checked && this.labelsVisible ? "" : "none";
+        }
+      });
+      const labelText = doc.createElement("span");
+      labelText.className = "bodies__label-icon";
+      labelText.textContent = "A";
+      labelControl.append(labelToggle, labelText);
+      row.append(labelControl);
+      this.bodyLabelToggles.set(config.key, labelToggle);
     }
 
     // Per-row trail toggle. Only bodies that actually have a trail get one; it
@@ -1845,18 +2074,73 @@ export class OrbitalApp {
       if (!pos) {
         continue;
       }
-      const screen = this.#sceneToScreen(pos.x, pos.y, width, height);
+      const config = this.#bodyConfig(key);
+      const isOuterMoon = config?.parent && config.parent !== "earth";
+      const parentPos = config?.parent ? positions.get(config.parent) : null;
+      const markerScreen = this.#sceneToScreen(pos.x, pos.y, width, height);
+      const parentScreen = parentPos
+        ? this.#sceneToScreen(parentPos.x, parentPos.y, width, height)
+        : markerScreen;
+      const moonSeparationPx = Math.hypot(
+        markerScreen.x - parentScreen.x,
+        markerScreen.y - parentScreen.y
+      );
+      // Cluster labels while the moons are visually close; once the camera is
+      // close enough to separate them, let each label follow its own marker.
+      const useParentCluster = isOuterMoon && moonSeparationPx < 96;
+      // Keep outer-moon labels attached to a stable parent-centered cluster
+      // instead of the rapidly moving moon markers. This prevents labels from
+      // jittering and swapping order as the moons pass one another in orbit.
+      const screen = useParentCluster ? parentScreen : markerScreen;
       // Hide labels for bodies projected outside the viewport so off-screen
       // names don't pile up at the edges.
       const onScreen =
         screen.ndcX >= -1 && screen.ndcX <= 1 && screen.ndcY >= -1 && screen.ndcY <= 1;
-      const visible = this.bodyMarkers.get(key)?.visible !== false;
+      const visible =
+        this.bodyMarkers.get(key)?.visible !== false && config?.labelVisible !== false;
       label.style.display = onScreen && visible ? "" : "none";
       // Fold any per-body label offset (e.g. the Moon, nudged clear of Earth)
       // into the transform so the per-frame write stays transform-only.
-      const config = this.#bodyConfig(key);
       const [offsetX = 0, offsetY = 0] = config?.labelOffset ?? [];
-      const off = config?.labelOffset ? { x: offsetX, y: offsetY } : LABEL_SCREEN_OFFSETS[key] ?? { x: 0, y: 0 };
+      // The generated catalog materializes an omitted offset as [0, 0]. Treat
+      // that default as unset so parented outer moons can use the shared fan
+      // layout; non-zero offsets remain authoritative (notably Earth's Moon).
+      const hasConfiguredOffset =
+        Array.isArray(config?.labelOffset) && (offsetX !== 0 || offsetY !== 0);
+      const configuredOffset = hasConfiguredOffset
+        ? { x: offsetX, y: offsetY }
+        : LABEL_SCREEN_OFFSETS[key];
+      // Parent-relative moons need the same breathing room as Earth's Moon:
+      // their marker often overlaps the parent at the system-scale framing.
+      // Keep explicit catalog offsets authoritative, then use the shared moon
+      // nudge for all outer-planet satellites. Siblings fan horizontally so
+      // their labels remain legible when zoomed out and their markers collapse
+      // toward the parent.
+      const siblings = config?.parent
+        ? this.activeBodyConfigs.filter((candidate) => candidate.parent === config.parent)
+        : [];
+      const siblingIndex = siblings.findIndex((candidate) => candidate.key === key);
+      const outerMoonOffset = useParentCluster
+        ? {
+            // Estimate the widest label in the left column so the right
+            // column clears it without measuring layout on every frame.
+            x: siblingIndex % 2 === 0
+              ? 0
+              : Math.max(
+                  76,
+                  ...siblings
+                    .filter((_, index) => index % 2 === 0)
+                    .map((sibling) => (this.#bodyDisplayName(sibling.key).length * 7.2) + 16)
+                ) + 10,
+            y: 22 + Math.floor(siblingIndex / 2) * 18
+          }
+        : isOuterMoon
+          ? { x: 0, y: 20 }
+        : config?.parent
+          ? { x: 0, y: 20 }
+          : { x: 0, y: 0 };
+      const off = configuredOffset
+        ?? outerMoonOffset;
       label.style.transform = `translate(${screen.x + off.x}px, ${screen.y + off.y}px)`;
     }
   }

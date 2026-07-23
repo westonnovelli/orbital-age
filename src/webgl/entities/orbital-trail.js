@@ -56,7 +56,10 @@ export class OrbitalTrailEntity {
     // Cached total path length (scene units), recomputed on each #syncVertices.
     this.pathLengthScene = 0;
     this.saturation = Number.isFinite(Number(saturation)) ? clamp(Number(saturation), 0, 1) : 1;
-    this.maxSamples = clamp(Math.floor(maxSamples), 2, 65536);
+    // The supported ephemeris spans 260 years at daily cadence (~95k samples).
+    // Keep the cap above that range so early historical trails are not silently
+    // discarded by the renderer after the app-level trail capacity is raised.
+    this.maxSamples = clamp(Math.floor(maxSamples), 2, 131072);
     this.historyDays = Math.max(0, Number(historyDays) || 0);
     this.minSampleDistance = Math.max(0, Number(minSampleDistance) || 0);
     this.minDayDelta = Math.max(0, Number(minDayDelta) || 0);
@@ -80,12 +83,17 @@ export class OrbitalTrailEntity {
     // trail's geometry is retained (cursor/scrubbing still work) but nothing is
     // drawn. Wired to the Bodies-panel per-row and master toggles.
     this.visible = visible !== false;
+    this.available = true;
   }
 
   // Toggle whether this trail draws. Anything other than an explicit `false`
   // keeps it visible (so `setVisible(undefined)` is a no-op show).
   setVisible(visible) {
     this.visible = visible !== false;
+  }
+
+  setAvailable(available) {
+    this.available = Boolean(available);
   }
 
   init(gl) {
@@ -100,11 +108,12 @@ export class OrbitalTrailEntity {
    * @param {number} totalDays - Total number of days to compute
    * @param {(day: number) => {x: number, y: number}} positionAtDay - Callback returning position for a given day offset
    */
-  precomputeTrail(totalDays, positionAtDay) {
+  precomputeTrail(totalDays, positionAtDay, startDay = 0) {
     const step = Math.max(this.minDayDelta, 0.01);
     const samples = [];
+    const firstDay = clamp(Number(startDay) || 0, 0, totalDays);
 
-    for (let day = 0; day <= totalDays; day += step) {
+    for (let day = firstDay; day <= totalDays; day += step) {
       const pos = positionAtDay(day);
       const pointX = pos.x * this.radiusX;
       const pointY = pos.y * this.radiusY;
@@ -141,6 +150,45 @@ export class OrbitalTrailEntity {
     this.dirty = true;
   }
 
+  async precomputeTrailAsync(totalDays, positionAtDay, startDay = 0, { signal, onProgress } = {}) {
+    const step = Math.max(this.minDayDelta, 0.01);
+    const samples = [];
+    const firstDay = clamp(Number(startDay) || 0, 0, totalDays);
+    const totalSteps = Math.max(1, Math.ceil((totalDays - firstDay) / step) + 1);
+    let stepIndex = 0;
+
+    for (let day = firstDay; day <= totalDays; day += step) {
+      if (signal?.aborted) throw signal.reason ?? new DOMException("Trail computation cancelled.", "AbortError");
+      const pos = positionAtDay(day);
+      const pointX = pos.x * this.radiusX;
+      const pointY = pos.y * this.radiusY;
+      const last = samples[samples.length - 1];
+      if (!last || day - last.day >= this.minDayDelta || Math.hypot(pointX - last.x, pointY - last.y) >= this.minSampleDistance) {
+        samples.push({ day, x: pointX, y: pointY });
+      }
+      stepIndex += 1;
+      if (stepIndex % 1024 === 0) {
+        onProgress?.(stepIndex / totalSteps);
+        await new Promise((resolve) => {
+          if (typeof requestAnimationFrame === "function") requestAnimationFrame(resolve);
+          else setTimeout(resolve, 0);
+        });
+      }
+    }
+
+    const lastDay = samples[samples.length - 1]?.day;
+    if (lastDay === undefined || lastDay < totalDays) {
+      const pos = positionAtDay(totalDays);
+      samples.push({ day: totalDays, x: pos.x * this.radiusX, y: pos.y * this.radiusY });
+    }
+    if (samples.length > this.maxSamples) samples.splice(0, samples.length - this.maxSamples);
+    this.samples = samples;
+    this.cursorIndex = samples.length;
+    this.precomputed = true;
+    this.dirty = true;
+    onProgress?.(1);
+  }
+
   /**
    * Pre-compute a parented (rosette) trail from day 0 to totalDays. Unlike
    * precomputeTrail, the world position of each sample depends on the live zoom
@@ -151,9 +199,10 @@ export class OrbitalTrailEntity {
    * @param {(day: number) => {px: number, py: number, ox: number, oy: number}} baseAtDay
    *   - px,py: parent position; ox,oy: parent-relative offset at coupling 1.
    */
-  precomputeParentedTrail(totalDays, baseAtDay) {
+  precomputeParentedTrail(totalDays, baseAtDay, startDay = 0) {
     const step = Math.max(this.minDayDelta, 0.01);
     const base = [];
+    const firstDay = clamp(Number(startDay) || 0, 0, totalDays);
 
     const pushBase = (day) => {
       const b = baseAtDay(day);
@@ -166,7 +215,7 @@ export class OrbitalTrailEntity {
       });
     };
 
-    for (let day = 0; day <= totalDays; day += step) {
+    for (let day = firstDay; day <= totalDays; day += step) {
       const b = baseAtDay(day);
       const px = b.px * this.radiusX;
       const py = b.py * this.radiusY;
@@ -290,7 +339,7 @@ export class OrbitalTrailEntity {
 
   render({ gl, camera }) {
     const drawCount = this.precomputed ? this.cursorIndex : this.samples.length;
-    if (!this.visible || !this.primitive || !this.buffer || drawCount < 2) {
+    if (!this.visible || !this.available || !this.primitive || !this.buffer || drawCount < 2) {
       return;
     }
 

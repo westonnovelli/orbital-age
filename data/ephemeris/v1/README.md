@@ -36,6 +36,11 @@ The script uses the window/cadence/targets in `header.json`, fetches all non-sun
 targets from Horizons API, writes raw payloads to `raw-horizons/`, rebuilds
 `snapshots.ndjson`, and updates `ephemerisSource.retrievedOn`.
 
+If Horizons reports that a body has no ephemeris before a later date, the script
+retries that body from its first available date, records `coverageStartUtc`, and
+leaves the body absent from earlier samples. The runtime hides that body until
+the first valid position is available.
+
 Useful variants:
 
 ```bash
@@ -47,6 +52,15 @@ npm run data:ephemeris:refresh -- --yes
 
 # deterministic retrieval date
 npm run data:ephemeris:refresh -- --yes --retrieved-on 2026-03-07
+
+# daily refresh: fetch only dates after the current window
+npm run data:ephemeris:refresh -- --fetch --incremental --yes
+
+# one-time historical backfill (network and substantial disk space required)
+npm run data:ephemeris:refresh -- --fetch --yes --start-utc 1766-07-23
+
+# one-time auxiliary historical backfill; honors per-body Horizons coverage
+npm run data:ephemeris:refresh:auxiliary:v2 -- --fetch --yes
 ```
 
 ## Rebuild Artifacts

@@ -18,10 +18,10 @@ test("v2 manifest carries tunable format metadata", () => {
   assert.equal(manifest.datasets.primary.load, "eager");
   assert.equal(manifest.datasets.auxiliary.load, "lazy");
   assert.equal(manifest.formatVersion, "1.0.0");
-  assert.equal(manifest.chunkSchema, "ephemeris.chunk.v1");
-  assert.equal(manifest.encoder, "json-base64");
-  assert.equal(manifest.chunks.every((chunk) => chunk.format === "json-base64"), true);
-  assert.equal(manifest.chunks.every((chunk) => chunk.vectorEncoding === "float32-base64"), true);
+  assert.equal(manifest.chunkSchema, "ephemeris.chunk.v2");
+  assert.equal(manifest.encoder, "binary-f32-gzip");
+  assert.equal(manifest.chunks.every((chunk) => chunk.format === "binary-f32-gzip"), true);
+  assert.equal(manifest.chunks.every((chunk) => chunk.vectorEncoding === "float32-le"), true);
 });
 
 test("v2 primary stream has a recent hot chunk and historical chunks", () => {
@@ -30,6 +30,7 @@ test("v2 primary stream has a recent hot chunk and historical chunks", () => {
 
   assert.ok(primaryChunks.some((chunk) => chunk.kind === "recent"));
   assert.ok(primaryChunks.some((chunk) => chunk.kind === "historical"));
+  assert.ok(new Set(primaryChunks.map((chunk) => chunk.group)).has("primary"));
   assert.deepEqual(manifest.streams.primary.bodyKeys, [
     "sun",
     "mercury",

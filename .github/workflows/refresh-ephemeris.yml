@@ -54,14 +54,15 @@ jobs:
       - name: Refresh dataset from JPL Horizons
         run: |
           TODAY="$(date -u +%F)"
-          echo "Refreshing ephemeris through today+1 (retrieved-on=$TODAY)"
-          npm run data:ephemeris:refresh -- --fetch --yes --retrieved-on "$TODAY"
+          echo "Refreshing ephemeris incrementally through today+1 (retrieved-on=$TODAY)"
+          npm run data:ephemeris:refresh:auxiliary:v2 -- --fetch --incremental --yes
+          npm run data:ephemeris:refresh -- --fetch --incremental --yes --retrieved-on "$TODAY"
 
       - name: Rebuild generated artifacts
         run: |
           npm run data:ephemeris:rebuild
-          npm run data:ephemeris:refresh:auxiliary:v2 -- --fetch --yes
           npm run data:ephemeris:rebuild:v2
+          npm run data:ephemeris:preflight:v2
 
       - name: Verify dataset integrity
         run: |

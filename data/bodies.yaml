@@ -21,11 +21,11 @@ ephemeris:
 format:
   datasetVersion: 2.1.0
   formatVersion: 1.0.0
-  chunkSchema: ephemeris.chunk.v1
-  encoder: json-base64
-  contentType: application/json
-  compression: none
-  vectorEncoding: float32-base64
+  chunkSchema: ephemeris.chunk.v2
+  encoder: binary-f32-gzip
+  contentType: application/octet-stream
+  compression: gzip
+  vectorEncoding: float32-le
 datasets:
   primary:
     load: eager

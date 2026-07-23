@@ -82,6 +82,7 @@ export class BodyMarkerEntity {
     this.uniforms = null;
     this.externalPosition = false;
     this.visible = true;
+    this.available = true;
     this.positionData = new Float32Array(2);
     this.#setPosition(this.angle);
   }
@@ -96,6 +97,10 @@ export class BodyMarkerEntity {
 
   setVisible(visible) {
     this.visible = Boolean(visible);
+  }
+
+  setAvailable(available) {
+    this.available = Boolean(available);
   }
 
   init(gl) {
@@ -116,7 +121,7 @@ export class BodyMarkerEntity {
   }
 
   render({ gl, camera, nowSeconds = 0 }) {
-    if (!this.visible || !this.program || !this.buffer) return;
+    if (!this.visible || !this.available || !this.program || !this.buffer) return;
 
     // Additive blending for glow halo
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE);

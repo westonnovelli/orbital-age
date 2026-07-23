@@ -74,8 +74,18 @@ export function normalizedBody(body) {
   };
   const hasLabel = capabilities.canShowLabel;
   const hasTrail = capabilities.canToggleTrail;
+  const group = body.group
+    ?? (body.dataset === "primary"
+      ? "primary"
+      : body.kind === "asteroid"
+        ? "belt"
+        : body.kind === "nearEarthAsteroid"
+          ? "near-earth"
+          : body.kind === "comet"
+            ? "comets"
+            : "dwarf-planets");
   return {
-    key: body.key, label: body.label ?? body.key, kind: body.kind ?? "smallBody", naifId: body.naifId,
+    key: body.key, label: body.label ?? body.key, kind: body.kind ?? "smallBody", group, naifId: body.naifId,
     horizonsCommand: body.horizonsCommand ?? String(body.naifId), dataset: body.dataset, stream: body.dataset,
     enabled, parent: body.relativeTo ?? null, relativeTo: body.relativeTo ?? null,
     // Compatibility aliases retained for consumers of manifest 2.0.

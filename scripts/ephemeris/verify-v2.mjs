@@ -1,6 +1,8 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import zlib from "node:zlib";
+import { decodeBinaryChunk } from "../../src/ephemeris/binary-chunk.js";
 
 const cwd = process.cwd();
 const v2Dir = path.resolve(cwd, process.env.EPHEMERIS_V2_DATA_DIR ?? "data/ephemeris/v2");
@@ -40,7 +42,9 @@ for (const chunk of manifest.chunks) {
   assert(buffer.byteLength === chunk.byteLength, `byteLength mismatch for ${chunk.id}`);
   assert(sha256(buffer) === chunk.sha256, `sha256 mismatch for ${chunk.id}`);
 
-  const payload = JSON.parse(buffer.toString("utf8"));
+  const payload = chunk.format === "binary-f32-gzip"
+    ? decodeBinaryChunk(zlib.gunzipSync(buffer))
+    : JSON.parse(buffer.toString("utf8"));
   assert(payload.chunkId === chunk.id, `chunkId mismatch for ${chunk.id}`);
   assert(payload.format === chunk.format, `format mismatch for ${chunk.id}`);
   assert(payload.samplesPerBody === chunk.samplesPerBody, `samplesPerBody mismatch for ${chunk.id}`);

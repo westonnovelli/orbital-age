@@ -3,7 +3,7 @@
   "ephemerisSource": {
     "provider": "JPL NAIF / JPL Horizons",
     "kernel": "de442s.bsp",
-    "retrievedOn": "2026-07-22"
+    "retrievedOn": "2026-07-23"
   },
   "frame": "ECLIPJ2000",
   "origin": "SSB",
@@ -12,13 +12,13 @@
     "time": "UTC"
   },
   "window": {
-    "startUtc": "1926-01-01T00:00:00Z",
-    "endUtc": "2026-07-23T00:00:00Z",
-    "days": 36729
+    "startUtc": "1766-07-23T00:00:00Z",
+    "endUtc": "2026-07-24T00:00:00Z",
+    "days": 94965
   },
   "cadence": {
     "step": "P1D",
-    "samplesPerBody": 36729
+    "samplesPerBody": 94965
   },
   "targets": [
     {
@@ -55,11 +55,13 @@
     },
     {
       "key": "neptune",
-      "naifId": 899
+      "naifId": 899,
+      "coverageStartUtc": "1800-01-02T00:00:00Z"
     },
     {
       "key": "pluto",
-      "naifId": 999
+      "naifId": 999,
+      "coverageStartUtc": "1800-01-03T00:00:00Z"
     },
     {
       "key": "moon",

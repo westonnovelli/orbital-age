@@ -2,7 +2,9 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline";
+import zlib from "node:zlib";
 import { enabledBodies, loadCatalog, normalizedBody } from "./catalog.mjs";
+import { encodeBinaryChunk } from "../../src/ephemeris/binary-chunk.js";
 
 const cwd = process.cwd();
 const v1Dir = path.resolve(cwd, process.env.EPHEMERIS_V1_DATA_DIR ?? "data/ephemeris/v1");
@@ -12,7 +14,11 @@ const outIndexPath = path.resolve(cwd, process.env.EPHEMERIS_V2_OUTPUT_MODULE ??
 const DAY_SECONDS = 86400;
 const DAY_MS = DAY_SECONDS * 1000;
 const ENCODERS = {
-  "json-base64": encodeJsonBase64Chunk
+  "json-base64": ({ chunk, targets, header, formatConfig, config }) => ({
+    bytes: encodeJsonBase64Chunk({ chunk, targets, header, formatConfig, config }),
+    extension: ".json"
+  }),
+  "binary-f32-gzip": encodeBinaryGzipChunk
 };
 
 function readJson(filePath) {
@@ -38,7 +44,7 @@ function subtractUtcYears(iso, years) {
   return date.toISOString().replace(".000Z", "Z");
 }
 
-function planChunks({ stream, targets, epochs, vectorsByKey, config, datasetEndUtc }) {
+function planChunks({ stream, group, targets, epochs, vectorsByKey, coverageStartByKey, config, datasetEndUtc }) {
   if (targets.length === 0 || epochs.length === 0) {
     return [];
   }
@@ -58,16 +64,23 @@ function planChunks({ stream, targets, epochs, vectorsByKey, config, datasetEndU
     if (endIndex <= startIndex) {
       return;
     }
+    const chunkTargets = targets.filter((target) => {
+      const coverageStart = coverageStartByKey.get(target.key);
+      return coverageStart === undefined || Date.parse(coverageStart) <= epochs[startIndex] * 1000;
+    });
+    if (chunkTargets.length === 0) return;
     chunks.push({
-      id: `${stream}-${kind}-${isoDate(isoMidnight(epochs[startIndex] * 1000))}-${isoDate(isoMidnight(epochs[endIndex] * 1000))}`,
+      id: `${stream}-${group}-${kind}-${isoDate(isoMidnight(epochs[startIndex] * 1000))}-${isoDate(isoMidnight(epochs[endIndex] * 1000))}`,
       stream,
+      group,
       kind,
       startIndex,
       endIndex,
       startUtc: isoMidnight(epochs[startIndex] * 1000),
       endUtc: isoMidnight(epochs[endIndex] * 1000),
       samplesPerBody: endIndex - startIndex + 1,
-      bodyKeys: targets.map((target) => target.key)
+      bodyKeys: chunkTargets.map((target) => target.key),
+      targetKeys: chunkTargets.map((target) => target.key)
     });
   }
 
@@ -78,17 +91,26 @@ function planChunks({ stream, targets, epochs, vectorsByKey, config, datasetEndU
 
   let start = 0;
   const historicalEnd = Math.max(0, recentStartIndex);
-  while (start < historicalEnd) {
-    const end = Math.min(historicalEnd, start + maxSamplesByUncompressed - 1);
-    addChunk("historical", start, end);
-    start = end;
+  const coverageBoundaries = [...new Set(
+    targets
+      .map((target) => coverageStartByKey.get(target.key))
+      .filter(Boolean)
+      .map((coverageStart) => epochs.findIndex((epoch) => epoch * 1000 >= Date.parse(coverageStart)))
+      .filter((index) => index > 0 && index < historicalEnd)
+  )].sort((a, b) => a - b);
+  for (const boundary of [...coverageBoundaries, historicalEnd]) {
+    while (start < boundary) {
+      const end = Math.min(boundary, start + maxSamplesByUncompressed - 1);
+      addChunk("historical", start, end);
+      start = end;
+    }
   }
 
   addChunk("recent", Math.max(0, historicalEnd), epochs.length - 1);
 
   return chunks.map((chunk) => {
     const vectors = {};
-    for (const target of targets) {
+    for (const target of targets.filter((candidate) => chunk.targetKeys.includes(candidate.key))) {
       vectors[target.key] = vectorsByKey.get(target.key).slice(
         chunk.startIndex * 3,
         (chunk.endIndex + 1) * 3
@@ -100,10 +122,9 @@ function planChunks({ stream, targets, epochs, vectorsByKey, config, datasetEndU
 
 function encodeJsonBase64Chunk({ chunk, targets, header, formatConfig, config }) {
   const bodyVectors = {};
-  for (const target of targets) {
-    const values = chunk.vectors[target.key] ?? [];
-    const array = Float32Array.from(values);
-    bodyVectors[target.key] = Buffer.from(array.buffer).toString("base64");
+  for (const bodyKey of chunk.bodyKeys) {
+    const array = Float32Array.from(chunk.vectors[bodyKey] ?? []);
+    bodyVectors[bodyKey] = Buffer.from(array.buffer).toString("base64");
   }
 
   return Buffer.from(
@@ -133,12 +154,38 @@ function encodeJsonBase64Chunk({ chunk, targets, header, formatConfig, config })
   );
 }
 
+function encodeBinaryGzipChunk({ chunk, targets, header, config }) {
+  const metadata = {
+    datasetVersion: config.datasetVersion,
+    formatVersion: config.formatVersion,
+    chunkSchema: config.chunkSchema,
+    stream: chunk.stream,
+    group: chunk.group,
+    chunkId: chunk.id,
+    startUtc: chunk.startUtc,
+    endUtc: chunk.endUtc,
+    stepSeconds: DAY_SECONDS,
+    samplesPerBody: chunk.samplesPerBody,
+    frame: header.frame,
+    origin: header.origin,
+    bodyKeys: chunk.bodyKeys
+  };
+  const vectors = chunk.bodyKeys.map((bodyKey) => chunk.vectors[bodyKey] ?? []);
+  const binary = encodeBinaryChunk({ metadata, vectors });
+  return {
+    bytes: zlib.gzipSync(binary, { level: zlib.constants.Z_BEST_COMPRESSION }),
+    extension: ".bin.gz",
+    uncompressedByteLength: binary.byteLength
+  };
+}
+
 async function readVectors({ header, targetKeys }) {
   const snapshotsPath = path.join(v1Dir, "snapshots.ndjson");
   const auxiliarySnapshotsPath = path.join(v2Dir, "auxiliary-snapshots.ndjson");
   const targetByNaifId = new Map(header.targets.map((target) => [target.naifId, target]));
   const selectedKeys = new Set(targetKeys);
   const vectorsByKey = new Map([...selectedKeys].map((key) => [key, []]));
+  const coverageStartByKey = new Map();
   const epochs = [];
   let currentEpoch = null;
 
@@ -161,6 +208,7 @@ async function readVectors({ header, targetKeys }) {
       continue;
     }
     vectorsByKey.get(target.key).push(row.xAu, row.yAu, row.zAu);
+    coverageStartByKey.set(target.key, coverageStartByKey.get(target.key) ?? row.epochUtc);
   }
 
   if (fs.existsSync(auxiliarySnapshotsPath)) {
@@ -169,7 +217,7 @@ async function readVectors({ header, targetKeys }) {
       crlfDelay: Infinity
     });
 
-    for await (const line of auxiliaryLineReader) {
+  for await (const line of auxiliaryLineReader) {
       if (!line.trim()) {
         continue;
       }
@@ -178,13 +226,29 @@ async function readVectors({ header, targetKeys }) {
         continue;
       }
       vectorsByKey.get(row.body).push(row.xAu, row.yAu, row.zAu);
+      coverageStartByKey.set(row.body, coverageStartByKey.get(row.body) ?? row.epochUtc);
+    }
+  }
+
+  // Keep vectors aligned with the global epoch array. Bodies whose Horizons
+  // kernels begin later are represented by a leading gap; those samples are
+  // excluded from chunks until their coverage starts.
+  for (const key of selectedKeys) {
+    const coverageStart = coverageStartByKey.get(key);
+    if (!coverageStart) continue;
+    const firstIndex = epochs.findIndex((epoch) => epoch * 1000 >= Date.parse(coverageStart));
+    if (firstIndex > 0) {
+      vectorsByKey.set(key, [
+        ...new Array(firstIndex * 3).fill(0),
+        ...vectorsByKey.get(key)
+      ]);
     }
   }
 
   for (const key of selectedKeys) {
     const expectedLength = epochs.length * 3;
     const actualLength = vectorsByKey.get(key).length;
-    if (actualLength !== expectedLength) {
+    if (actualLength > expectedLength || actualLength % 3 !== 0) {
       throw new Error(
         `Vector length mismatch for ${key}: expected ${expectedLength}, got ${actualLength}. ` +
           "Run the matching refresh script for this stream."
@@ -192,7 +256,7 @@ async function readVectors({ header, targetKeys }) {
     }
   }
 
-  return { epochs, vectorsByKey };
+  return { epochs, vectorsByKey, coverageStartByKey };
 }
 
 async function main() {
@@ -216,10 +280,16 @@ async function main() {
     throw new Error(`Unsupported v2 encoder: ${config.encoder}`);
   }
 
-  const catalogTargets = enabledBodies(catalog).map(normalizedBody);
+  const catalogTargetsBase = enabledBodies(catalog).map(normalizedBody);
+  const v1TargetsByKey = new Map(header.targets.map((target) => [target.key, target]));
+  const catalogTargets = catalogTargetsBase.map((target) => ({
+    ...target,
+    ...(v1TargetsByKey.get(target.key)?.coverageStartUtc
+      ? { coverageStartUtc: v1TargetsByKey.get(target.key).coverageStartUtc }
+      : {})
+  }));
   const primaryTargets = catalogTargets.filter((target) => target.stream === "primary");
   const auxiliaryTargets = catalogTargets.filter((target) => target.stream === "auxiliary");
-  const v1TargetsByKey = new Map(header.targets.map((target) => [target.key, target]));
   for (const target of primaryTargets) {
     if (!v1TargetsByKey.has(target.key)) {
       throw new Error(`Primary catalog body ${target.key} is absent from the canonical v1 dataset. Run data:ephemeris:refresh.`);
@@ -227,7 +297,16 @@ async function main() {
   }
 
   const allKeys = [...new Set([...primaryTargets, ...auxiliaryTargets].map((target) => target.key))];
-  const { epochs, vectorsByKey } = await readVectors({ header, targetKeys: allKeys });
+  const { epochs, vectorsByKey, coverageStartByKey } = await readVectors({ header, targetKeys: allKeys });
+  // Auxiliary bodies are not listed in the canonical v1 header, so their
+  // coverage cannot be copied from header.targets. Derive and publish their
+  // first real sample from the auxiliary snapshot stream instead.
+  for (const target of catalogTargets) {
+    const coverageStart = coverageStartByKey.get(target.key);
+    if (coverageStart && Date.parse(coverageStart) > Date.parse(header.window.startUtc)) {
+      target.coverageStartUtc = coverageStart;
+    }
+  }
 
   fs.rmSync(path.join(v2Dir, "chunks"), { recursive: true, force: true });
   for (const dataset of Object.keys(config.datasets)) {
@@ -235,25 +314,35 @@ async function main() {
   }
 
   const chunks = [];
-  for (const [stream, targets] of Object.entries(config.datasets).map(([dataset]) => [
-    dataset,
-    catalogTargets.filter((target) => target.dataset === dataset)
-  ])) {
-    for (const planned of planChunks({
-      stream,
-      targets,
-      epochs,
-      vectorsByKey,
-      config,
-      datasetEndUtc: header.window.endUtc
-    })) {
+  for (const [stream] of Object.entries(config.datasets)) {
+    const streamTargets = catalogTargets.filter((target) => target.dataset === stream);
+    const groups = new Map();
+    for (const target of streamTargets) {
+      const group = target.group ?? target.kind ?? "default";
+      const targets = groups.get(group) ?? [];
+      targets.push(target);
+      groups.set(group, targets);
+    }
+    for (const [group, targets] of groups) {
+      for (const planned of planChunks({
+        stream,
+        group,
+        targets,
+        epochs,
+        vectorsByKey,
+        coverageStartByKey,
+        config,
+        datasetEndUtc: header.window.endUtc
+      })) {
       const encoded = encoder({ chunk: planned, targets, header, formatConfig, config });
-      const relativePath = `chunks/${stream}/${planned.id}.json`;
+      const relativePath = `chunks/${stream}/${group}/${planned.id}${encoded.extension}`;
       const outPath = path.join(v2Dir, relativePath);
-      fs.writeFileSync(outPath, encoded);
+      fs.mkdirSync(path.dirname(outPath), { recursive: true });
+      fs.writeFileSync(outPath, encoded.bytes);
       chunks.push({
         id: planned.id,
         stream: planned.stream,
+        group: planned.group,
         kind: planned.kind,
         startUtc: planned.startUtc,
         endUtc: planned.endUtc,
@@ -265,9 +354,11 @@ async function main() {
         compression: formatConfig.compression,
         vectorEncoding: formatConfig.vectorEncoding,
         url: `../../data/ephemeris/v2/${relativePath}`,
-        byteLength: encoded.byteLength,
-        sha256: sha256(encoded)
+        byteLength: encoded.bytes.byteLength,
+        ...(encoded.uncompressedByteLength ? { uncompressedByteLength: encoded.uncompressedByteLength } : {}),
+        sha256: sha256(encoded.bytes)
       });
+      }
     }
   }
 

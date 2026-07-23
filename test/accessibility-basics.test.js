@@ -28,7 +28,7 @@ test("index.html has unique IDs to preserve label/control accessibility mappings
 
 test("birthday form and timeline controls expose basic accessible semantics", () => {
   assert.match(html, /<label for="birthday">Birthday<\/label>/);
-  assert.match(html, /<input id="birthday"[^>]*type="date"[^>]*required[^>]*min="1900-01-01"[^>]*max="2100-12-31"/);
+  assert.match(html, /<input id="birthday"[^>]*type="date"[^>]*required[^>]*min="1766-07-23"[^>]*max="2100-12-31"/);
   assert.match(html, /<fieldset id="timeline-controls" class="timeline" disabled>/);
   assert.match(html, /<legend>Timeline controls<\/legend>/);
   assert.match(html, /id="play-pause"[^>]*aria-label="Play timeline"/);

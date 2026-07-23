@@ -128,8 +128,9 @@ What `data:ephemeris:rebuild:v2` regenerates:
 
 The v2 builder reads the canonical v1 rows, then applies the dataset, byte
 budget, body capability, and encoder definitions in `data/bodies.yaml`. The
-initial encoder is `json-base64`; future
-binary/compressed formats should be added behind the same manifest and decoder
+current encoder is lossless gzip-compressed little-endian Float32 binary;
+`json-base64` remains supported for migration fixtures and older manifests.
+Binary/compressed formats are selected behind the manifest and decoder
 interfaces rather than changing app code directly.
 
 Auxiliary bodies are fetched from Horizons using `data/bodies.yaml`. Raw auxiliary responses and

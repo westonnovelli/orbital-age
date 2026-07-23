@@ -11,7 +11,8 @@
     "data:ephemeris:verify": "node scripts/ephemeris/verify-v1.mjs",
     "data:ephemeris:refresh:auxiliary:v2": "node scripts/ephemeris/refresh-auxiliary-v2.mjs",
     "data:ephemeris:rebuild:v2": "node scripts/ephemeris/rebuild-v2.mjs",
-    "data:ephemeris:verify:v2": "node scripts/ephemeris/verify-v2.mjs"
+    "data:ephemeris:verify:v2": "node scripts/ephemeris/verify-v2.mjs",
+    "data:ephemeris:preflight:v2": "node scripts/ephemeris/preflight-v2.mjs"
   },
   "devDependencies": {
     "serve": "^14.2.6"

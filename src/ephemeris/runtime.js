@@ -1,4 +1,5 @@
 import { EPHEMERIS_V2_INDEX } from "./generated-v2-index.js";
+import { decodeBinaryChunk } from "./binary-chunk.js";
 
 const DAY_SECONDS = 86400;
 const loadedChunks = new Map();
@@ -94,6 +95,12 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+function throwIfAborted(signal) {
+  if (signal?.aborted) {
+    throw signal.reason ?? new DOMException("Ephemeris loading was cancelled.", "AbortError");
+  }
+}
+
 function interpolate(a, b, t) {
   return a + (b - a) * t;
 }
@@ -147,21 +154,39 @@ function chunkUrl(chunk) {
   return new URL(chunk.url, import.meta.url);
 }
 
-async function fetchChunkPayload(chunk) {
+async function gunzipBytes(bytes) {
+  if (isNodeRuntime) {
+    const { gunzipSync } = await import("node:zlib");
+    return new Uint8Array(gunzipSync(bytes));
+  }
+  if (typeof DecompressionStream === "undefined") {
+    throw new Error("This browser does not support gzip ephemeris chunks.");
+  }
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
+async function fetchChunkPayload(chunk, signal) {
+  throwIfAborted(signal);
   const url = chunkUrl(chunk);
   if (isNodeRuntime && url.protocol === "file:") {
     const [{ readFile }, { fileURLToPath }] = await Promise.all([
       import("node:fs/promises"),
       import("node:url")
     ]);
-    return JSON.parse(await readFile(fileURLToPath(url), "utf8"));
+    const bytes = await readFile(fileURLToPath(url));
+    return chunk.format === "binary-f32-gzip"
+      ? decodeBinaryChunk(await gunzipBytes(bytes))
+      : JSON.parse(bytes.toString("utf8"));
   }
 
-  const response = await fetch(url);
+  const response = await fetch(url, { signal });
   if (!response.ok) {
     throw new Error(`Failed to load ephemeris chunk ${chunk.id}: ${response.status}`);
   }
-  return response.json();
+  return chunk.format === "binary-f32-gzip"
+    ? decodeBinaryChunk(await gunzipBytes(await response.arrayBuffer()))
+    : response.json();
 }
 
 const decoders = {
@@ -205,7 +230,8 @@ function mergeDecodedChunk(existing, decoded) {
   };
 }
 
-async function loadChunk(chunk, { bodyKeys } = {}) {
+async function loadChunk(chunk, { bodyKeys, signal } = {}) {
+  throwIfAborted(signal);
   const requestedBodyKeys = bodyKeysForChunk(chunk, bodyKeys);
   if (chunkHasLoadedBodies(chunk, requestedBodyKeys)) {
     return loadedChunks.get(chunk.id);
@@ -216,13 +242,24 @@ async function loadChunk(chunk, { bodyKeys } = {}) {
     return loadingChunks.get(loadingKey);
   }
 
-  const promise = fetchChunkPayload(chunk)
+  const promise = fetchChunkPayload(chunk, signal)
     .then((payload) => {
       const decoder = decoders[chunk.format];
-      if (!decoder) {
+      const decoded = chunk.format === "binary-f32-gzip"
+        ? {
+            ...payload,
+            id: payload.chunkId,
+            bodyKeys: requestedBodyKeys,
+            vectors: Object.fromEntries(requestedBodyKeys.map((key) => [key, payload.vectors[key]])),
+            startUnixS: Date.parse(payload.startUtc) / 1000,
+            endUnixS: Date.parse(payload.endUtc) / 1000
+          }
+        : decoder
+          ? decoder(payload, { bodyKeys: requestedBodyKeys })
+          : null;
+      if (!decoded) {
         throw new Error(`Unsupported ephemeris chunk format: ${chunk.format}`);
       }
-      const decoded = decoder(payload, { bodyKeys: requestedBodyKeys });
       const merged = mergeDecodedChunk(loadedChunks.get(chunk.id), decoded);
       loadedChunks.set(chunk.id, merged);
       cumulativePathCache.clear();
@@ -283,6 +320,19 @@ export function planEphemerisLoad({ startUtc, endUtc, streams, bodyKeys } = {}) 
   );
   const missingChunks = chunks.filter((chunk) => !chunkHasLoadedBodies(chunk, requestedBodyKeys));
 
+  const phases = [...new Set(chunks.map((chunk) => `${chunk.stream}:${chunk.group ?? "default"}`))].map((key) => {
+    const [stream, group] = key.split(":");
+    const phaseChunks = chunks.filter((chunk) => chunk.stream === stream && (chunk.group ?? "default") === group);
+    return {
+      id: key,
+      stream,
+      group,
+      chunkCount: phaseChunks.length,
+      totalBytes: phaseChunks.reduce((sum, chunk) => sum + chunk.byteLength, 0),
+      missingBytes: phaseChunks.filter((chunk) => !chunkHasLoadedBodies(chunk, requestedBodyKeys)).reduce((sum, chunk) => sum + chunk.byteLength, 0)
+    };
+  });
+
   return {
     startUtc: new Date(startUnixS * 1000).toISOString().replace(".000Z", "Z"),
     endUtc: new Date(endUnixS * 1000).toISOString().replace(".000Z", "Z"),
@@ -290,9 +340,11 @@ export function planEphemerisLoad({ startUtc, endUtc, streams, bodyKeys } = {}) 
     bodyKeys: requestedBodyKeys,
     chunks,
     missingChunks,
+    phases,
     loaded: missingChunks.length === 0,
     totalBytes: chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0),
-    missingBytes: missingChunks.reduce((sum, chunk) => sum + chunk.byteLength, 0)
+    missingBytes: missingChunks.reduce((sum, chunk) => sum + chunk.byteLength, 0),
+    uncompressedBytes: chunks.reduce((sum, chunk) => sum + (chunk.uncompressedByteLength ?? 0), 0)
   };
 }
 
@@ -302,21 +354,26 @@ export async function ensureEphemerisLoaded({
   streams,
   bodyKeys,
   priority = "normal",
+  signal,
   onProgress
 } = {}) {
+  throwIfAborted(signal);
   const plan = planEphemerisLoad({ startUtc, endUtc, streams, bodyKeys });
   if (plan.loaded) {
-    onProgress?.({ loadedChunks: plan.chunks.length, totalChunks: plan.chunks.length, chunk: null, plan, priority });
+    onProgress?.({ loadedChunks: plan.chunks.length, totalChunks: plan.chunks.length, loadedBytes: plan.totalBytes, totalBytes: plan.totalBytes, chunk: null, plan, priority, phase: "complete" });
     return plan;
   }
 
   let loadedCount = plan.chunks.length - plan.missingChunks.length;
+  let loadedBytes = plan.totalBytes - plan.missingBytes;
   const totalChunks = plan.chunks.length;
   for (const chunk of plan.missingChunks) {
-    onProgress?.({ loadedChunks: loadedCount, totalChunks, chunk, plan, priority });
-    await loadChunk(chunk, { bodyKeys: plan.bodyKeys });
+    throwIfAborted(signal);
+    onProgress?.({ loadedChunks: loadedCount, totalChunks, loadedBytes, totalBytes: plan.totalBytes, chunk, plan, priority, phase: chunk.group ?? chunk.stream });
+    await loadChunk(chunk, { bodyKeys: plan.bodyKeys, signal });
     loadedCount += 1;
-    onProgress?.({ loadedChunks: loadedCount, totalChunks, chunk, plan, priority });
+    loadedBytes += chunk.byteLength;
+    onProgress?.({ loadedChunks: loadedCount, totalChunks, loadedBytes, totalBytes: plan.totalBytes, chunk, plan, priority, phase: chunk.group ?? chunk.stream });
   }
 
   return planEphemerisLoad({ startUtc, endUtc, streams, bodyKeys });
