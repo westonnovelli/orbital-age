@@ -8,11 +8,18 @@ export function loadCatalog(cwd = process.cwd(), sourcePath = process.env.BODY_C
   const filePath = path.resolve(cwd, sourcePath);
   let catalog;
   try {
-    const document = parseDocument(fs.readFileSync(filePath, "utf8"), { prettyErrors: true });
+    // The catalog intentionally shares common render policies through YAML
+    // anchors (notably the 100-body asteroid belt). Keep this bounded, but
+    // above the expansion count of the checked-in catalog.
+    const document = parseDocument(fs.readFileSync(filePath, "utf8"), {
+      prettyErrors: true,
+      merge: true,
+      maxAliasCount: 2000
+    });
     if (document.errors.length > 0) {
       throw document.errors[0];
     }
-    catalog = document.toJS();
+    catalog = document.toJS({ maxAliasCount: 2000 });
   } catch (error) {
     throw new Error(`Unable to parse body catalog ${filePath}: ${error.message}`);
   }

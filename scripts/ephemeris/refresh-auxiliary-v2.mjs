@@ -153,14 +153,21 @@ async function main() {
     rowsByTarget.set(target.key, rows);
   }
 
-  const rows = [];
-  for (let i = 0; i < header.cadence.samplesPerBody; i += 1) {
-    for (const target of auxiliary) {
-      rows.push(rowsByTarget.get(target.key)[i]);
+  // The asteroid-belt catalog produces millions of rows. Write incrementally
+  // rather than building one multi-gigabyte string in memory.
+  const snapshotsFd = fs.openSync(snapshotsPath, "w");
+  let rowCount = 0;
+  try {
+    for (let i = 0; i < header.cadence.samplesPerBody; i += 1) {
+      for (const target of auxiliary) {
+        fs.writeSync(snapshotsFd, `${JSON.stringify(rowsByTarget.get(target.key)[i])}\n`);
+        rowCount += 1;
+      }
     }
+  } finally {
+    fs.closeSync(snapshotsFd);
   }
-  fs.writeFileSync(snapshotsPath, rows.map((row) => JSON.stringify(row)).join("\n") + "\n");
-  console.log(`Wrote ${path.relative(cwd, snapshotsPath)} (${rows.length} rows)`);
+  console.log(`Wrote ${path.relative(cwd, snapshotsPath)} (${rowCount} rows)`);
 }
 
 main().catch((error) => {

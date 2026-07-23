@@ -134,7 +134,10 @@ Auxiliary failures should be logged and surfaced as non-blocking layer state.
 ## Suggested UX Layers
 
 - **Featured Small Bodies**: default representative set.
-- **Asteroid Belt**: Ceres, Vesta, Pallas, Hygiea, Psyche.
+- **Asteroid Belt**: the first 100 numbered main-belt asteroids (Ceres through
+  Hekate), rendered as visible marker-only points. Do not add labels, trails,
+  Follow controls, distance readouts, or camera-fit participation to this
+  illustrative layer.
 - **Near-Earth Objects**: Eros, Bennu, Ryugu, Apophis.
 - **Comets**: Halley, 67P.
 - **Dwarf Planets**: Eris, Makemake.

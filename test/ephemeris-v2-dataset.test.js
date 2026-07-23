@@ -53,8 +53,8 @@ test("v2 auxiliary stream has named bodies and lazy chunks", () => {
   assert.ok(auxiliaryChunks.some((chunk) => chunk.kind === "historical"));
   assert.ok(manifest.streams.auxiliary.bodyKeys.includes("ceres"));
   assert.ok(manifest.streams.auxiliary.bodyKeys.includes("halley"));
-  assert.equal(manifest.bodies.ceres.hasLabel, true);
-  assert.equal(manifest.bodies.ceres.hasTrail, true);
+  assert.equal(manifest.bodies.ceres.hasLabel, false);
+  assert.equal(manifest.bodies.ceres.hasTrail, false);
 });
 
 test("v2 chunk byte and hash metadata matches files", () => {
@@ -68,13 +68,19 @@ test("v2 chunk byte and hash metadata matches files", () => {
   }
 });
 
-test("belt sample bodies are never label or trail enabled", () => {
+test("asteroid belt has 100 visible marker-only bodies", () => {
   const manifest = readJson("manifest.json");
+  const beltBodies = Object.values(manifest.bodies)
+    .filter((body) => body.layers.includes("asteroidBelt"));
 
-  for (const body of Object.values(manifest.bodies)) {
-    if (body.renderClass === "beltSample") {
-      assert.equal(body.hasLabel, false);
-      assert.equal(body.hasTrail, false);
-    }
+  assert.equal(beltBodies.length, 100);
+  for (const body of beltBodies) {
+    assert.equal(body.capabilities.canRender, true);
+    assert.equal(body.capabilities.canShowByDefault, true);
+    assert.equal(body.capabilities.canFitCamera, false);
+    assert.equal(body.hasLabel, false);
+    assert.equal(body.hasTrail, false);
+    assert.equal(body.capabilities.canFollow, false);
+    assert.equal(body.capabilities.canShowDistance, false);
   }
 });

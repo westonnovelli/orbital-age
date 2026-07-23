@@ -39,6 +39,26 @@ datasets:
     maxEncodedBytesPerChunk: 5000000
 # `enabled` is the body kill switch. The render flags below independently map
 # to manifest capabilities; see docs/body-catalog-capabilities.md.
+# The belt uses deliberately dramatized markers: the points need to remain
+# visually legible at the solar-system scale, rather than reflect true size.
+asteroidBeltRender: &asteroidBeltRender
+  enabled: true
+  defaultVisible: true
+  color:
+    - 0.72
+    - 0.66
+    - 0.58
+  size: 0.014
+  orbitRadiusAu: 3
+  cameraFit: false
+  trail:
+    enabled: false
+  label:
+    enabled: false
+  follow:
+    enabled: false
+  distance:
+    enabled: false
 bodies:
   - key: sun
     label: Sun
@@ -385,30 +405,7 @@ bodies:
       - featured
       - asteroidBelt
     render:
-      enabled: true
-      defaultVisible: true
-      color:
-        - 0.72
-        - 0.66
-        - 0.58
-      size: 0.026
-      orbitRadiusAu: 2.98
-      cameraFit: true
-      trail:
-        enabled: true
-        defaultVisible: false
-        color:
-          - 0.72
-          - 0.66
-          - 0.58
-          - 0.045
-        hueStart: 0.09
-      label:
-        enabled: true
-      follow:
-        enabled: true
-      distance:
-        enabled: false
+      <<: *asteroidBeltRender
   - key: pallas
     label: Pallas
     kind: asteroid
@@ -419,30 +416,7 @@ bodies:
     layers:
       - asteroidBelt
     render:
-      enabled: true
-      defaultVisible: false
-      color:
-        - 0.72
-        - 0.66
-        - 0.58
-      size: 0.022
-      orbitRadiusAu: 2.98
-      cameraFit: true
-      trail:
-        enabled: true
-        defaultVisible: false
-        color:
-          - 0.72
-          - 0.66
-          - 0.58
-          - 0.045
-        hueStart: 0.09
-      label:
-        enabled: true
-      follow:
-        enabled: true
-      distance:
-        enabled: false
+      <<: *asteroidBeltRender
   - key: vesta
     label: Vesta
     kind: asteroid
@@ -454,30 +428,7 @@ bodies:
       - featured
       - asteroidBelt
     render:
-      enabled: true
-      defaultVisible: true
-      color:
-        - 0.88
-        - 0.78
-        - 0.62
-      size: 0.022
-      orbitRadiusAu: 2.57
-      cameraFit: true
-      trail:
-        enabled: true
-        defaultVisible: false
-        color:
-          - 0.88
-          - 0.78
-          - 0.62
-          - 0.045
-        hueStart: 0.12
-      label:
-        enabled: true
-      follow:
-        enabled: true
-      distance:
-        enabled: false
+      <<: *asteroidBeltRender
   - key: hygiea
     label: Hygiea
     kind: asteroid
@@ -488,23 +439,7 @@ bodies:
     layers:
       - asteroidBelt
     render:
-      enabled: true
-      defaultVisible: false
-      color:
-        - 0.72
-        - 0.66
-        - 0.58
-      size: 0.022
-      orbitRadiusAu: 3.14
-      cameraFit: true
-      trail:
-        enabled: false
-      label:
-        enabled: false
-      follow:
-        enabled: true
-      distance:
-        enabled: false
+      <<: *asteroidBeltRender
   - key: psyche
     label: Psyche
     kind: asteroid
@@ -515,23 +450,1052 @@ bodies:
     layers:
       - asteroidBelt
     render:
-      enabled: true
-      defaultVisible: false
-      color:
-        - 0.72
-        - 0.66
-        - 0.58
-      size: 0.022
-      orbitRadiusAu: 3.32
-      cameraFit: true
-      trail:
-        enabled: false
-      label:
-        enabled: false
-      follow:
-        enabled: true
-      distance:
-        enabled: false
+      <<: *asteroidBeltRender
+  - key: juno
+    label: Juno
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000003
+    horizonsCommand: 3;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: astraea
+    label: Astraea
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000005
+    horizonsCommand: 5;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: hebe
+    label: Hebe
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000006
+    horizonsCommand: 6;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: iris
+    label: Iris
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000007
+    horizonsCommand: 7;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: flora
+    label: Flora
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000008
+    horizonsCommand: 8;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: metis
+    label: Metis
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000009
+    horizonsCommand: 9;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: parthenope
+    label: Parthenope
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000011
+    horizonsCommand: 11;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: victoria
+    label: Victoria
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000012
+    horizonsCommand: 12;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: egeria
+    label: Egeria
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000013
+    horizonsCommand: 13;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: irene
+    label: Irene
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000014
+    horizonsCommand: 14;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: eunomia
+    label: Eunomia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000015
+    horizonsCommand: 15;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: thetis
+    label: Thetis
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000017
+    horizonsCommand: 17;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: melpomene
+    label: Melpomene
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000018
+    horizonsCommand: 18;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: fortuna
+    label: Fortuna
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000019
+    horizonsCommand: 19;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: massalia
+    label: Massalia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000020
+    horizonsCommand: 20;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: lutetia
+    label: Lutetia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000021
+    horizonsCommand: 21;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: kalliope
+    label: Kalliope
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000022
+    horizonsCommand: 22;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: thalia
+    label: Thalia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000023
+    horizonsCommand: 23;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: themis
+    label: Themis
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000024
+    horizonsCommand: 24;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: phocaea
+    label: Phocaea
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000025
+    horizonsCommand: 25;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: proserpina
+    label: Proserpina
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000026
+    horizonsCommand: 26;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: euterpe
+    label: Euterpe
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000027
+    horizonsCommand: 27;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: bellona
+    label: Bellona
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000028
+    horizonsCommand: 28;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: amphitrite
+    label: Amphitrite
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000029
+    horizonsCommand: 29;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: urania
+    label: Urania
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000030
+    horizonsCommand: 30;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: euphrosyne
+    label: Euphrosyne
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000031
+    horizonsCommand: 31;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: pomona
+    label: Pomona
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000032
+    horizonsCommand: 32;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: polyhymnia
+    label: Polyhymnia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000033
+    horizonsCommand: 33;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: circe
+    label: Circe
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000034
+    horizonsCommand: 34;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: leukothea
+    label: Leukothea
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000035
+    horizonsCommand: 35;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: atalante
+    label: Atalante
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000036
+    horizonsCommand: 36;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: fides
+    label: Fides
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000037
+    horizonsCommand: 37;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: leda
+    label: Leda
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000038
+    horizonsCommand: 38;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: laetitia
+    label: Laetitia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000039
+    horizonsCommand: 39;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: harmonia
+    label: Harmonia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000040
+    horizonsCommand: 40;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: daphne
+    label: Daphne
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000041
+    horizonsCommand: 41;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: isis
+    label: Isis
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000042
+    horizonsCommand: 42;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: ariadne
+    label: Ariadne
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000043
+    horizonsCommand: 43;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: nysa
+    label: Nysa
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000044
+    horizonsCommand: 44;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: eugenia
+    label: Eugenia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000045
+    horizonsCommand: 45;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: hestia
+    label: Hestia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000046
+    horizonsCommand: 46;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: aglaja
+    label: Aglaja
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000047
+    horizonsCommand: 47;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: doris
+    label: Doris
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000048
+    horizonsCommand: 48;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: pales
+    label: Pales
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000049
+    horizonsCommand: 49;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: virginia
+    label: Virginia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000050
+    horizonsCommand: 50;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: nemausa
+    label: Nemausa
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000051
+    horizonsCommand: 51;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: asteroid-52-europa
+    label: Europa
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000052
+    horizonsCommand: 52;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: kalypso
+    label: Kalypso
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000053
+    horizonsCommand: 53;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: alexandra
+    label: Alexandra
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000054
+    horizonsCommand: 54;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: pandora
+    label: Pandora
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000055
+    horizonsCommand: 55;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: melete
+    label: Melete
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000056
+    horizonsCommand: 56;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: mnemosyne
+    label: Mnemosyne
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000057
+    horizonsCommand: 57;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: concordia
+    label: Concordia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000058
+    horizonsCommand: 58;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: elpis
+    label: Elpis
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000059
+    horizonsCommand: 59;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: echo
+    label: Echo
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000060
+    horizonsCommand: 60;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: danae
+    label: Danae
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000061
+    horizonsCommand: 61;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: erato
+    label: Erato
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000062
+    horizonsCommand: 62;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: ausonia
+    label: Ausonia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000063
+    horizonsCommand: 63;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: angelina
+    label: Angelina
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000064
+    horizonsCommand: 64;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: cybele
+    label: Cybele
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000065
+    horizonsCommand: 65;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: maja
+    label: Maja
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000066
+    horizonsCommand: 66;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: asia
+    label: Asia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000067
+    horizonsCommand: 67;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: leto
+    label: Leto
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000068
+    horizonsCommand: 68;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: hesperia
+    label: Hesperia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000069
+    horizonsCommand: 69;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: panopaea
+    label: Panopaea
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000070
+    horizonsCommand: 70;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: niobe
+    label: Niobe
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000071
+    horizonsCommand: 71;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: feronia
+    label: Feronia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000072
+    horizonsCommand: 72;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: klytia
+    label: Klytia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000073
+    horizonsCommand: 73;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: galatea
+    label: Galatea
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000074
+    horizonsCommand: 74;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: eurydike
+    label: Eurydike
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000075
+    horizonsCommand: 75;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: freia
+    label: Freia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000076
+    horizonsCommand: 76;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: frigga
+    label: Frigga
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000077
+    horizonsCommand: 77;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: diana
+    label: Diana
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000078
+    horizonsCommand: 78;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: eurynome
+    label: Eurynome
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000079
+    horizonsCommand: 79;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: sappho
+    label: Sappho
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000080
+    horizonsCommand: 80;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: terpsichore
+    label: Terpsichore
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000081
+    horizonsCommand: 81;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: alkmene
+    label: Alkmene
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000082
+    horizonsCommand: 82;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: beatrix
+    label: Beatrix
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000083
+    horizonsCommand: 83;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: klio
+    label: Klio
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000084
+    horizonsCommand: 84;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: asteroid-85-io
+    label: Io
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000085
+    horizonsCommand: 85;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: semele
+    label: Semele
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000086
+    horizonsCommand: 86;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: sylvia
+    label: Sylvia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000087
+    horizonsCommand: 87;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: thisbe
+    label: Thisbe
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000088
+    horizonsCommand: 88;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: julia
+    label: Julia
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000089
+    horizonsCommand: 89;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: antiope
+    label: Antiope
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000090
+    horizonsCommand: 90;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: aegina
+    label: Aegina
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000091
+    horizonsCommand: 91;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: undina
+    label: Undina
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000092
+    horizonsCommand: 92;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: minerva
+    label: Minerva
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000093
+    horizonsCommand: 93;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: aurora
+    label: Aurora
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000094
+    horizonsCommand: 94;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: arethusa
+    label: Arethusa
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000095
+    horizonsCommand: 95;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: aegle
+    label: Aegle
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000096
+    horizonsCommand: 96;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: klotho
+    label: Klotho
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000097
+    horizonsCommand: 97;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: ianthe
+    label: Ianthe
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000098
+    horizonsCommand: 98;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: dike
+    label: Dike
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000099
+    horizonsCommand: 99;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
+  - key: hekate
+    label: Hekate
+    kind: asteroid
+    dataset: auxiliary
+    naifId: 2000100
+    horizonsCommand: 100;
+    enabled: true
+    layers:
+      - asteroidBelt
+    render:
+      <<: *asteroidBeltRender
   - key: eros
     label: Eros
     kind: nearEarthAsteroid

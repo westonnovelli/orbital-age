@@ -4,7 +4,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v1",
   "encoder": "json-base64",
-  "generatedOn": "2026-07-23T16:21:10.077Z",
+  "generatedOn": "2026-07-23T16:39:03.329Z",
   "compatibility": {
     "manifestSchema": "ephemeris.manifest.v2",
     "requiredFrame": "ECLIPJ2000",
@@ -64,6 +64,101 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "vesta",
         "hygiea",
         "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
         "eros",
         "bennu",
         "ryugu",
@@ -125,6 +220,101 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "vesta",
         "hygiea",
         "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
         "eros",
         "bennu",
         "ryugu",
@@ -844,15 +1034,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "enabled": true,
       "parent": null,
       "relativeTo": null,
-      "hasLabel": true,
-      "hasTrail": true,
+      "hasLabel": false,
+      "hasTrail": false,
       "capabilities": {
         "canRender": true,
         "canShowByDefault": true,
-        "canFitCamera": true,
-        "canShowLabel": true,
-        "canToggleTrail": true,
-        "canFollow": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
         "canShowDistance": false
       },
       "layers": [
@@ -867,31 +1057,26 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.66,
           0.58
         ],
-        "size": 0.026,
+        "size": 0.014,
         "trueSizeAu": null,
-        "orbitRadiusAu": 2.98,
-        "cameraFit": true,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
         "relativeScale": null,
         "label": {
-          "enabled": true,
+          "enabled": false,
           "offset": [
             0,
             0
           ]
         },
         "trail": {
-          "enabled": true,
+          "enabled": false,
           "defaultVisible": false,
-          "color": [
-            0.72,
-            0.66,
-            0.58,
-            0.045
-          ],
-          "hueStart": 0.09
+          "color": null,
+          "hueStart": 0
         },
         "follow": {
-          "enabled": true
+          "enabled": false
         },
         "distance": {
           "enabled": false
@@ -909,15 +1094,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "enabled": true,
       "parent": null,
       "relativeTo": null,
-      "hasLabel": true,
-      "hasTrail": true,
+      "hasLabel": false,
+      "hasTrail": false,
       "capabilities": {
         "canRender": true,
-        "canShowByDefault": false,
-        "canFitCamera": true,
-        "canShowLabel": true,
-        "canToggleTrail": true,
-        "canFollow": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
         "canShowDistance": false
       },
       "layers": [
@@ -925,37 +1110,32 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       ],
       "render": {
         "enabled": true,
-        "defaultVisible": false,
+        "defaultVisible": true,
         "color": [
           0.72,
           0.66,
           0.58
         ],
-        "size": 0.022,
+        "size": 0.014,
         "trueSizeAu": null,
-        "orbitRadiusAu": 2.98,
-        "cameraFit": true,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
         "relativeScale": null,
         "label": {
-          "enabled": true,
+          "enabled": false,
           "offset": [
             0,
             0
           ]
         },
         "trail": {
-          "enabled": true,
+          "enabled": false,
           "defaultVisible": false,
-          "color": [
-            0.72,
-            0.66,
-            0.58,
-            0.045
-          ],
-          "hueStart": 0.09
+          "color": null,
+          "hueStart": 0
         },
         "follow": {
-          "enabled": true
+          "enabled": false
         },
         "distance": {
           "enabled": false
@@ -973,15 +1153,15 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "enabled": true,
       "parent": null,
       "relativeTo": null,
-      "hasLabel": true,
-      "hasTrail": true,
+      "hasLabel": false,
+      "hasTrail": false,
       "capabilities": {
         "canRender": true,
         "canShowByDefault": true,
-        "canFitCamera": true,
-        "canShowLabel": true,
-        "canToggleTrail": true,
-        "canFollow": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
         "canShowDistance": false
       },
       "layers": [
@@ -992,35 +1172,30 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "enabled": true,
         "defaultVisible": true,
         "color": [
-          0.88,
-          0.78,
-          0.62
+          0.72,
+          0.66,
+          0.58
         ],
-        "size": 0.022,
+        "size": 0.014,
         "trueSizeAu": null,
-        "orbitRadiusAu": 2.57,
-        "cameraFit": true,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
         "relativeScale": null,
         "label": {
-          "enabled": true,
+          "enabled": false,
           "offset": [
             0,
             0
           ]
         },
         "trail": {
-          "enabled": true,
+          "enabled": false,
           "defaultVisible": false,
-          "color": [
-            0.88,
-            0.78,
-            0.62,
-            0.045
-          ],
-          "hueStart": 0.12
+          "color": null,
+          "hueStart": 0
         },
         "follow": {
-          "enabled": true
+          "enabled": false
         },
         "distance": {
           "enabled": false
@@ -1042,11 +1217,11 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "hasTrail": false,
       "capabilities": {
         "canRender": true,
-        "canShowByDefault": false,
-        "canFitCamera": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
         "canShowLabel": false,
         "canToggleTrail": false,
-        "canFollow": true,
+        "canFollow": false,
         "canShowDistance": false
       },
       "layers": [
@@ -1054,16 +1229,16 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       ],
       "render": {
         "enabled": true,
-        "defaultVisible": false,
+        "defaultVisible": true,
         "color": [
           0.72,
           0.66,
           0.58
         ],
-        "size": 0.022,
+        "size": 0.014,
         "trueSizeAu": null,
-        "orbitRadiusAu": 3.14,
-        "cameraFit": true,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
         "relativeScale": null,
         "label": {
           "enabled": false,
@@ -1079,7 +1254,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           "hueStart": 0
         },
         "follow": {
-          "enabled": true
+          "enabled": false
         },
         "distance": {
           "enabled": false
@@ -1101,11 +1276,11 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "hasTrail": false,
       "capabilities": {
         "canRender": true,
-        "canShowByDefault": false,
-        "canFitCamera": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
         "canShowLabel": false,
         "canToggleTrail": false,
-        "canFollow": true,
+        "canFollow": false,
         "canShowDistance": false
       },
       "layers": [
@@ -1113,16 +1288,16 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       ],
       "render": {
         "enabled": true,
-        "defaultVisible": false,
+        "defaultVisible": true,
         "color": [
           0.72,
           0.66,
           0.58
         ],
-        "size": 0.022,
+        "size": 0.014,
         "trueSizeAu": null,
-        "orbitRadiusAu": 3.32,
-        "cameraFit": true,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
         "relativeScale": null,
         "label": {
           "enabled": false,
@@ -1138,7 +1313,5612 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           "hueStart": 0
         },
         "follow": {
-          "enabled": true
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "juno": {
+      "key": "juno",
+      "label": "Juno",
+      "kind": "asteroid",
+      "naifId": 2000003,
+      "horizonsCommand": "3;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "astraea": {
+      "key": "astraea",
+      "label": "Astraea",
+      "kind": "asteroid",
+      "naifId": 2000005,
+      "horizonsCommand": "5;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "hebe": {
+      "key": "hebe",
+      "label": "Hebe",
+      "kind": "asteroid",
+      "naifId": 2000006,
+      "horizonsCommand": "6;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "iris": {
+      "key": "iris",
+      "label": "Iris",
+      "kind": "asteroid",
+      "naifId": 2000007,
+      "horizonsCommand": "7;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "flora": {
+      "key": "flora",
+      "label": "Flora",
+      "kind": "asteroid",
+      "naifId": 2000008,
+      "horizonsCommand": "8;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "metis": {
+      "key": "metis",
+      "label": "Metis",
+      "kind": "asteroid",
+      "naifId": 2000009,
+      "horizonsCommand": "9;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "parthenope": {
+      "key": "parthenope",
+      "label": "Parthenope",
+      "kind": "asteroid",
+      "naifId": 2000011,
+      "horizonsCommand": "11;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "victoria": {
+      "key": "victoria",
+      "label": "Victoria",
+      "kind": "asteroid",
+      "naifId": 2000012,
+      "horizonsCommand": "12;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "egeria": {
+      "key": "egeria",
+      "label": "Egeria",
+      "kind": "asteroid",
+      "naifId": 2000013,
+      "horizonsCommand": "13;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "irene": {
+      "key": "irene",
+      "label": "Irene",
+      "kind": "asteroid",
+      "naifId": 2000014,
+      "horizonsCommand": "14;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "eunomia": {
+      "key": "eunomia",
+      "label": "Eunomia",
+      "kind": "asteroid",
+      "naifId": 2000015,
+      "horizonsCommand": "15;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "thetis": {
+      "key": "thetis",
+      "label": "Thetis",
+      "kind": "asteroid",
+      "naifId": 2000017,
+      "horizonsCommand": "17;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "melpomene": {
+      "key": "melpomene",
+      "label": "Melpomene",
+      "kind": "asteroid",
+      "naifId": 2000018,
+      "horizonsCommand": "18;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "fortuna": {
+      "key": "fortuna",
+      "label": "Fortuna",
+      "kind": "asteroid",
+      "naifId": 2000019,
+      "horizonsCommand": "19;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "massalia": {
+      "key": "massalia",
+      "label": "Massalia",
+      "kind": "asteroid",
+      "naifId": 2000020,
+      "horizonsCommand": "20;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "lutetia": {
+      "key": "lutetia",
+      "label": "Lutetia",
+      "kind": "asteroid",
+      "naifId": 2000021,
+      "horizonsCommand": "21;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "kalliope": {
+      "key": "kalliope",
+      "label": "Kalliope",
+      "kind": "asteroid",
+      "naifId": 2000022,
+      "horizonsCommand": "22;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "thalia": {
+      "key": "thalia",
+      "label": "Thalia",
+      "kind": "asteroid",
+      "naifId": 2000023,
+      "horizonsCommand": "23;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "themis": {
+      "key": "themis",
+      "label": "Themis",
+      "kind": "asteroid",
+      "naifId": 2000024,
+      "horizonsCommand": "24;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "phocaea": {
+      "key": "phocaea",
+      "label": "Phocaea",
+      "kind": "asteroid",
+      "naifId": 2000025,
+      "horizonsCommand": "25;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "proserpina": {
+      "key": "proserpina",
+      "label": "Proserpina",
+      "kind": "asteroid",
+      "naifId": 2000026,
+      "horizonsCommand": "26;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "euterpe": {
+      "key": "euterpe",
+      "label": "Euterpe",
+      "kind": "asteroid",
+      "naifId": 2000027,
+      "horizonsCommand": "27;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "bellona": {
+      "key": "bellona",
+      "label": "Bellona",
+      "kind": "asteroid",
+      "naifId": 2000028,
+      "horizonsCommand": "28;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "amphitrite": {
+      "key": "amphitrite",
+      "label": "Amphitrite",
+      "kind": "asteroid",
+      "naifId": 2000029,
+      "horizonsCommand": "29;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "urania": {
+      "key": "urania",
+      "label": "Urania",
+      "kind": "asteroid",
+      "naifId": 2000030,
+      "horizonsCommand": "30;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "euphrosyne": {
+      "key": "euphrosyne",
+      "label": "Euphrosyne",
+      "kind": "asteroid",
+      "naifId": 2000031,
+      "horizonsCommand": "31;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "pomona": {
+      "key": "pomona",
+      "label": "Pomona",
+      "kind": "asteroid",
+      "naifId": 2000032,
+      "horizonsCommand": "32;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "polyhymnia": {
+      "key": "polyhymnia",
+      "label": "Polyhymnia",
+      "kind": "asteroid",
+      "naifId": 2000033,
+      "horizonsCommand": "33;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "circe": {
+      "key": "circe",
+      "label": "Circe",
+      "kind": "asteroid",
+      "naifId": 2000034,
+      "horizonsCommand": "34;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "leukothea": {
+      "key": "leukothea",
+      "label": "Leukothea",
+      "kind": "asteroid",
+      "naifId": 2000035,
+      "horizonsCommand": "35;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "atalante": {
+      "key": "atalante",
+      "label": "Atalante",
+      "kind": "asteroid",
+      "naifId": 2000036,
+      "horizonsCommand": "36;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "fides": {
+      "key": "fides",
+      "label": "Fides",
+      "kind": "asteroid",
+      "naifId": 2000037,
+      "horizonsCommand": "37;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "leda": {
+      "key": "leda",
+      "label": "Leda",
+      "kind": "asteroid",
+      "naifId": 2000038,
+      "horizonsCommand": "38;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "laetitia": {
+      "key": "laetitia",
+      "label": "Laetitia",
+      "kind": "asteroid",
+      "naifId": 2000039,
+      "horizonsCommand": "39;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "harmonia": {
+      "key": "harmonia",
+      "label": "Harmonia",
+      "kind": "asteroid",
+      "naifId": 2000040,
+      "horizonsCommand": "40;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "daphne": {
+      "key": "daphne",
+      "label": "Daphne",
+      "kind": "asteroid",
+      "naifId": 2000041,
+      "horizonsCommand": "41;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "isis": {
+      "key": "isis",
+      "label": "Isis",
+      "kind": "asteroid",
+      "naifId": 2000042,
+      "horizonsCommand": "42;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "ariadne": {
+      "key": "ariadne",
+      "label": "Ariadne",
+      "kind": "asteroid",
+      "naifId": 2000043,
+      "horizonsCommand": "43;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "nysa": {
+      "key": "nysa",
+      "label": "Nysa",
+      "kind": "asteroid",
+      "naifId": 2000044,
+      "horizonsCommand": "44;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "eugenia": {
+      "key": "eugenia",
+      "label": "Eugenia",
+      "kind": "asteroid",
+      "naifId": 2000045,
+      "horizonsCommand": "45;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "hestia": {
+      "key": "hestia",
+      "label": "Hestia",
+      "kind": "asteroid",
+      "naifId": 2000046,
+      "horizonsCommand": "46;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "aglaja": {
+      "key": "aglaja",
+      "label": "Aglaja",
+      "kind": "asteroid",
+      "naifId": 2000047,
+      "horizonsCommand": "47;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "doris": {
+      "key": "doris",
+      "label": "Doris",
+      "kind": "asteroid",
+      "naifId": 2000048,
+      "horizonsCommand": "48;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "pales": {
+      "key": "pales",
+      "label": "Pales",
+      "kind": "asteroid",
+      "naifId": 2000049,
+      "horizonsCommand": "49;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "virginia": {
+      "key": "virginia",
+      "label": "Virginia",
+      "kind": "asteroid",
+      "naifId": 2000050,
+      "horizonsCommand": "50;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "nemausa": {
+      "key": "nemausa",
+      "label": "Nemausa",
+      "kind": "asteroid",
+      "naifId": 2000051,
+      "horizonsCommand": "51;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "asteroid-52-europa": {
+      "key": "asteroid-52-europa",
+      "label": "Europa",
+      "kind": "asteroid",
+      "naifId": 2000052,
+      "horizonsCommand": "52;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "kalypso": {
+      "key": "kalypso",
+      "label": "Kalypso",
+      "kind": "asteroid",
+      "naifId": 2000053,
+      "horizonsCommand": "53;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "alexandra": {
+      "key": "alexandra",
+      "label": "Alexandra",
+      "kind": "asteroid",
+      "naifId": 2000054,
+      "horizonsCommand": "54;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "pandora": {
+      "key": "pandora",
+      "label": "Pandora",
+      "kind": "asteroid",
+      "naifId": 2000055,
+      "horizonsCommand": "55;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "melete": {
+      "key": "melete",
+      "label": "Melete",
+      "kind": "asteroid",
+      "naifId": 2000056,
+      "horizonsCommand": "56;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "mnemosyne": {
+      "key": "mnemosyne",
+      "label": "Mnemosyne",
+      "kind": "asteroid",
+      "naifId": 2000057,
+      "horizonsCommand": "57;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "concordia": {
+      "key": "concordia",
+      "label": "Concordia",
+      "kind": "asteroid",
+      "naifId": 2000058,
+      "horizonsCommand": "58;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "elpis": {
+      "key": "elpis",
+      "label": "Elpis",
+      "kind": "asteroid",
+      "naifId": 2000059,
+      "horizonsCommand": "59;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "echo": {
+      "key": "echo",
+      "label": "Echo",
+      "kind": "asteroid",
+      "naifId": 2000060,
+      "horizonsCommand": "60;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "danae": {
+      "key": "danae",
+      "label": "Danae",
+      "kind": "asteroid",
+      "naifId": 2000061,
+      "horizonsCommand": "61;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "erato": {
+      "key": "erato",
+      "label": "Erato",
+      "kind": "asteroid",
+      "naifId": 2000062,
+      "horizonsCommand": "62;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "ausonia": {
+      "key": "ausonia",
+      "label": "Ausonia",
+      "kind": "asteroid",
+      "naifId": 2000063,
+      "horizonsCommand": "63;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "angelina": {
+      "key": "angelina",
+      "label": "Angelina",
+      "kind": "asteroid",
+      "naifId": 2000064,
+      "horizonsCommand": "64;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "cybele": {
+      "key": "cybele",
+      "label": "Cybele",
+      "kind": "asteroid",
+      "naifId": 2000065,
+      "horizonsCommand": "65;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "maja": {
+      "key": "maja",
+      "label": "Maja",
+      "kind": "asteroid",
+      "naifId": 2000066,
+      "horizonsCommand": "66;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "asia": {
+      "key": "asia",
+      "label": "Asia",
+      "kind": "asteroid",
+      "naifId": 2000067,
+      "horizonsCommand": "67;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "leto": {
+      "key": "leto",
+      "label": "Leto",
+      "kind": "asteroid",
+      "naifId": 2000068,
+      "horizonsCommand": "68;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "hesperia": {
+      "key": "hesperia",
+      "label": "Hesperia",
+      "kind": "asteroid",
+      "naifId": 2000069,
+      "horizonsCommand": "69;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "panopaea": {
+      "key": "panopaea",
+      "label": "Panopaea",
+      "kind": "asteroid",
+      "naifId": 2000070,
+      "horizonsCommand": "70;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "niobe": {
+      "key": "niobe",
+      "label": "Niobe",
+      "kind": "asteroid",
+      "naifId": 2000071,
+      "horizonsCommand": "71;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "feronia": {
+      "key": "feronia",
+      "label": "Feronia",
+      "kind": "asteroid",
+      "naifId": 2000072,
+      "horizonsCommand": "72;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "klytia": {
+      "key": "klytia",
+      "label": "Klytia",
+      "kind": "asteroid",
+      "naifId": 2000073,
+      "horizonsCommand": "73;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "galatea": {
+      "key": "galatea",
+      "label": "Galatea",
+      "kind": "asteroid",
+      "naifId": 2000074,
+      "horizonsCommand": "74;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "eurydike": {
+      "key": "eurydike",
+      "label": "Eurydike",
+      "kind": "asteroid",
+      "naifId": 2000075,
+      "horizonsCommand": "75;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "freia": {
+      "key": "freia",
+      "label": "Freia",
+      "kind": "asteroid",
+      "naifId": 2000076,
+      "horizonsCommand": "76;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "frigga": {
+      "key": "frigga",
+      "label": "Frigga",
+      "kind": "asteroid",
+      "naifId": 2000077,
+      "horizonsCommand": "77;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "diana": {
+      "key": "diana",
+      "label": "Diana",
+      "kind": "asteroid",
+      "naifId": 2000078,
+      "horizonsCommand": "78;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "eurynome": {
+      "key": "eurynome",
+      "label": "Eurynome",
+      "kind": "asteroid",
+      "naifId": 2000079,
+      "horizonsCommand": "79;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "sappho": {
+      "key": "sappho",
+      "label": "Sappho",
+      "kind": "asteroid",
+      "naifId": 2000080,
+      "horizonsCommand": "80;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "terpsichore": {
+      "key": "terpsichore",
+      "label": "Terpsichore",
+      "kind": "asteroid",
+      "naifId": 2000081,
+      "horizonsCommand": "81;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "alkmene": {
+      "key": "alkmene",
+      "label": "Alkmene",
+      "kind": "asteroid",
+      "naifId": 2000082,
+      "horizonsCommand": "82;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "beatrix": {
+      "key": "beatrix",
+      "label": "Beatrix",
+      "kind": "asteroid",
+      "naifId": 2000083,
+      "horizonsCommand": "83;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "klio": {
+      "key": "klio",
+      "label": "Klio",
+      "kind": "asteroid",
+      "naifId": 2000084,
+      "horizonsCommand": "84;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "asteroid-85-io": {
+      "key": "asteroid-85-io",
+      "label": "Io",
+      "kind": "asteroid",
+      "naifId": 2000085,
+      "horizonsCommand": "85;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "semele": {
+      "key": "semele",
+      "label": "Semele",
+      "kind": "asteroid",
+      "naifId": 2000086,
+      "horizonsCommand": "86;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "sylvia": {
+      "key": "sylvia",
+      "label": "Sylvia",
+      "kind": "asteroid",
+      "naifId": 2000087,
+      "horizonsCommand": "87;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "thisbe": {
+      "key": "thisbe",
+      "label": "Thisbe",
+      "kind": "asteroid",
+      "naifId": 2000088,
+      "horizonsCommand": "88;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "julia": {
+      "key": "julia",
+      "label": "Julia",
+      "kind": "asteroid",
+      "naifId": 2000089,
+      "horizonsCommand": "89;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "antiope": {
+      "key": "antiope",
+      "label": "Antiope",
+      "kind": "asteroid",
+      "naifId": 2000090,
+      "horizonsCommand": "90;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "aegina": {
+      "key": "aegina",
+      "label": "Aegina",
+      "kind": "asteroid",
+      "naifId": 2000091,
+      "horizonsCommand": "91;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "undina": {
+      "key": "undina",
+      "label": "Undina",
+      "kind": "asteroid",
+      "naifId": 2000092,
+      "horizonsCommand": "92;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "minerva": {
+      "key": "minerva",
+      "label": "Minerva",
+      "kind": "asteroid",
+      "naifId": 2000093,
+      "horizonsCommand": "93;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "aurora": {
+      "key": "aurora",
+      "label": "Aurora",
+      "kind": "asteroid",
+      "naifId": 2000094,
+      "horizonsCommand": "94;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "arethusa": {
+      "key": "arethusa",
+      "label": "Arethusa",
+      "kind": "asteroid",
+      "naifId": 2000095,
+      "horizonsCommand": "95;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "aegle": {
+      "key": "aegle",
+      "label": "Aegle",
+      "kind": "asteroid",
+      "naifId": 2000096,
+      "horizonsCommand": "96;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "klotho": {
+      "key": "klotho",
+      "label": "Klotho",
+      "kind": "asteroid",
+      "naifId": 2000097,
+      "horizonsCommand": "97;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "ianthe": {
+      "key": "ianthe",
+      "label": "Ianthe",
+      "kind": "asteroid",
+      "naifId": 2000098,
+      "horizonsCommand": "98;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "dike": {
+      "key": "dike",
+      "label": "Dike",
+      "kind": "asteroid",
+      "naifId": 2000099,
+      "horizonsCommand": "99;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "hekate": {
+      "key": "hekate",
+      "label": "Hekate",
+      "kind": "asteroid",
+      "naifId": 2000100,
+      "horizonsCommand": "100;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": false,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": false,
+        "canToggleTrail": false,
+        "canFollow": false,
+        "canShowDistance": false
+      },
+      "layers": [
+        "asteroidBelt"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.66,
+          0.58
+        ],
+        "size": 0.014,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": false,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": false
         },
         "distance": {
           "enabled": false
@@ -3117,19 +8897,114 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "sha256": "bd5e1a73ef26c3d2811eb55d1809280e3f6c236094f110b5006b393bf4ad9e45"
     },
     {
-      "id": "auxiliary-historical-1926-01-01-1948-03-06",
+      "id": "auxiliary-historical-1926-01-01-1932-02-04",
       "stream": "auxiliary",
       "kind": "historical",
       "startUtc": "1926-01-01T00:00:00Z",
-      "endUtc": "1948-03-06T00:00:00Z",
+      "endUtc": "1932-02-04T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 8101,
+      "samplesPerBody": 2226,
       "bodyKeys": [
         "ceres",
         "pallas",
         "vesta",
         "hygiea",
         "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
         "eros",
         "bennu",
         "ryugu",
@@ -3166,24 +9041,119 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/json",
       "compression": "none",
       "vectorEncoding": "float32-base64",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1926-01-01-1948-03-06.json",
-      "byteLength": 4667833,
-      "sha256": "8572005180c37288c2354f68aef970e7373143a3016c4652482808e0344734d4"
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1926-01-01-1932-02-04.json",
+      "byteLength": 4670525,
+      "sha256": "b39abfaba9977ea6370a7c9e32344acf715e93137bdeb9debd72d5def9faacfe"
     },
     {
-      "id": "auxiliary-historical-1948-03-06-1970-05-10",
+      "id": "auxiliary-historical-1932-02-04-1938-03-09",
       "stream": "auxiliary",
       "kind": "historical",
-      "startUtc": "1948-03-06T00:00:00Z",
-      "endUtc": "1970-05-10T00:00:00Z",
+      "startUtc": "1932-02-04T00:00:00Z",
+      "endUtc": "1938-03-09T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 8101,
+      "samplesPerBody": 2226,
       "bodyKeys": [
         "ceres",
         "pallas",
         "vesta",
         "hygiea",
         "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
         "eros",
         "bennu",
         "ryugu",
@@ -3220,24 +9190,119 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/json",
       "compression": "none",
       "vectorEncoding": "float32-base64",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1948-03-06-1970-05-10.json",
-      "byteLength": 4667833,
-      "sha256": "ccef16f98ee3df1869a7826f6a9f192961a4a96aba117ad29222b401c513602a"
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1932-02-04-1938-03-09.json",
+      "byteLength": 4670525,
+      "sha256": "4c50e9db2e2a59ada396b10dc71c8a28b420fb836462f828ff3b20699afcddc5"
     },
     {
-      "id": "auxiliary-historical-1970-05-10-1992-07-13",
+      "id": "auxiliary-historical-1938-03-09-1944-04-11",
       "stream": "auxiliary",
       "kind": "historical",
-      "startUtc": "1970-05-10T00:00:00Z",
-      "endUtc": "1992-07-13T00:00:00Z",
+      "startUtc": "1938-03-09T00:00:00Z",
+      "endUtc": "1944-04-11T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 8101,
+      "samplesPerBody": 2226,
       "bodyKeys": [
         "ceres",
         "pallas",
         "vesta",
         "hygiea",
         "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
         "eros",
         "bennu",
         "ryugu",
@@ -3274,24 +9339,1609 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/json",
       "compression": "none",
       "vectorEncoding": "float32-base64",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1970-05-10-1992-07-13.json",
-      "byteLength": 4667833,
-      "sha256": "977d8cb91aaedb53fabe5e5f2911270146b5db0b72d6cff679e5f1d9259968df"
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1938-03-09-1944-04-11.json",
+      "byteLength": 4670525,
+      "sha256": "e2df506748df276ca7faf9ea8cf11de95f365bd889e26be692a289ed1ae59401"
     },
     {
-      "id": "auxiliary-historical-1992-07-13-2006-07-23",
+      "id": "auxiliary-historical-1944-04-11-1950-05-15",
       "stream": "auxiliary",
       "kind": "historical",
-      "startUtc": "1992-07-13T00:00:00Z",
+      "startUtc": "1944-04-11T00:00:00Z",
+      "endUtc": "1950-05-15T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2226,
+      "bodyKeys": [
+        "ceres",
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis",
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1944-04-11-1950-05-15.json",
+      "byteLength": 4670525,
+      "sha256": "658321630f828efbec62e9a62febb3acdb47f81bcbe0f1e4ed4d84bd4914903c"
+    },
+    {
+      "id": "auxiliary-historical-1950-05-15-1956-06-17",
+      "stream": "auxiliary",
+      "kind": "historical",
+      "startUtc": "1950-05-15T00:00:00Z",
+      "endUtc": "1956-06-17T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2226,
+      "bodyKeys": [
+        "ceres",
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis",
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1950-05-15-1956-06-17.json",
+      "byteLength": 4670525,
+      "sha256": "b2490aec365bfac2fde7f09195a3c794cf3422af59de0ab7690d7d8bd58c6419"
+    },
+    {
+      "id": "auxiliary-historical-1956-06-17-1962-07-21",
+      "stream": "auxiliary",
+      "kind": "historical",
+      "startUtc": "1956-06-17T00:00:00Z",
+      "endUtc": "1962-07-21T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2226,
+      "bodyKeys": [
+        "ceres",
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis",
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1956-06-17-1962-07-21.json",
+      "byteLength": 4670525,
+      "sha256": "e5a7bb805bbec16eb0b54bfde4ef63ef748963527b5e5f61f8e3546908c0b557"
+    },
+    {
+      "id": "auxiliary-historical-1962-07-21-1968-08-23",
+      "stream": "auxiliary",
+      "kind": "historical",
+      "startUtc": "1962-07-21T00:00:00Z",
+      "endUtc": "1968-08-23T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2226,
+      "bodyKeys": [
+        "ceres",
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis",
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1962-07-21-1968-08-23.json",
+      "byteLength": 4670525,
+      "sha256": "2e35d2b69323ccced84b7ee59363e333d6270c893e2d48b182b3c2ef8589bf81"
+    },
+    {
+      "id": "auxiliary-historical-1968-08-23-1974-09-26",
+      "stream": "auxiliary",
+      "kind": "historical",
+      "startUtc": "1968-08-23T00:00:00Z",
+      "endUtc": "1974-09-26T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2226,
+      "bodyKeys": [
+        "ceres",
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis",
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1968-08-23-1974-09-26.json",
+      "byteLength": 4670525,
+      "sha256": "5ba61c67d30ce97a3da2a3a2a934c04a4d8a436419da7b124cd916289d3ce79e"
+    },
+    {
+      "id": "auxiliary-historical-1974-09-26-1980-10-29",
+      "stream": "auxiliary",
+      "kind": "historical",
+      "startUtc": "1974-09-26T00:00:00Z",
+      "endUtc": "1980-10-29T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2226,
+      "bodyKeys": [
+        "ceres",
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis",
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1974-09-26-1980-10-29.json",
+      "byteLength": 4670525,
+      "sha256": "c3ae1c0dcfc2740acaba9e596067481a0266d92e5a5ec5e5b63360fb11030d14"
+    },
+    {
+      "id": "auxiliary-historical-1980-10-29-1986-12-02",
+      "stream": "auxiliary",
+      "kind": "historical",
+      "startUtc": "1980-10-29T00:00:00Z",
+      "endUtc": "1986-12-02T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2226,
+      "bodyKeys": [
+        "ceres",
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis",
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1980-10-29-1986-12-02.json",
+      "byteLength": 4670525,
+      "sha256": "ef74567e333c6c77ebc02466d953286b6465c7f39f0185dee6ce9f71b4d5ba56"
+    },
+    {
+      "id": "auxiliary-historical-1986-12-02-1993-01-04",
+      "stream": "auxiliary",
+      "kind": "historical",
+      "startUtc": "1986-12-02T00:00:00Z",
+      "endUtc": "1993-01-04T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2226,
+      "bodyKeys": [
+        "ceres",
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis",
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1986-12-02-1993-01-04.json",
+      "byteLength": 4670525,
+      "sha256": "a7d5d490c1f47aa2be421c0a50574fe31168f54e7411d07154f0eb584618622f"
+    },
+    {
+      "id": "auxiliary-historical-1993-01-04-1999-02-07",
+      "stream": "auxiliary",
+      "kind": "historical",
+      "startUtc": "1993-01-04T00:00:00Z",
+      "endUtc": "1999-02-07T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2226,
+      "bodyKeys": [
+        "ceres",
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis",
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1993-01-04-1999-02-07.json",
+      "byteLength": 4670525,
+      "sha256": "879d7e746eac9b3005ca8df03a01fb53f2666326bab0528329aaed43fa00e45c"
+    },
+    {
+      "id": "auxiliary-historical-1999-02-07-2005-03-12",
+      "stream": "auxiliary",
+      "kind": "historical",
+      "startUtc": "1999-02-07T00:00:00Z",
+      "endUtc": "2005-03-12T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2226,
+      "bodyKeys": [
+        "ceres",
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis",
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1999-02-07-2005-03-12.json",
+      "byteLength": 4670525,
+      "sha256": "5690fee2e738bbcf4d15feafe82c9a75c01749f8aeed00416671d5e1a6661c46"
+    },
+    {
+      "id": "auxiliary-historical-2005-03-12-2006-07-23",
+      "stream": "auxiliary",
+      "kind": "historical",
+      "startUtc": "2005-03-12T00:00:00Z",
       "endUtc": "2006-07-23T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 5124,
+      "samplesPerBody": 499,
       "bodyKeys": [
         "ceres",
         "pallas",
         "vesta",
         "hygiea",
         "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
         "eros",
         "bennu",
         "ryugu",
@@ -3328,9 +10978,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/json",
       "compression": "none",
       "vectorEncoding": "float32-base64",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1992-07-13-2006-07-23.json",
-      "byteLength": 2953081,
-      "sha256": "7920ea05eb567356c5006fd3b0abf80c917b4449051efc05d418b6d8c76a441f"
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-2005-03-12-2006-07-23.json",
+      "byteLength": 1050732,
+      "sha256": "387c1b9d4546f8f77034dd17b258111dc5fd7cac2d18e3e480599b6236591bce"
     },
     {
       "id": "auxiliary-recent-2006-07-23-2026-07-23",
@@ -3346,6 +10996,101 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "vesta",
         "hygiea",
         "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate",
         "eros",
         "bennu",
         "ryugu",
@@ -3383,8 +11128,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "compression": "none",
       "vectorEncoding": "float32-base64",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-recent-2006-07-23-2026-07-23.json",
-      "byteLength": 4209909,
-      "sha256": "327bdffc8c90f55172c7256c7e6f54a1d142a1d22ca1016885920f5f2cbd2004"
+      "byteLength": 15318201,
+      "sha256": "e44a4bce486d96f4eca739eb43d30ce1d3ce48ec05aeca873f2db95b247d942e"
     }
   ]
 });
