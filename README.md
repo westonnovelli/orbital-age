@@ -35,7 +35,8 @@ Then open the printed URL (typically `http://localhost:3000`).
 This project is currently source-only and does not require a bundling step.
 
 - Verification build step: run `npm test`.
-- Deployment artifact: static files in the repository root (`index.html`, `src/`).
+- Deployment artifact: static files in the repository root (`index.html`, `src/`, `assets/`).
+- Static browser assets belong in `assets/`; Pages deployment copies the entire directory.
 
 ## Positional Fidelity Verification
 
@@ -65,9 +66,11 @@ npm run data:ephemeris:rebuild:v2
 npm run data:ephemeris:verify:v2
 ```
 
-`data/ephemeris/v2` contains the chunked, loader-facing dataset. It is generated
-from the canonical v1 rows and uses `build-config.json` to tune stream hot
-windows, chunk byte budgets, and output format.
+`data/bodies.yaml` is the canonical body catalog. `data/ephemeris/v2` is its
+generated, loader-facing runtime contract: it records supported bodies,
+capabilities, coordinate/time constraints, dataset load policies, chunks, and
+integrity metadata. The builder packages canonical v1 rows according to the
+catalog's dataset hot windows, byte budgets, and output format.
 
 ## CI/CD
 

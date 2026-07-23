@@ -126,14 +126,13 @@ What `data:ephemeris:rebuild:v2` regenerates:
 - `data/ephemeris/v2/chunks/**`
 - `src/ephemeris/generated-v2-index.js`
 
-The v2 builder reads the canonical v1 rows, then applies
-`data/ephemeris/v2/build-config.json` byte budgets, stream definitions, hot
-windows, and encoder settings. The initial encoder is `json-base64`; future
+The v2 builder reads the canonical v1 rows, then applies the dataset, byte
+budget, body capability, and encoder definitions in `data/bodies.yaml`. The
+initial encoder is `json-base64`; future
 binary/compressed formats should be added behind the same manifest and decoder
 interfaces rather than changing app code directly.
 
-Auxiliary bodies are fetched from Horizons using
-`data/ephemeris/v2/auxiliary-targets.json`. Raw auxiliary responses and
+Auxiliary bodies are fetched from Horizons using `data/bodies.yaml`. Raw auxiliary responses and
 `auxiliary-snapshots.ndjson` are re-fetchable intermediates and are ignored by
 git; committed v2 runtime artifacts are the manifest, generated index, and
 chunk files.

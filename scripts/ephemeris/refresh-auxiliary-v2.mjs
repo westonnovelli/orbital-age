@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { pipeline } from "node:stream/promises";
 import { Readable } from "node:stream";
+import { enabledBodies, loadCatalog } from "./catalog.mjs";
 
 const HORIZONS_API_URL = "https://ssd.jpl.nasa.gov/api/horizons.api";
 const cwd = process.cwd();
@@ -102,7 +103,7 @@ function parseHorizonsCsvRows(resultText, target) {
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const header = JSON.parse(fs.readFileSync(path.join(v1Dir, "header.json"), "utf8"));
-  const auxiliary = JSON.parse(fs.readFileSync(path.join(v2Dir, "auxiliary-targets.json"), "utf8"));
+  const auxiliary = enabledBodies(loadCatalog(cwd), "auxiliary");
   const startDate = utcDateFromIso(header.window.startUtc);
   const stopDate = utcDateFromIso(header.window.endUtc);
 
@@ -111,7 +112,7 @@ async function main() {
     `- window: ${startDate}..${stopDate}`,
     "- requests:"
   ];
-  for (const target of auxiliary.targets) {
+  for (const target of auxiliary) {
     const url = buildUrl(horizonsParams({ command: target.horizonsCommand, startDate, stopDate }));
     planLines.push(`  - ${target.key}: ${url}`);
   }
@@ -124,7 +125,7 @@ async function main() {
 
   if (options.fetch) {
     fs.mkdirSync(rawDir, { recursive: true });
-    for (const target of auxiliary.targets) {
+    for (const target of auxiliary) {
       const url = buildUrl(horizonsParams({ command: target.horizonsCommand, startDate, stopDate }));
       const destination = path.join(rawDir, `${target.key}.json`);
       await fetchRawJson(url, destination);
@@ -137,7 +138,7 @@ async function main() {
   }
 
   const rowsByTarget = new Map();
-  for (const target of auxiliary.targets) {
+  for (const target of auxiliary) {
     const rawPath = path.join(rawDir, `${target.key}.json`);
     if (!fs.existsSync(rawPath)) {
       throw new Error(`Missing raw Horizons response: ${path.relative(cwd, rawPath)}`);
@@ -154,7 +155,7 @@ async function main() {
 
   const rows = [];
   for (let i = 0; i < header.cadence.samplesPerBody; i += 1) {
-    for (const target of auxiliary.targets) {
+    for (const target of auxiliary) {
       rows.push(rowsByTarget.get(target.key)[i]);
     }
   }

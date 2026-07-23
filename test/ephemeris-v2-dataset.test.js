@@ -13,7 +13,10 @@ function readJson(relativePath) {
 test("v2 manifest carries tunable format metadata", () => {
   const manifest = readJson("manifest.json");
 
-  assert.equal(manifest.datasetVersion, "2.0.0");
+  assert.equal(manifest.datasetVersion, "2.1.0");
+  assert.equal(manifest.compatibility.manifestSchema, "ephemeris.manifest.v2");
+  assert.equal(manifest.datasets.primary.load, "eager");
+  assert.equal(manifest.datasets.auxiliary.load, "lazy");
   assert.equal(manifest.formatVersion, "1.0.0");
   assert.equal(manifest.chunkSchema, "ephemeris.chunk.v1");
   assert.equal(manifest.encoder, "json-base64");

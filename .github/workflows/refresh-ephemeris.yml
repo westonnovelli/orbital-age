@@ -2,13 +2,14 @@ name: Refresh Ephemeris
 
 # Keeps the deployed ephemeris dataset current (<=24h old) by re-fetching JPL
 # Horizons through "today + 1 day", regenerating the dataset artifacts, committing
-# them to master, and then publishing to GitHub Pages via the inline deploy steps.
+# them to master, and then publishing to GitHub Pages through the reusable
+# deploy-pages workflow.
 #
-# Why deploy inline instead of relying on the existing push -> CI -> deploy chain:
+# Why call this workflow instead of relying on the existing push -> CI -> deploy chain:
 # a push made with the default GITHUB_TOKEN does NOT trigger another workflow run,
-# so committing data here would never re-fire CI/deploy-pages. We therefore run the
-# Pages build + deploy steps directly in this workflow (mirrored from
-# deploy-pages.yml) and still commit the data to master for persistence.
+# so committing data here would never re-fire CI/deploy-pages. We therefore call
+# the reusable Pages workflow directly after the refresh and still commit the data
+# to master for persistence.
 #
 # Caveats:
 # - Scheduled workflows only run from the default branch (master).
@@ -34,9 +35,6 @@ concurrency:
 jobs:
   refresh-and-deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout
@@ -92,26 +90,9 @@ jobs:
             git push origin master
           fi
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v6
-
-      - name: Prepare static artifact
-        run: |
-          mkdir -p _site
-          cp index.html _site/
-          cp -R src _site/src
-          mkdir -p _site/data/ephemeris/v2
-          cp data/ephemeris/v2/manifest.json _site/data/ephemeris/v2/
-          cp -R data/ephemeris/v2/chunks _site/data/ephemeris/v2/chunks
-          cp orbital-drift.mp3 _site/
-          if [ -f CNAME ]; then cp CNAME _site/; fi
-          if [ -f favicon.ico ]; then cp favicon.ico _site/; fi
-
-      - name: Upload static site artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: _site
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
+  deploy-pages:
+    needs: refresh-and-deploy
+    if: needs.refresh-and-deploy.result == 'success'
+    uses: ./.github/workflows/deploy-pages.yml
+    with:
+      ref: master

@@ -25,57 +25,70 @@ The larger auxiliary dataset can still include additional bodies such as Pallas,
 Hygiea, Psyche, Bennu, Ryugu, Apophis, Eris, and Makemake. They should remain in
 the data registry until we expose them through an explicit layer.
 
-## Add a Body to the Dataset
+## Add or Change an Auxiliary Body
 
-1. Add the body to `data/ephemeris/v2/auxiliary-targets.json`.
-2. Fetch auxiliary source data:
+`data/bodies.yaml` is the only hand-maintained body configuration. Do not edit
+the generated manifest, index, or chunk files directly.
+
+1. Add or update a `bodies` item with:
+
+   - `key`, `label`, `kind`, `dataset: auxiliary`, `naifId`, and
+     `horizonsCommand`;
+   - `enabled: true` and one or more user-facing `layers`;
+   - a `render` block with visual settings and independent `label`, `trail`,
+     `follow`, and `distance` capability flags.
+
+   Set `render.defaultVisible: false` for bodies that should be available only
+   after their layer is enabled. Keep `distance.enabled: false` and
+   `trail.defaultVisible: false` for cheap auxiliary defaults.
+
+2. Validate the catalog and preview the exact Horizons requests before fetching:
 
    ```bash
-   npm run data:ephemeris:refresh:auxiliary:v2 -- --fetch --yes
+   mise exec -- node --test test/body-catalog.test.js
+   mise exec -- node scripts/ephemeris/refresh-auxiliary-v2.mjs --print-plan
    ```
 
-3. Rebuild and verify v2 artifacts:
+3. Fetch auxiliary source data:
 
    ```bash
-   npm run data:ephemeris:rebuild:v2
-   npm run data:ephemeris:verify:v2
+   mise exec -- npm run data:ephemeris:refresh:auxiliary:v2 -- --fetch --yes
    ```
 
-4. Confirm generated changes include:
+4. Rebuild and verify v2 artifacts:
+
+   ```bash
+   mise exec -- npm run data:ephemeris:rebuild:v2
+   mise exec -- npm run data:ephemeris:verify:v2
+   ```
+
+5. Confirm generated changes include:
 
    - `data/ephemeris/v2/manifest.json`
    - `data/ephemeris/v2/chunks/**`
    - `src/ephemeris/generated-v2-index.js`
 
 Do not commit raw auxiliary responses or intermediate snapshots. They are local
-build inputs and should remain ignored.
+build inputs and should remain ignored. Commit the catalog and regenerated
+manifest/index/chunks together.
 
 ## Add a Body to Runtime Rendering
 
-Do not add every dataset body directly to the default render list. Instead, add
-or update layer definitions in `src/app.js`.
+Layer membership and rendering policy live on the body in `data/bodies.yaml`.
+The build copies those fields into `manifest.bodies[key]`; runtime code must use
+that contract rather than duplicate color, size, capability, or default-state
+lists in application code.
 
-Recommended shape:
-
-```js
-const AUXILIARY_BODY_LAYERS = {
-  featured: ["ceres", "vesta", "eros", "halley", "67p"],
-  asteroidBelt: ["pallas", "hygiea", "psyche"],
-  nearEarth: ["bennu", "ryugu", "apophis"],
-  dwarfPlanets: ["eris", "makemake"],
-  comets: ["halley", "67p"]
-};
-```
-
-Each body should have one render config entry keyed by body id. Layers should
-refer to those keys rather than duplicating color, size, and trail metadata.
+Use the existing layer names where appropriate: `featured`, `asteroidBelt`,
+`nearEarth`, `dwarfPlanets`, and `comets`.
 
 ## Loading Pattern
 
 When a layer is enabled:
 
 1. Resolve the layer to body keys.
-2. Filter keys against `getBodyRegistry()`.
+2. Filter keys against `getBodyRegistry()` and retain only bodies whose manifest
+   capability `render.enabled` is true.
 3. Call `planEphemerisLoad(...)`.
 4. If missing chunks are needed, show a small layer-level loading state.
 5. Call `ensureEphemerisLoaded(...)` with `streams: ["auxiliary"]` and the exact
@@ -138,7 +151,10 @@ Add or update tests when introducing a layer:
 
 ## Operational Notes
 
-- The manifest remains authoritative for chunk URLs and formats.
+- The manifest remains authoritative for chunk URLs, enabled bodies, dataset
+  load policies, body capabilities/defaults, runtime coordinate/time
+  constraints, and formats. Treat a manifest validation error as a stale or
+  incompatible build artifact; rebuild rather than patching it.
 - App code should not assume physical filenames or chunk boundaries.
 - Keep layer definitions small and user-oriented.
 - Treat "all auxiliary bodies" as an explicit advanced mode, not the default.

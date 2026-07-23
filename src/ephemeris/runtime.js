@@ -6,6 +6,30 @@ const loadingChunks = new Map();
 const cumulativePathCache = new Map();
 const isNodeRuntime = Boolean(globalThis.process?.versions?.node);
 
+const REQUIRED_MANIFEST_SCHEMA = "ephemeris.manifest.v2";
+
+function assertManifestContract(manifest) {
+  const fail = (message) => {
+    throw new Error(`Incompatible ephemeris manifest: ${message}. Rebuild the ephemeris data artifacts.`);
+  };
+  const contract = manifest.compatibility;
+  if (!contract || contract.manifestSchema !== REQUIRED_MANIFEST_SCHEMA) fail(`expected ${REQUIRED_MANIFEST_SCHEMA}`);
+  if (manifest.frame !== contract.requiredFrame) fail(`frame ${manifest.frame} does not satisfy ${contract.requiredFrame}`);
+  if (manifest.origin !== contract.requiredOrigin) fail(`origin ${manifest.origin} does not satisfy ${contract.requiredOrigin}`);
+  if (manifest.units?.position !== contract.requiredPositionUnit) fail(`position unit ${manifest.units?.position} does not satisfy ${contract.requiredPositionUnit}`);
+  if (manifest.cadence?.stepSeconds !== contract.requiredCadenceSeconds) fail(`cadence ${manifest.cadence?.stepSeconds} does not satisfy ${contract.requiredCadenceSeconds}`);
+  if (!manifest.datasets || !manifest.bodies || !Array.isArray(manifest.chunks)) fail("datasets, bodies, and chunks are required");
+  for (const [key, body] of Object.entries(manifest.bodies)) {
+    if (key !== body.key || !manifest.datasets[body.dataset ?? body.stream]) fail(`invalid body contract for ${key}`);
+    if (body.relativeTo && !manifest.bodies[body.relativeTo]) fail(`body ${key} has unknown parent ${body.relativeTo}`);
+  }
+  for (const chunk of manifest.chunks) {
+    if (!manifest.datasets[chunk.stream] || !Array.isArray(chunk.bodyKeys) || !chunk.url || !chunk.format) fail(`invalid chunk ${chunk.id}`);
+  }
+}
+
+assertManifestContract(EPHEMERIS_V2_INDEX);
+
 export class EphemerisDataMissingError extends Error {
   constructor(message, loadPlan) {
     super(message);
@@ -75,11 +99,11 @@ function interpolate(a, b, t) {
 }
 
 function bodyStream(bodyKey) {
-  return EPHEMERIS_V2_INDEX.bodies[bodyKey]?.stream ?? null;
+  return EPHEMERIS_V2_INDEX.bodies[bodyKey]?.dataset ?? EPHEMERIS_V2_INDEX.bodies[bodyKey]?.stream ?? null;
 }
 
 function bodyKeysForStreams(streams) {
-  return streams.flatMap((stream) => EPHEMERIS_V2_INDEX.streams[stream]?.bodyKeys ?? []);
+  return streams.flatMap((stream) => EPHEMERIS_V2_INDEX.datasets[stream]?.bodyKeys ?? EPHEMERIS_V2_INDEX.streams[stream]?.bodyKeys ?? []);
 }
 
 function chunkCovers(chunk, startUnixS, endUnixS) {
@@ -381,7 +405,7 @@ export function getBodyDerivedOffsetAuAtInstant(bodyKey, dateInput) {
   if (!body?.relativeTo) {
     throw new Error(`No derived dataset for body key: ${bodyKey}`);
   }
-  const parent = Object.values(EPHEMERIS_V2_INDEX.bodies).find(
+  const parent = EPHEMERIS_V2_INDEX.bodies[body.relativeTo] ?? Object.values(EPHEMERIS_V2_INDEX.bodies).find(
     (candidate) => candidate.naifId === body.relativeTo
   );
   if (!parent) {

@@ -1,5 +1,5 @@
 {
-  "datasetVersion": "2.0.0",
+  "datasetVersion": "2.1.0",
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v1",
   "stream": "auxiliary",

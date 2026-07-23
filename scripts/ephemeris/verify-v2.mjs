@@ -17,9 +17,15 @@ function assert(condition, message) {
   }
 }
 
-for (const field of ["datasetVersion", "formatVersion", "chunkSchema", "encoder", "chunks", "bodies"]) {
+for (const field of ["datasetVersion", "formatVersion", "chunkSchema", "encoder", "compatibility", "datasets", "chunks", "bodies"]) {
   assert(manifest[field] !== undefined, `manifest is missing ${field}`);
 }
+
+assert(manifest.compatibility.manifestSchema === "ephemeris.manifest.v2", "manifest has incompatible schema");
+assert(manifest.frame === manifest.compatibility.requiredFrame, "manifest frame violates compatibility contract");
+assert(manifest.origin === manifest.compatibility.requiredOrigin, "manifest origin violates compatibility contract");
+assert(manifest.units.position === manifest.compatibility.requiredPositionUnit, "manifest position units violate compatibility contract");
+assert(manifest.cadence.stepSeconds === manifest.compatibility.requiredCadenceSeconds, "manifest cadence violates compatibility contract");
 
 const chunksByStream = new Map();
 
@@ -44,7 +50,12 @@ for (const chunk of manifest.chunks) {
 }
 
 for (const body of Object.values(manifest.bodies)) {
-  assert(chunksByStream.has(body.stream), `body ${body.key} references stream with no chunks: ${body.stream}`);
+  const dataset = body.dataset ?? body.stream;
+  assert(manifest.datasets[dataset], `body ${body.key} references unknown dataset: ${dataset}`);
+  assert(chunksByStream.has(dataset), `body ${body.key} references dataset with no chunks: ${dataset}`);
+  if (body.relativeTo) {
+    assert(manifest.bodies[body.relativeTo], `body ${body.key} references unknown parent: ${body.relativeTo}`);
+  }
   if (body.renderClass === "beltSample") {
     assert(body.hasLabel === false, `beltSample ${body.key} must not have labels`);
     assert(body.hasTrail === false, `beltSample ${body.key} must not have trails`);

@@ -1,6 +1,13 @@
 name: Deploy to GitHub Pages
 
 on:
+  workflow_call:
+    inputs:
+      ref:
+        description: Git ref to publish
+        required: false
+        type: string
+        default: master
   workflow_run:
     workflows: [CI]
     types: [completed]
@@ -18,9 +25,12 @@ jobs:
   deploy:
     if: >-
       ${{
-        github.event.workflow_run.conclusion == 'success' &&
-        github.event.workflow_run.event == 'push' &&
-        github.event.workflow_run.head_branch == 'master'
+        github.event_name == 'workflow_call' ||
+        (
+          github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_branch == 'master'
+        )
       }}
     runs-on: ubuntu-latest
     environment:
@@ -32,7 +42,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           repository: ${{ github.repository }}
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ inputs.ref || github.event.workflow_run.head_sha || 'master' }}
 
       - name: Configure Pages
         uses: actions/configure-pages@v6
@@ -46,8 +56,8 @@ jobs:
           cp data/ephemeris/v2/manifest.json _site/data/ephemeris/v2/
           cp -R data/ephemeris/v2/chunks _site/data/ephemeris/v2/chunks
           cp orbital-drift.mp3 _site/
+          cp -R assets _site/assets
           if [ -f CNAME ]; then cp CNAME _site/; fi
-          if [ -f favicon.ico ]; then cp favicon.ico _site/; fi
 
       - name: Upload static site artifact
         uses: actions/upload-pages-artifact@v4

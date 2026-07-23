@@ -15,5 +15,8 @@
   },
   "devDependencies": {
     "serve": "^14.2.6"
+  },
+  "dependencies": {
+    "yaml": "^2.5.1"
   }
 }

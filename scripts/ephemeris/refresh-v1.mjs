@@ -3,6 +3,7 @@ import path from "node:path";
 import { pipeline } from "node:stream/promises";
 import { Readable } from "node:stream";
 import { createInterface } from "node:readline/promises";
+import { enabledBodies, loadCatalog } from "./catalog.mjs";
 
 const HORIZONS_API_URL = "https://ssd.jpl.nasa.gov/api/horizons.api";
 const DEFAULT_DATA_DIR = "data/ephemeris/v1";
@@ -197,6 +198,22 @@ async function main() {
   const rawDir = path.join(dataDir, RAW_DIR_NAME);
 
   const header = JSON.parse(fs.readFileSync(headerPath, "utf8"));
+  // Fixture/custom datasets remain self-contained. The repository's canonical
+  // v1 dataset is the only target list generated from the body catalog.
+  if (path.resolve(dataDir) === path.resolve(cwd, DEFAULT_DATA_DIR)) {
+    const catalog = loadCatalog(cwd);
+    const primaryBodies = enabledBodies(catalog, "primary");
+    const naifByKey = new Map(primaryBodies.map((body) => [body.key, body.naifId]));
+    header.schemaVersion = catalog.schemaVersion;
+    header.frame = catalog.ephemeris.frame;
+    header.origin = catalog.ephemeris.origin;
+    header.units = catalog.ephemeris.units;
+    header.targets = primaryBodies.map((body) => ({
+      key: body.key,
+      naifId: body.naifId,
+      ...(body.relativeTo ? { relativeTo: naifByKey.get(body.relativeTo) } : {})
+    }));
+  }
 
   // Only extend the window during a live fetch. Cached-raw rebuilds (no --fetch) keep
   // the existing window so their fixed-size raw payloads still line up.

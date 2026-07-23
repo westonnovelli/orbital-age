@@ -2,12 +2,11 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline";
+import { enabledBodies, loadCatalog, normalizedBody } from "./catalog.mjs";
 
 const cwd = process.cwd();
 const v1Dir = path.resolve(cwd, process.env.EPHEMERIS_V1_DATA_DIR ?? "data/ephemeris/v1");
 const v2Dir = path.resolve(cwd, process.env.EPHEMERIS_V2_DATA_DIR ?? "data/ephemeris/v2");
-const configPath = path.join(v2Dir, "build-config.json");
-const auxiliaryTargetsPath = path.join(v2Dir, "auxiliary-targets.json");
 const outIndexPath = path.resolve(cwd, process.env.EPHEMERIS_V2_OUTPUT_MODULE ?? "src/ephemeris/generated-v2-index.js");
 
 const DAY_SECONDS = 86400;
@@ -39,29 +38,12 @@ function subtractUtcYears(iso, years) {
   return date.toISOString().replace(".000Z", "Z");
 }
 
-function targetForStream(target, stream, defaultsByRenderClass) {
-  const renderClass = target.renderClass ?? (stream === "primary" ? "primary" : "featuredAuxiliary");
-  const defaults = defaultsByRenderClass[renderClass] ?? {};
-  return {
-    key: target.key,
-    label: target.label ?? target.key,
-    naifId: target.naifId,
-    stream,
-    kind: target.kind ?? (stream === "primary" ? "majorBody" : "smallBody"),
-    renderClass,
-    hasLabel: target.hasLabel ?? defaults.hasLabel ?? true,
-    hasTrail: target.hasTrail ?? defaults.hasTrail ?? true,
-    parent: target.parent ?? null,
-    relativeTo: target.relativeTo ?? null
-  };
-}
-
 function planChunks({ stream, targets, epochs, vectorsByKey, config, datasetEndUtc }) {
   if (targets.length === 0 || epochs.length === 0) {
     return [];
   }
 
-  const streamConfig = config.streams[stream];
+  const streamConfig = config.datasets[stream];
   const hotStartMs = Date.parse(subtractUtcYears(datasetEndUtc, streamConfig.hotWindowYears));
   const firstEpochMs = epochs[0] * 1000;
   const recentStartMs = Math.max(firstEpochMs, hotStartMs);
@@ -116,7 +98,7 @@ function planChunks({ stream, targets, epochs, vectorsByKey, config, datasetEndU
   });
 }
 
-function encodeJsonBase64Chunk({ chunk, targets, header, formatConfig }) {
+function encodeJsonBase64Chunk({ chunk, targets, header, formatConfig, config }) {
   const bodyVectors = {};
   for (const target of targets) {
     const values = chunk.vectors[target.key] ?? [];
@@ -127,9 +109,9 @@ function encodeJsonBase64Chunk({ chunk, targets, header, formatConfig }) {
   return Buffer.from(
     `${JSON.stringify(
       {
-        datasetVersion: "2.0.0",
-        formatVersion: "1.0.0",
-        chunkSchema: "ephemeris.chunk.v1",
+        datasetVersion: config.datasetVersion,
+        formatVersion: config.formatVersion,
+        chunkSchema: config.chunkSchema,
         stream: chunk.stream,
         chunkId: chunk.id,
         startUtc: chunk.startUtc,
@@ -214,40 +196,49 @@ async function readVectors({ header, targetKeys }) {
 }
 
 async function main() {
-  const config = readJson(configPath);
+  const catalog = loadCatalog(cwd);
+  const config = {
+    ...catalog.format,
+    datasets: catalog.datasets,
+    encoder: catalog.format.encoder,
+    formats: {
+      [catalog.format.encoder]: {
+        contentType: catalog.format.contentType,
+        compression: catalog.format.compression,
+        vectorEncoding: catalog.format.vectorEncoding
+      }
+    }
+  };
   const header = readJson(path.join(v1Dir, "header.json"));
-  const auxiliary = fs.existsSync(auxiliaryTargetsPath) ? readJson(auxiliaryTargetsPath) : { targets: [] };
   const formatConfig = config.formats[config.encoder];
   const encoder = ENCODERS[config.encoder];
   if (!encoder || !formatConfig) {
     throw new Error(`Unsupported v2 encoder: ${config.encoder}`);
   }
 
+  const catalogTargets = enabledBodies(catalog).map(normalizedBody);
+  const primaryTargets = catalogTargets.filter((target) => target.stream === "primary");
+  const auxiliaryTargets = catalogTargets.filter((target) => target.stream === "auxiliary");
   const v1TargetsByKey = new Map(header.targets.map((target) => [target.key, target]));
-  const primaryKeys = config.streams.primary.includeTargetKeys;
-  const primaryTargets = primaryKeys.map((key) => {
-    const target = v1TargetsByKey.get(key);
-    if (!target) {
-      throw new Error(`Unknown primary target key: ${key}`);
+  for (const target of primaryTargets) {
+    if (!v1TargetsByKey.has(target.key)) {
+      throw new Error(`Primary catalog body ${target.key} is absent from the canonical v1 dataset. Run data:ephemeris:refresh.`);
     }
-    return targetForStream(target, "primary", config.bodyRenderDefaults);
-  });
-  const auxiliaryTargets = auxiliary.targets.map((target) =>
-    targetForStream(target, "auxiliary", config.bodyRenderDefaults)
-  );
+  }
 
   const allKeys = [...new Set([...primaryTargets, ...auxiliaryTargets].map((target) => target.key))];
   const { epochs, vectorsByKey } = await readVectors({ header, targetKeys: allKeys });
 
   fs.rmSync(path.join(v2Dir, "chunks"), { recursive: true, force: true });
-  fs.mkdirSync(path.join(v2Dir, "chunks", "primary"), { recursive: true });
-  fs.mkdirSync(path.join(v2Dir, "chunks", "auxiliary"), { recursive: true });
+  for (const dataset of Object.keys(config.datasets)) {
+    fs.mkdirSync(path.join(v2Dir, "chunks", dataset), { recursive: true });
+  }
 
   const chunks = [];
-  for (const [stream, targets] of [
-    ["primary", primaryTargets],
-    ["auxiliary", auxiliaryTargets]
-  ]) {
+  for (const [stream, targets] of Object.entries(config.datasets).map(([dataset]) => [
+    dataset,
+    catalogTargets.filter((target) => target.dataset === dataset)
+  ])) {
     for (const planned of planChunks({
       stream,
       targets,
@@ -256,7 +247,7 @@ async function main() {
       config,
       datasetEndUtc: header.window.endUtc
     })) {
-      const encoded = encoder({ chunk: planned, targets, header, formatConfig });
+      const encoded = encoder({ chunk: planned, targets, header, formatConfig, config });
       const relativePath = `chunks/${stream}/${planned.id}.json`;
       const outPath = path.join(v2Dir, relativePath);
       fs.writeFileSync(outPath, encoded);
@@ -286,27 +277,41 @@ async function main() {
     chunkSchema: config.chunkSchema,
     encoder: config.encoder,
     generatedOn: process.env.EPHEMERIS_GENERATED_ON_UTC ?? new Date().toISOString(),
+    compatibility: {
+      manifestSchema: "ephemeris.manifest.v2",
+      requiredFrame: catalog.ephemeris.frame,
+      requiredOrigin: catalog.ephemeris.origin,
+      requiredPositionUnit: catalog.ephemeris.units.position,
+      requiredCadenceSeconds: catalog.ephemeris.cadence.stepSeconds
+    },
     source: {
-      provider: header.ephemerisSource.provider,
-      kernel: header.ephemerisSource.kernel,
+      provider: catalog.ephemeris.provider,
+      kernel: catalog.ephemeris.kernel,
       retrievedOn: header.ephemerisSource.retrievedOn,
       canonicalDataset: "data/ephemeris/v1"
     },
-    frame: header.frame,
-    origin: header.origin,
-    units: header.units,
+    frame: catalog.ephemeris.frame,
+    origin: catalog.ephemeris.origin,
+    units: catalog.ephemeris.units,
     cadence: {
       step: header.cadence.step,
       stepSeconds: DAY_SECONDS
     },
     window: header.window,
+    datasets: Object.fromEntries(Object.entries(config.datasets).map(([key, dataset]) => [key, {
+      ...dataset,
+      bodyKeys: catalogTargets.filter((body) => body.dataset === key).map((body) => body.key)
+    }])),
+    // `streams` remains an alias while callers migrate to the dataset contract.
     streams: {
       primary: {
-        hotWindowYears: config.streams.primary.hotWindowYears,
+        hotWindowYears: config.datasets.primary.hotWindowYears,
+        load: config.datasets.primary.load,
         bodyKeys: primaryTargets.map((target) => target.key)
       },
       auxiliary: {
-        hotWindowYears: config.streams.auxiliary.hotWindowYears,
+        hotWindowYears: config.datasets.auxiliary.hotWindowYears,
+        load: config.datasets.auxiliary.load,
         bodyKeys: auxiliaryTargets.map((target) => target.key)
       }
     },

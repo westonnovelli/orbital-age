@@ -52,7 +52,10 @@ const HUE_CYCLES_PER_ORBIT = 1;
 // (aphelion, in AU). It is used only to derive the Auto-fit camera framing so
 // the outermost orbit (Neptune ~30 AU) is on screen; it does not affect where a
 // body is actually drawn (positions come from the ephemeris each frame).
-const RENDERED_BODIES = [
+// Compatibility fallback for the checked-in 2.0 data artifact. New manifests
+// carry this data in `bodies.*.render`, and the app no longer chooses bodies by
+// primary/auxiliary hard-coded membership.
+const LEGACY_PRIMARY_RENDERED_BODIES = [
   {
     key: "mercury",
     color: [0.62, 0.59, 0.55],
@@ -188,7 +191,7 @@ const RENDERED_BODIES = [
   }
 ];
 
-const AUXILIARY_RENDERED_BODIES = [
+const LEGACY_AUXILIARY_RENDERED_BODIES = [
   { key: "ceres", color: [0.72, 0.66, 0.58], size: 0.026, orbitRadiusAu: 2.98, hueStart: 0.09 },
   { key: "vesta", color: [0.88, 0.78, 0.62], size: 0.022, orbitRadiusAu: 2.57, hueStart: 0.12 },
   { key: "eros", color: [0.95, 0.52, 0.36], size: 0.016, orbitRadiusAu: 1.78, hueStart: 0.01 },
@@ -239,7 +242,35 @@ const TRUE_SCALE_MIN_HALF_HEIGHT = 0.0006;
 
 // Auto-fit framing: the camera halfHeight is derived from the outermost tracked
 // orbit (Neptune ~30 AU) rather than the old hardcoded 2.2 tuned for Earth.
-const MAX_ORBIT_RADIUS_AU = Math.max(...RENDERED_BODIES.map((b) => b.orbitRadiusAu ?? 0));
+function manifestRenderConfigs(dataset) {
+  const configured = Object.values(getBodyRegistry())
+    .filter((body) => (body.dataset ?? body.stream) === dataset && body.render?.enabled && body.render.defaultVisible)
+    .map((body) => ({
+      key: body.key,
+      label: body.label,
+      stream: body.dataset ?? body.stream,
+      color: body.render.color,
+      size: body.render.size,
+      orbitRadiusAu: body.render.orbitRadiusAu,
+      parent: body.parent,
+      relativeScale: body.render.relativeScale,
+      cameraFit: body.render.cameraFit,
+      labelEnabled: body.render.label?.enabled,
+      labelOffset: body.render.label?.offset,
+      followEnabled: body.render.follow?.enabled,
+      distanceEnabled: body.render.distance?.enabled,
+      trail: body.render.trail?.enabled ? {
+        ...BASE_TRAIL,
+        color: body.render.trail.color,
+        hueStart: body.render.trail.hueStart,
+        visible: body.render.trail.defaultVisible
+      } : null
+    }));
+  if (configured.length > 0) return configured;
+  return dataset === PRIMARY_EPHEMERIS_STREAM ? LEGACY_PRIMARY_RENDERED_BODIES : LEGACY_AUXILIARY_RENDERED_BODIES;
+}
+
+const MAX_ORBIT_RADIUS_AU = Math.max(...manifestRenderConfigs(PRIMARY_EPHEMERIS_STREAM).map((b) => b.orbitRadiusAu ?? 0));
 const AUTO_FIT_HALF_HEIGHT = autoFitHalfHeight(MAX_ORBIT_RADIUS_AU);
 const STARFIELD_SPREAD = starfieldSpread(AUTO_FIT_HALF_HEIGHT);
 
@@ -690,7 +721,7 @@ export class OrbitalApp {
     this.timelineController = null;
     this.deepTimeLoader = null;
     this.scene = null;
-    this.activeBodyConfigs = [...RENDERED_BODIES];
+    this.activeBodyConfigs = [...manifestRenderConfigs(PRIMARY_EPHEMERIS_STREAM)];
     this.auxiliaryBodiesAttached = false;
   }
 
@@ -730,7 +761,7 @@ export class OrbitalApp {
     }
 
     this.validationMessage.textContent = "";
-    this.activeBodyConfigs = [...RENDERED_BODIES];
+    this.activeBodyConfigs = [...manifestRenderConfigs(PRIMARY_EPHEMERIS_STREAM)];
     this.auxiliaryBodiesAttached = false;
 
     const todayUtc = normalizeToUtcMidnight(new Date());
@@ -794,7 +825,7 @@ export class OrbitalApp {
         trail,
         parent: config.parent ?? null,
         relativeScale: config.relativeScale,
-        trackDistance: config.stream !== AUXILIARY_EPHEMERIS_STREAM
+        trackDistance: config.distanceEnabled !== false
       });
     }
 
@@ -895,7 +926,8 @@ export class OrbitalApp {
     }
 
     const bodyRegistry = getBodyRegistry();
-    const auxiliaryConfigs = AUXILIARY_RENDERED_BODIES.filter((config) => bodyRegistry[config.key]);
+    const auxiliaryConfigs = manifestRenderConfigs(AUXILIARY_EPHEMERIS_STREAM)
+      .filter((config) => bodyRegistry[config.key]);
     if (auxiliaryConfigs.length === 0 || this.auxiliaryBodiesAttached) {
       return;
     }
@@ -954,7 +986,7 @@ export class OrbitalApp {
         trail,
         parent: config.parent ?? null,
         relativeScale: config.relativeScale,
-        trackDistance: false
+        trackDistance: config.distanceEnabled === undefined ? false : config.distanceEnabled
       });
     }
 
@@ -1150,8 +1182,11 @@ export class OrbitalApp {
     distance.className = "bodies__distance";
     distance.textContent = "--";
 
-    row.append(swatch, name, distance);
-    this.bodyDistanceOutputs.set(config.key, distance);
+    row.append(swatch, name);
+    if (config.distanceEnabled !== false) {
+      row.append(distance);
+      this.bodyDistanceOutputs.set(config.key, distance);
+    }
 
     // Per-row trail toggle. Only bodies that actually have a trail get one; it
     // drives the matching OrbitalTrailEntity's setVisible(). The checkbox is
@@ -1189,6 +1224,9 @@ export class OrbitalApp {
     // leaves zoom untouched (recenter only); choosing a framing preset later
     // still overrides tracking as today. Works for both top-level and nested
     // child rows (keyed purely by body key).
+    if (config.followEnabled === false) {
+      return row;
+    }
     const follow = doc.createElement("button");
     follow.type = "button";
     follow.className = "bodies__follow";
@@ -1299,6 +1337,9 @@ export class OrbitalApp {
     }
 
     for (const config of this.activeBodyConfigs) {
+      if (config.labelEnabled === false) {
+        continue;
+      }
       const label = doc.createElement("span");
       label.className = "scene-label";
       label.dataset.key = config.key;
@@ -1605,7 +1646,9 @@ export class OrbitalApp {
       label.style.display = onScreen ? "" : "none";
       // Fold any per-body label offset (e.g. the Moon, nudged clear of Earth)
       // into the transform so the per-frame write stays transform-only.
-      const off = LABEL_SCREEN_OFFSETS[key] ?? { x: 0, y: 0 };
+      const config = this.#bodyConfig(key);
+      const [offsetX = 0, offsetY = 0] = config?.labelOffset ?? [];
+      const off = config?.labelOffset ? { x: offsetX, y: offsetY } : LABEL_SCREEN_OFFSETS[key] ?? { x: 0, y: 0 };
       label.style.transform = `translate(${screen.x + off.x}px, ${screen.y + off.y}px)`;
     }
   }
@@ -1954,7 +1997,9 @@ export class OrbitalApp {
     }
 
     for (const [key, output] of this.bodyDistanceOutputs) {
-      output.textContent = formatTraveledKm(traveled.get(key));
+      // A newly attached body can be rendered before its first distance tick;
+      // its deterministic value at that point is zero, not an unavailable value.
+      output.textContent = formatTraveledKm(traveled.get(key) ?? 0);
     }
   }
 
