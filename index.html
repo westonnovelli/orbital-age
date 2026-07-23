@@ -277,18 +277,15 @@
         </aside>
 
         <!-- Bodies panel: a compact flight roster (rows built in JS) -->
-        <aside class="panel panel--bodies" aria-label="Flight roster">
+        <aside class="panel panel--bodies" aria-label="Bodies">
           <h2 class="bodies__heading">
             <span class="bodies__pulse" aria-hidden="true"></span>
             Flight roster
             <span id="bodies-count" class="bodies__count" aria-label="0 tracked bodies">00</span>
           </h2>
           <p class="bodies__caption">Object telemetry · km since origin</p>
-          <label class="bodies__master-trails">
-            <input type="checkbox" id="bodies-master-trails" class="bodies__master-toggle" checked />
-            <span class="bodies__master-icon" aria-hidden="true">⌁</span>
-            Orbital paths
-          </label>
+          <div id="bodies-tabs" class="bodies__tabs" role="tablist" aria-label="Body categories"></div>
+          <div id="bodies-tab-controls" class="bodies__tab-controls" aria-label="Selected category controls"></div>
           <ul id="bodies-list" class="bodies__list" aria-live="polite"></ul>
         </aside>
 

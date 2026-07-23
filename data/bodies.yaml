@@ -577,7 +577,30 @@ bodies:
     layers:
       - nearEarth
     render:
-      enabled: false
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.42
+        - 0.86
+        - 0.72
+      size: 0.016
+      orbitRadiusAu: 1.36
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color:
+          - 0.42
+          - 0.86
+          - 0.72
+          - 0.045
+        hueStart: 0.38
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
   - key: ryugu
     label: Ryugu
     kind: nearEarthAsteroid
@@ -588,7 +611,30 @@ bodies:
     layers:
       - nearEarth
     render:
-      enabled: false
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.76
+        - 0.64
+        - 0.92
+      size: 0.016
+      orbitRadiusAu: 1.42
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color:
+          - 0.76
+          - 0.64
+          - 0.92
+          - 0.045
+        hueStart: 0.76
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
   - key: apophis
     label: Apophis
     kind: nearEarthAsteroid
@@ -599,7 +645,30 @@ bodies:
     layers:
       - nearEarth
     render:
-      enabled: false
+      enabled: true
+      defaultVisible: false
+      color:
+        - 1
+        - 0.5
+        - 0.3
+      size: 0.016
+      orbitRadiusAu: 1.1
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color:
+          - 1
+          - 0.5
+          - 0.3
+          - 0.045
+        hueStart: 0.03
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
   - key: halley
     label: Halley
     kind: comet
@@ -670,6 +739,142 @@ bodies:
         enabled: true
       distance:
         enabled: false
+  - key: encke
+    label: Encke
+    kind: comet
+    dataset: auxiliary
+    naifId: 90000091
+    horizonsCommand: "90000091"
+    enabled: true
+    layers:
+      - comets
+    render:
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.48
+        - 0.9
+        - 0.78
+      size: 0.017
+      orbitRadiusAu: 4.1
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color:
+          - 0.48
+          - 0.9
+          - 0.78
+          - 0.045
+        hueStart: 0.4
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
+  - key: tempel-1
+    label: Tempel 1
+    kind: comet
+    dataset: auxiliary
+    naifId: 90000192
+    horizonsCommand: "90000192"
+    enabled: true
+    layers:
+      - comets
+    render:
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.54
+        - 0.76
+        - 0.96
+      size: 0.017
+      orbitRadiusAu: 4.7
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color:
+          - 0.54
+          - 0.76
+          - 0.96
+          - 0.045
+        hueStart: 0.57
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
+  - key: wild-2
+    label: Wild 2
+    kind: comet
+    dataset: auxiliary
+    naifId: 90000862
+    horizonsCommand: "90000862"
+    enabled: true
+    layers:
+      - comets
+    render:
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.66
+        - 0.84
+        - 0.92
+      size: 0.017
+      orbitRadiusAu: 5.5
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color:
+          - 0.66
+          - 0.84
+          - 0.92
+          - 0.045
+        hueStart: 0.54
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
+  - key: hartley-2
+    label: Hartley 2
+    kind: comet
+    dataset: auxiliary
+    naifId: 90000959
+    horizonsCommand: "90000959"
+    enabled: true
+    layers:
+      - comets
+    render:
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.72
+        - 0.92
+        - 0.7
+      size: 0.017
+      orbitRadiusAu: 5.9
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color:
+          - 0.72
+          - 0.92
+          - 0.7
+          - 0.045
+        hueStart: 0.32
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
   - key: eris
     label: Eris
     kind: dwarfPlanet
@@ -680,7 +885,23 @@ bodies:
     layers:
       - dwarfPlanets
     render:
-      enabled: false
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.74
+        - 0.8
+        - 0.92
+      size: 0.021
+      orbitRadiusAu: 97.6
+      cameraFit: false
+      trail:
+        enabled: false
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
   - key: makemake
     label: Makemake
     kind: dwarfPlanet
@@ -691,4 +912,497 @@ bodies:
     layers:
       - dwarfPlanets
     render:
-      enabled: false
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.88
+        - 0.66
+        - 0.58
+      size: 0.02
+      orbitRadiusAu: 52.7
+      cameraFit: false
+      trail:
+        enabled: false
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
+  - key: haumea
+    label: Haumea
+    kind: dwarfPlanet
+    dataset: auxiliary
+    naifId: 2136108
+    horizonsCommand: 136108;
+    enabled: true
+    layers:
+      - dwarfPlanets
+    render:
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.7
+        - 0.82
+        - 0.9
+      size: 0.019
+      orbitRadiusAu: 51.6
+      cameraFit: false
+      trail:
+        enabled: false
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
+  - key: quaoar
+    label: Quaoar
+    kind: dwarfPlanet
+    dataset: auxiliary
+    naifId: 20050000
+    horizonsCommand: 50000;
+    enabled: true
+    layers:
+      - dwarfPlanets
+    render:
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.76
+        - 0.7
+        - 0.84
+      size: 0.019
+      orbitRadiusAu: 45.2
+      cameraFit: false
+      trail:
+        enabled: false
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
+  - key: orcus
+    label: Orcus
+    kind: dwarfPlanet
+    dataset: auxiliary
+    naifId: 20090482
+    horizonsCommand: 90482;
+    enabled: true
+    layers:
+      - dwarfPlanets
+    render:
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.66
+        - 0.72
+        - 0.86
+      size: 0.019
+      orbitRadiusAu: 48.1
+      cameraFit: false
+      trail:
+        enabled: false
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
+  - key: io
+    label: Io
+    kind: moon
+    dataset: auxiliary
+    naifId: 501
+    horizonsCommand: "501"
+    enabled: true
+    relativeTo: jupiter
+    layers:
+      - jupiterMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.96
+        - 0.76
+        - 0.36
+      size: 0.018
+      trueSizeAu: 0.0000122
+      orbitRadiusAu: 5.46
+      cameraFit: false
+      relativeScale: 20
+      trail:
+        enabled: false
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
+  - key: europa
+    label: Europa
+    kind: moon
+    dataset: auxiliary
+    naifId: 502
+    horizonsCommand: "502"
+    enabled: true
+    relativeTo: jupiter
+    layers:
+      - jupiterMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.82
+        - 0.74
+        - 0.62
+      size: 0.018
+      trueSizeAu: 0.0000104
+      orbitRadiusAu: 5.46
+      cameraFit: false
+      relativeScale: 20
+      trail:
+        enabled: false
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
+  - key: ganymede
+    label: Ganymede
+    kind: moon
+    dataset: auxiliary
+    naifId: 503
+    horizonsCommand: "503"
+    enabled: true
+    relativeTo: jupiter
+    layers:
+      - jupiterMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.7
+        - 0.78
+        - 0.74
+      size: 0.02
+      trueSizeAu: 0.0000176
+      orbitRadiusAu: 5.46
+      cameraFit: false
+      relativeScale: 20
+      trail:
+        enabled: false
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
+  - key: callisto
+    label: Callisto
+    kind: moon
+    dataset: auxiliary
+    naifId: 504
+    horizonsCommand: "504"
+    enabled: true
+    relativeTo: jupiter
+    layers:
+      - jupiterMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color:
+        - 0.58
+        - 0.64
+        - 0.66
+      size: 0.019
+      trueSizeAu: 0.0000161
+      orbitRadiusAu: 5.46
+      cameraFit: false
+      relativeScale: 20
+      trail:
+        enabled: false
+      label:
+        enabled: true
+      follow:
+        enabled: true
+      distance:
+        enabled: false
+  - key: enceladus
+    label: Enceladus
+    kind: moon
+    dataset: auxiliary
+    naifId: 602
+    horizonsCommand: "602"
+    enabled: true
+    relativeTo: saturn
+    layers:
+      - saturnMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color: [0.86, 0.9, 0.94]
+      size: 0.017
+      trueSizeAu: 0.0000017
+      orbitRadiusAu: 10.12
+      cameraFit: false
+      relativeScale: 20
+      trail: { enabled: false }
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: false }
+  - key: rhea
+    label: Rhea
+    kind: moon
+    dataset: auxiliary
+    naifId: 605
+    horizonsCommand: "605"
+    enabled: true
+    relativeTo: saturn
+    layers:
+      - saturnMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color: [0.7, 0.74, 0.78]
+      size: 0.018
+      trueSizeAu: 0.0000051
+      orbitRadiusAu: 10.12
+      cameraFit: false
+      relativeScale: 20
+      trail: { enabled: false }
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: false }
+  - key: titan
+    label: Titan
+    kind: moon
+    dataset: auxiliary
+    naifId: 606
+    horizonsCommand: "606"
+    enabled: true
+    relativeTo: saturn
+    layers:
+      - saturnMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color: [0.88, 0.66, 0.34]
+      size: 0.021
+      trueSizeAu: 0.0000172
+      orbitRadiusAu: 10.12
+      cameraFit: false
+      relativeScale: 20
+      trail: { enabled: false }
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: false }
+  - key: ariel
+    label: Ariel
+    kind: moon
+    dataset: auxiliary
+    naifId: 701
+    horizonsCommand: "701"
+    enabled: true
+    relativeTo: uranus
+    layers:
+      - uranusMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color: [0.74, 0.84, 0.86]
+      size: 0.018
+      trueSizeAu: 0.0000039
+      orbitRadiusAu: 20.1
+      cameraFit: false
+      relativeScale: 20
+      trail: { enabled: false }
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: false }
+  - key: titania
+    label: Titania
+    kind: moon
+    dataset: auxiliary
+    naifId: 703
+    horizonsCommand: "703"
+    enabled: true
+    relativeTo: uranus
+    layers:
+      - uranusMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color: [0.68, 0.76, 0.84]
+      size: 0.019
+      trueSizeAu: 0.0000053
+      orbitRadiusAu: 20.1
+      cameraFit: false
+      relativeScale: 20
+      trail: { enabled: false }
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: false }
+  - key: miranda
+    label: Miranda
+    kind: moon
+    dataset: auxiliary
+    naifId: 705
+    horizonsCommand: "705"
+    enabled: true
+    relativeTo: uranus
+    layers:
+      - uranusMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color: [0.7, 0.72, 0.68]
+      size: 0.017
+      trueSizeAu: 0.0000016
+      orbitRadiusAu: 20.1
+      cameraFit: false
+      relativeScale: 20
+      trail: { enabled: false }
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: false }
+  - key: triton
+    label: Triton
+    kind: moon
+    dataset: auxiliary
+    naifId: 801
+    horizonsCommand: "801"
+    enabled: true
+    relativeTo: neptune
+    layers:
+      - neptuneMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color: [0.74, 0.82, 0.9]
+      size: 0.02
+      trueSizeAu: 0.0000090
+      orbitRadiusAu: 30.1
+      cameraFit: false
+      relativeScale: 20
+      trail: { enabled: false }
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: false }
+  - key: larissa
+    label: Larissa
+    kind: moon
+    dataset: auxiliary
+    naifId: 807
+    horizonsCommand: "807"
+    enabled: true
+    relativeTo: neptune
+    layers:
+      - neptuneMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color: [0.62, 0.68, 0.72]
+      size: 0.017
+      trueSizeAu: 0.0000013
+      orbitRadiusAu: 30.1
+      cameraFit: false
+      relativeScale: 20
+      trail: { enabled: false }
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: false }
+  - key: proteus
+    label: Proteus
+    kind: moon
+    dataset: auxiliary
+    naifId: 808
+    horizonsCommand: "808"
+    enabled: true
+    relativeTo: neptune
+    layers:
+      - neptuneMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color: [0.54, 0.6, 0.66]
+      size: 0.018
+      trueSizeAu: 0.0000014
+      orbitRadiusAu: 30.1
+      cameraFit: false
+      relativeScale: 20
+      trail: { enabled: false }
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: false }
+  - key: charon
+    label: Charon
+    kind: moon
+    dataset: auxiliary
+    naifId: 901
+    horizonsCommand: "901"
+    enabled: true
+    relativeTo: pluto
+    layers:
+      - plutoMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color: [0.68, 0.7, 0.72]
+      size: 0.019
+      trueSizeAu: 0.0000041
+      orbitRadiusAu: 49.3
+      cameraFit: false
+      relativeScale: 100
+      trail: { enabled: false }
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: false }
+  - key: nix
+    label: Nix
+    kind: moon
+    dataset: auxiliary
+    naifId: 902
+    horizonsCommand: "902"
+    enabled: true
+    relativeTo: pluto
+    layers:
+      - plutoMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color: [0.72, 0.74, 0.76]
+      size: 0.016
+      trueSizeAu: 0.0000002
+      orbitRadiusAu: 49.3
+      cameraFit: false
+      relativeScale: 100
+      trail: { enabled: false }
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: false }
+  - key: hydra
+    label: Hydra
+    kind: moon
+    dataset: auxiliary
+    naifId: 903
+    horizonsCommand: "903"
+    enabled: true
+    relativeTo: pluto
+    layers:
+      - plutoMoons
+    render:
+      enabled: true
+      defaultVisible: false
+      color: [0.64, 0.68, 0.74]
+      size: 0.016
+      trueSizeAu: 0.0000002
+      orbitRadiusAu: 49.3
+      cameraFit: false
+      relativeScale: 100
+      trail: { enabled: false }
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: false }

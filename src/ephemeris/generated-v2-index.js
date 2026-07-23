@@ -4,7 +4,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v1",
   "encoder": "json-base64",
-  "generatedOn": "2026-07-23T14:56:19.858Z",
+  "generatedOn": "2026-07-23T16:21:10.077Z",
   "compatibility": {
     "manifestSchema": "ephemeris.manifest.v2",
     "requiredFrame": "ECLIPJ2000",
@@ -70,8 +70,31 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "apophis",
         "halley",
         "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
         "eris",
-        "makemake"
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
       ]
     }
   },
@@ -108,8 +131,31 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "apophis",
         "halley",
         "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
         "eris",
-        "makemake"
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
       ]
     }
   },
@@ -1175,44 +1221,53 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "enabled": true,
       "parent": null,
       "relativeTo": null,
-      "hasLabel": false,
-      "hasTrail": false,
+      "hasLabel": true,
+      "hasTrail": true,
       "capabilities": {
-        "canRender": false,
+        "canRender": true,
         "canShowByDefault": false,
         "canFitCamera": false,
-        "canShowLabel": false,
-        "canToggleTrail": false,
-        "canFollow": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
         "canShowDistance": false
       },
       "layers": [
         "nearEarth"
       ],
       "render": {
-        "enabled": false,
+        "enabled": true,
         "defaultVisible": false,
-        "color": null,
-        "size": null,
+        "color": [
+          0.42,
+          0.86,
+          0.72
+        ],
+        "size": 0.016,
         "trueSizeAu": null,
-        "orbitRadiusAu": null,
+        "orbitRadiusAu": 1.36,
         "cameraFit": false,
         "relativeScale": null,
         "label": {
-          "enabled": false,
+          "enabled": true,
           "offset": [
             0,
             0
           ]
         },
         "trail": {
-          "enabled": false,
+          "enabled": true,
           "defaultVisible": false,
-          "color": null,
-          "hueStart": 0
+          "color": [
+            0.42,
+            0.86,
+            0.72,
+            0.045
+          ],
+          "hueStart": 0.38
         },
         "follow": {
-          "enabled": false
+          "enabled": true
         },
         "distance": {
           "enabled": false
@@ -1230,44 +1285,53 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "enabled": true,
       "parent": null,
       "relativeTo": null,
-      "hasLabel": false,
-      "hasTrail": false,
+      "hasLabel": true,
+      "hasTrail": true,
       "capabilities": {
-        "canRender": false,
+        "canRender": true,
         "canShowByDefault": false,
         "canFitCamera": false,
-        "canShowLabel": false,
-        "canToggleTrail": false,
-        "canFollow": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
         "canShowDistance": false
       },
       "layers": [
         "nearEarth"
       ],
       "render": {
-        "enabled": false,
+        "enabled": true,
         "defaultVisible": false,
-        "color": null,
-        "size": null,
+        "color": [
+          0.76,
+          0.64,
+          0.92
+        ],
+        "size": 0.016,
         "trueSizeAu": null,
-        "orbitRadiusAu": null,
+        "orbitRadiusAu": 1.42,
         "cameraFit": false,
         "relativeScale": null,
         "label": {
-          "enabled": false,
+          "enabled": true,
           "offset": [
             0,
             0
           ]
         },
         "trail": {
-          "enabled": false,
+          "enabled": true,
           "defaultVisible": false,
-          "color": null,
-          "hueStart": 0
+          "color": [
+            0.76,
+            0.64,
+            0.92,
+            0.045
+          ],
+          "hueStart": 0.76
         },
         "follow": {
-          "enabled": false
+          "enabled": true
         },
         "distance": {
           "enabled": false
@@ -1285,44 +1349,53 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "enabled": true,
       "parent": null,
       "relativeTo": null,
-      "hasLabel": false,
-      "hasTrail": false,
+      "hasLabel": true,
+      "hasTrail": true,
       "capabilities": {
-        "canRender": false,
+        "canRender": true,
         "canShowByDefault": false,
         "canFitCamera": false,
-        "canShowLabel": false,
-        "canToggleTrail": false,
-        "canFollow": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
         "canShowDistance": false
       },
       "layers": [
         "nearEarth"
       ],
       "render": {
-        "enabled": false,
+        "enabled": true,
         "defaultVisible": false,
-        "color": null,
-        "size": null,
+        "color": [
+          1,
+          0.5,
+          0.3
+        ],
+        "size": 0.016,
         "trueSizeAu": null,
-        "orbitRadiusAu": null,
+        "orbitRadiusAu": 1.1,
         "cameraFit": false,
         "relativeScale": null,
         "label": {
-          "enabled": false,
+          "enabled": true,
           "offset": [
             0,
             0
           ]
         },
         "trail": {
-          "enabled": false,
+          "enabled": true,
           "defaultVisible": false,
-          "color": null,
-          "hueStart": 0
+          "color": [
+            1,
+            0.5,
+            0.3,
+            0.045
+          ],
+          "hueStart": 0.03
         },
         "follow": {
-          "enabled": false
+          "enabled": true
         },
         "distance": {
           "enabled": false
@@ -1459,6 +1532,262 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         }
       }
     },
+    "encke": {
+      "key": "encke",
+      "label": "Encke",
+      "kind": "comet",
+      "naifId": 90000091,
+      "horizonsCommand": "90000091",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "comets"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.48,
+          0.9,
+          0.78
+        ],
+        "size": 0.017,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 4.1,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            0.48,
+            0.9,
+            0.78,
+            0.045
+          ],
+          "hueStart": 0.4
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "tempel-1": {
+      "key": "tempel-1",
+      "label": "Tempel 1",
+      "kind": "comet",
+      "naifId": 90000192,
+      "horizonsCommand": "90000192",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "comets"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.54,
+          0.76,
+          0.96
+        ],
+        "size": 0.017,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 4.7,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            0.54,
+            0.76,
+            0.96,
+            0.045
+          ],
+          "hueStart": 0.57
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "wild-2": {
+      "key": "wild-2",
+      "label": "Wild 2",
+      "kind": "comet",
+      "naifId": 90000862,
+      "horizonsCommand": "90000862",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "comets"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.66,
+          0.84,
+          0.92
+        ],
+        "size": 0.017,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 5.5,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            0.66,
+            0.84,
+            0.92,
+            0.045
+          ],
+          "hueStart": 0.54
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "hartley-2": {
+      "key": "hartley-2",
+      "label": "Hartley 2",
+      "kind": "comet",
+      "naifId": 90000959,
+      "horizonsCommand": "90000959",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "comets"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.72,
+          0.92,
+          0.7
+        ],
+        "size": 0.017,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 5.9,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            0.72,
+            0.92,
+            0.7,
+            0.045
+          ],
+          "hueStart": 0.32
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
     "eris": {
       "key": "eris",
       "label": "Eris",
@@ -1470,31 +1799,35 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "enabled": true,
       "parent": null,
       "relativeTo": null,
-      "hasLabel": false,
+      "hasLabel": true,
       "hasTrail": false,
       "capabilities": {
-        "canRender": false,
+        "canRender": true,
         "canShowByDefault": false,
         "canFitCamera": false,
-        "canShowLabel": false,
+        "canShowLabel": true,
         "canToggleTrail": false,
-        "canFollow": false,
+        "canFollow": true,
         "canShowDistance": false
       },
       "layers": [
         "dwarfPlanets"
       ],
       "render": {
-        "enabled": false,
+        "enabled": true,
         "defaultVisible": false,
-        "color": null,
-        "size": null,
+        "color": [
+          0.74,
+          0.8,
+          0.92
+        ],
+        "size": 0.021,
         "trueSizeAu": null,
-        "orbitRadiusAu": null,
+        "orbitRadiusAu": 97.6,
         "cameraFit": false,
         "relativeScale": null,
         "label": {
-          "enabled": false,
+          "enabled": true,
           "offset": [
             0,
             0
@@ -1507,7 +1840,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           "hueStart": 0
         },
         "follow": {
-          "enabled": false
+          "enabled": true
         },
         "distance": {
           "enabled": false
@@ -1525,31 +1858,35 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "enabled": true,
       "parent": null,
       "relativeTo": null,
-      "hasLabel": false,
+      "hasLabel": true,
       "hasTrail": false,
       "capabilities": {
-        "canRender": false,
+        "canRender": true,
         "canShowByDefault": false,
         "canFitCamera": false,
-        "canShowLabel": false,
+        "canShowLabel": true,
         "canToggleTrail": false,
-        "canFollow": false,
+        "canFollow": true,
         "canShowDistance": false
       },
       "layers": [
         "dwarfPlanets"
       ],
       "render": {
-        "enabled": false,
+        "enabled": true,
         "defaultVisible": false,
-        "color": null,
-        "size": null,
+        "color": [
+          0.88,
+          0.66,
+          0.58
+        ],
+        "size": 0.02,
         "trueSizeAu": null,
-        "orbitRadiusAu": null,
+        "orbitRadiusAu": 52.7,
         "cameraFit": false,
         "relativeScale": null,
         "label": {
-          "enabled": false,
+          "enabled": true,
           "offset": [
             0,
             0
@@ -1562,7 +1899,1128 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           "hueStart": 0
         },
         "follow": {
+          "enabled": true
+        },
+        "distance": {
           "enabled": false
+        }
+      }
+    },
+    "haumea": {
+      "key": "haumea",
+      "label": "Haumea",
+      "kind": "dwarfPlanet",
+      "naifId": 2136108,
+      "horizonsCommand": "136108;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "dwarfPlanets"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.7,
+          0.82,
+          0.9
+        ],
+        "size": 0.019,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 51.6,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "quaoar": {
+      "key": "quaoar",
+      "label": "Quaoar",
+      "kind": "dwarfPlanet",
+      "naifId": 20050000,
+      "horizonsCommand": "50000;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "dwarfPlanets"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.76,
+          0.7,
+          0.84
+        ],
+        "size": 0.019,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 45.2,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "orcus": {
+      "key": "orcus",
+      "label": "Orcus",
+      "kind": "dwarfPlanet",
+      "naifId": 20090482,
+      "horizonsCommand": "90482;",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "dwarfPlanets"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.66,
+          0.72,
+          0.86
+        ],
+        "size": 0.019,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 48.1,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "io": {
+      "key": "io",
+      "label": "Io",
+      "kind": "moon",
+      "naifId": 501,
+      "horizonsCommand": "501",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "jupiter",
+      "relativeTo": "jupiter",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "jupiterMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.96,
+          0.76,
+          0.36
+        ],
+        "size": 0.018,
+        "trueSizeAu": 0.0000122,
+        "orbitRadiusAu": 5.46,
+        "cameraFit": false,
+        "relativeScale": 20,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "europa": {
+      "key": "europa",
+      "label": "Europa",
+      "kind": "moon",
+      "naifId": 502,
+      "horizonsCommand": "502",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "jupiter",
+      "relativeTo": "jupiter",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "jupiterMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.82,
+          0.74,
+          0.62
+        ],
+        "size": 0.018,
+        "trueSizeAu": 0.0000104,
+        "orbitRadiusAu": 5.46,
+        "cameraFit": false,
+        "relativeScale": 20,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "ganymede": {
+      "key": "ganymede",
+      "label": "Ganymede",
+      "kind": "moon",
+      "naifId": 503,
+      "horizonsCommand": "503",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "jupiter",
+      "relativeTo": "jupiter",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "jupiterMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.7,
+          0.78,
+          0.74
+        ],
+        "size": 0.02,
+        "trueSizeAu": 0.0000176,
+        "orbitRadiusAu": 5.46,
+        "cameraFit": false,
+        "relativeScale": 20,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "callisto": {
+      "key": "callisto",
+      "label": "Callisto",
+      "kind": "moon",
+      "naifId": 504,
+      "horizonsCommand": "504",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "jupiter",
+      "relativeTo": "jupiter",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "jupiterMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.58,
+          0.64,
+          0.66
+        ],
+        "size": 0.019,
+        "trueSizeAu": 0.0000161,
+        "orbitRadiusAu": 5.46,
+        "cameraFit": false,
+        "relativeScale": 20,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "enceladus": {
+      "key": "enceladus",
+      "label": "Enceladus",
+      "kind": "moon",
+      "naifId": 602,
+      "horizonsCommand": "602",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "saturn",
+      "relativeTo": "saturn",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "saturnMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.86,
+          0.9,
+          0.94
+        ],
+        "size": 0.017,
+        "trueSizeAu": 0.0000017,
+        "orbitRadiusAu": 10.12,
+        "cameraFit": false,
+        "relativeScale": 20,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "rhea": {
+      "key": "rhea",
+      "label": "Rhea",
+      "kind": "moon",
+      "naifId": 605,
+      "horizonsCommand": "605",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "saturn",
+      "relativeTo": "saturn",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "saturnMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.7,
+          0.74,
+          0.78
+        ],
+        "size": 0.018,
+        "trueSizeAu": 0.0000051,
+        "orbitRadiusAu": 10.12,
+        "cameraFit": false,
+        "relativeScale": 20,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "titan": {
+      "key": "titan",
+      "label": "Titan",
+      "kind": "moon",
+      "naifId": 606,
+      "horizonsCommand": "606",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "saturn",
+      "relativeTo": "saturn",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "saturnMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.88,
+          0.66,
+          0.34
+        ],
+        "size": 0.021,
+        "trueSizeAu": 0.0000172,
+        "orbitRadiusAu": 10.12,
+        "cameraFit": false,
+        "relativeScale": 20,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "ariel": {
+      "key": "ariel",
+      "label": "Ariel",
+      "kind": "moon",
+      "naifId": 701,
+      "horizonsCommand": "701",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "uranus",
+      "relativeTo": "uranus",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "uranusMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.74,
+          0.84,
+          0.86
+        ],
+        "size": 0.018,
+        "trueSizeAu": 0.0000039,
+        "orbitRadiusAu": 20.1,
+        "cameraFit": false,
+        "relativeScale": 20,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "titania": {
+      "key": "titania",
+      "label": "Titania",
+      "kind": "moon",
+      "naifId": 703,
+      "horizonsCommand": "703",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "uranus",
+      "relativeTo": "uranus",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "uranusMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.68,
+          0.76,
+          0.84
+        ],
+        "size": 0.019,
+        "trueSizeAu": 0.0000053,
+        "orbitRadiusAu": 20.1,
+        "cameraFit": false,
+        "relativeScale": 20,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "miranda": {
+      "key": "miranda",
+      "label": "Miranda",
+      "kind": "moon",
+      "naifId": 705,
+      "horizonsCommand": "705",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "uranus",
+      "relativeTo": "uranus",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "uranusMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.7,
+          0.72,
+          0.68
+        ],
+        "size": 0.017,
+        "trueSizeAu": 0.0000016,
+        "orbitRadiusAu": 20.1,
+        "cameraFit": false,
+        "relativeScale": 20,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "triton": {
+      "key": "triton",
+      "label": "Triton",
+      "kind": "moon",
+      "naifId": 801,
+      "horizonsCommand": "801",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "neptune",
+      "relativeTo": "neptune",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "neptuneMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.74,
+          0.82,
+          0.9
+        ],
+        "size": 0.02,
+        "trueSizeAu": 0.000009,
+        "orbitRadiusAu": 30.1,
+        "cameraFit": false,
+        "relativeScale": 20,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "larissa": {
+      "key": "larissa",
+      "label": "Larissa",
+      "kind": "moon",
+      "naifId": 807,
+      "horizonsCommand": "807",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "neptune",
+      "relativeTo": "neptune",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "neptuneMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.62,
+          0.68,
+          0.72
+        ],
+        "size": 0.017,
+        "trueSizeAu": 0.0000013,
+        "orbitRadiusAu": 30.1,
+        "cameraFit": false,
+        "relativeScale": 20,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "proteus": {
+      "key": "proteus",
+      "label": "Proteus",
+      "kind": "moon",
+      "naifId": 808,
+      "horizonsCommand": "808",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "neptune",
+      "relativeTo": "neptune",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "neptuneMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.54,
+          0.6,
+          0.66
+        ],
+        "size": 0.018,
+        "trueSizeAu": 0.0000014,
+        "orbitRadiusAu": 30.1,
+        "cameraFit": false,
+        "relativeScale": 20,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "charon": {
+      "key": "charon",
+      "label": "Charon",
+      "kind": "moon",
+      "naifId": 901,
+      "horizonsCommand": "901",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "pluto",
+      "relativeTo": "pluto",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "plutoMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.68,
+          0.7,
+          0.72
+        ],
+        "size": 0.019,
+        "trueSizeAu": 0.0000041,
+        "orbitRadiusAu": 49.3,
+        "cameraFit": false,
+        "relativeScale": 100,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "nix": {
+      "key": "nix",
+      "label": "Nix",
+      "kind": "moon",
+      "naifId": 902,
+      "horizonsCommand": "902",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "pluto",
+      "relativeTo": "pluto",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "plutoMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.72,
+          0.74,
+          0.76
+        ],
+        "size": 0.016,
+        "trueSizeAu": 2e-7,
+        "orbitRadiusAu": 49.3,
+        "cameraFit": false,
+        "relativeScale": 100,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": false
+        }
+      }
+    },
+    "hydra": {
+      "key": "hydra",
+      "label": "Hydra",
+      "kind": "moon",
+      "naifId": 903,
+      "horizonsCommand": "903",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": "pluto",
+      "relativeTo": "pluto",
+      "hasLabel": true,
+      "hasTrail": false,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": false,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": false,
+        "canFollow": true,
+        "canShowDistance": false
+      },
+      "layers": [
+        "plutoMoons"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": false,
+        "color": [
+          0.64,
+          0.68,
+          0.74
+        ],
+        "size": 0.016,
+        "trueSizeAu": 2e-7,
+        "orbitRadiusAu": 49.3,
+        "cameraFit": false,
+        "relativeScale": 100,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": false,
+          "defaultVisible": false,
+          "color": null,
+          "hueStart": 0
+        },
+        "follow": {
+          "enabled": true
         },
         "distance": {
           "enabled": false
@@ -1659,13 +3117,13 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "sha256": "bd5e1a73ef26c3d2811eb55d1809280e3f6c236094f110b5006b393bf4ad9e45"
     },
     {
-      "id": "auxiliary-historical-1926-01-01-1987-06-04",
+      "id": "auxiliary-historical-1926-01-01-1948-03-06",
       "stream": "auxiliary",
       "kind": "historical",
       "startUtc": "1926-01-01T00:00:00Z",
-      "endUtc": "1987-06-04T00:00:00Z",
+      "endUtc": "1948-03-06T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 22435,
+      "samplesPerBody": 8101,
       "bodyKeys": [
         "ceres",
         "pallas",
@@ -1678,25 +3136,48 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "apophis",
         "halley",
         "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
         "eris",
-        "makemake"
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
       ],
       "format": "json-base64",
       "contentType": "application/json",
       "compression": "none",
       "vectorEncoding": "float32-base64",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1926-01-01-1987-06-04.json",
-      "byteLength": 4667398,
-      "sha256": "088f581fdc399170b76991aba6a7e548241452a72ab2c7f8a5e6082647147a94"
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1926-01-01-1948-03-06.json",
+      "byteLength": 4667833,
+      "sha256": "8572005180c37288c2354f68aef970e7373143a3016c4652482808e0344734d4"
     },
     {
-      "id": "auxiliary-historical-1987-06-04-2006-07-23",
+      "id": "auxiliary-historical-1948-03-06-1970-05-10",
       "stream": "auxiliary",
       "kind": "historical",
-      "startUtc": "1987-06-04T00:00:00Z",
-      "endUtc": "2006-07-23T00:00:00Z",
+      "startUtc": "1948-03-06T00:00:00Z",
+      "endUtc": "1970-05-10T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 6990,
+      "samplesPerBody": 8101,
       "bodyKeys": [
         "ceres",
         "pallas",
@@ -1709,16 +3190,147 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "apophis",
         "halley",
         "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
         "eris",
-        "makemake"
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
       ],
       "format": "json-base64",
       "contentType": "application/json",
       "compression": "none",
       "vectorEncoding": "float32-base64",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1987-06-04-2006-07-23.json",
-      "byteLength": 1454837,
-      "sha256": "c63f37307692e7f16c94d744983dd0e26414ee30ffa1a8733d47723aa8155625"
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1948-03-06-1970-05-10.json",
+      "byteLength": 4667833,
+      "sha256": "ccef16f98ee3df1869a7826f6a9f192961a4a96aba117ad29222b401c513602a"
+    },
+    {
+      "id": "auxiliary-historical-1970-05-10-1992-07-13",
+      "stream": "auxiliary",
+      "kind": "historical",
+      "startUtc": "1970-05-10T00:00:00Z",
+      "endUtc": "1992-07-13T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 8101,
+      "bodyKeys": [
+        "ceres",
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis",
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1970-05-10-1992-07-13.json",
+      "byteLength": 4667833,
+      "sha256": "977d8cb91aaedb53fabe5e5f2911270146b5db0b72d6cff679e5f1d9259968df"
+    },
+    {
+      "id": "auxiliary-historical-1992-07-13-2006-07-23",
+      "stream": "auxiliary",
+      "kind": "historical",
+      "startUtc": "1992-07-13T00:00:00Z",
+      "endUtc": "2006-07-23T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 5124,
+      "bodyKeys": [
+        "ceres",
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis",
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
+      ],
+      "format": "json-base64",
+      "contentType": "application/json",
+      "compression": "none",
+      "vectorEncoding": "float32-base64",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-historical-1992-07-13-2006-07-23.json",
+      "byteLength": 2953081,
+      "sha256": "7920ea05eb567356c5006fd3b0abf80c917b4449051efc05d418b6d8c76a441f"
     },
     {
       "id": "auxiliary-recent-2006-07-23-2026-07-23",
@@ -1740,16 +3352,39 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "apophis",
         "halley",
         "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2",
         "eris",
-        "makemake"
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
       ],
       "format": "json-base64",
       "contentType": "application/json",
       "compression": "none",
       "vectorEncoding": "float32-base64",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/auxiliary-recent-2006-07-23-2026-07-23.json",
-      "byteLength": 1520561,
-      "sha256": "e750d8fd31fdb5e356abebe881fa423a308ebbe391fd4bbe004bb0f4d3696515"
+      "byteLength": 4209909,
+      "sha256": "327bdffc8c90f55172c7256c7e6f54a1d142a1d22ca1016885920f5f2cbd2004"
     }
   ]
 });

@@ -577,7 +577,8 @@ export class OrbitalApp {
     bodiesPanel,
     bodiesList,
     bodiesCount,
-    trailsMasterToggle,
+    bodiesTabs,
+    bodiesTabControls,
     trueScaleToggle,
     labelsToggle,
     labelsOverlay,
@@ -640,6 +641,9 @@ export class OrbitalApp {
     this.bodiesPanel = bodiesPanel;
     this.bodiesList = bodiesList;
     this.bodiesCount = bodiesCount;
+    this.bodiesTabs = bodiesTabs;
+    this.bodiesTabControls = bodiesTabControls;
+    this.activeBodiesTab = null;
     this.bodyDistanceOutputs = new Map();
     // key -> OrbitalTrailEntity for the body's trail, populated by the build
     // loop. Drives the per-row and master Bodies-panel trail toggles.
@@ -647,8 +651,6 @@ export class OrbitalApp {
     // Per-row trail-toggle checkboxes, keyed by body key, so the master toggle
     // can reflect its fan-out by syncing each row checkbox's checked state.
     this.bodyTrailToggles = new Map();
-    // Header master "all trails" checkbox (queried/threaded from main.js).
-    this.trailsMasterToggle = trailsMasterToggle;
     // key -> BodyMarkerEntity, populated by the build loop, so "True scale" mode
     // can resize every marker between its dramatized and physically-accurate size.
     this.bodyMarkers = new Map();
@@ -769,7 +771,6 @@ export class OrbitalApp {
 
     this.#bindTimelineControls();
     this.#bindFramingControls();
-    this.#bindTrailControls();
     this.#bindScaleControls();
     this.#bindSceneInteraction();
     this.#bindAudioControls();
@@ -925,7 +926,6 @@ export class OrbitalApp {
 
     this.#buildBodiesPanel();
     this.#buildBodyLabels();
-    this.#syncMasterTrailToggle();
     // Re-apply the current scale mode so a re-render preserves True scale (fresh
     // markers default to their dramatized size; the Moon resets to ×40).
     this.#applyTrueScale(this.trueScale);
@@ -1029,7 +1029,6 @@ export class OrbitalApp {
     this.#expandAutoFitForActiveBodies();
     this.#buildBodiesPanel();
     this.#buildBodyLabels();
-    this.#syncMasterTrailToggle();
     this.#applyTrueScale(this.trueScale);
     this.#updateBodyLabels();
   }
@@ -1137,6 +1136,12 @@ export class OrbitalApp {
     this.bodyDistanceOutputs = new Map();
     this.bodyTrailToggles = new Map();
     this.bodiesList.textContent = "";
+    if (this.bodiesTabs) {
+      this.bodiesTabs.textContent = "";
+    }
+    if (this.bodiesTabControls) {
+      this.bodiesTabControls.textContent = "";
+    }
     if (this.bodiesCount) {
       const count = this.activeBodyConfigs.length;
       this.bodiesCount.textContent = String(count).padStart(2, "0");
@@ -1160,10 +1165,12 @@ export class OrbitalApp {
       }
     }
 
-    const placedChildKeys = new Set();
+    const configsByKey = new Map(this.activeBodyConfigs.map((config) => [config.key, config]));
     const topLevelGroups = new Map();
     for (const config of this.activeBodyConfigs) {
-      if (config.parent) {
+      // A body joins its parent's system whenever that parent is active. Orphaned
+      // satellites remain discoverable in their own category instead.
+      if (config.parent && configsByKey.has(config.parent)) {
         continue;
       }
 
@@ -1173,51 +1180,140 @@ export class OrbitalApp {
       topLevelGroups.set(group.key, groupedConfigs);
     }
 
-    for (const groupKey of ROSTER_GROUP_ORDER) {
-      const group = topLevelGroups.get(groupKey);
-      if (!group) {
-        continue;
+    const groups = ROSTER_GROUP_ORDER
+      .map((groupKey) => topLevelGroups.get(groupKey))
+      .filter(Boolean);
+    if (groups.length === 0) {
+      return;
+    }
+
+    if (!groups.some((group) => group.key === this.activeBodiesTab)) {
+      this.activeBodiesTab = groups[0].key;
+    }
+    const selectedGroup = groups.find((group) => group.key === this.activeBodiesTab) ?? groups[0];
+
+    for (const group of groups) {
+      const tab = doc.createElement("button");
+      tab.type = "button";
+      tab.className = "bodies__tab";
+      tab.id = `bodies-tab-${group.key}`;
+      tab.setAttribute("role", "tab");
+      tab.setAttribute("aria-selected", String(group.key === selectedGroup.key));
+      tab.setAttribute("aria-controls", "bodies-list");
+      tab.textContent = `${group.label} ${String(group.configs.length).padStart(2, "0")}`;
+      tab.addEventListener("click", () => {
+        if (this.activeBodiesTab === group.key) {
+          return;
+        }
+        this.activeBodiesTab = group.key;
+        this.#buildBodiesPanel();
+      });
+      this.bodiesTabs?.append(tab);
+    }
+    this.bodiesList.setAttribute("aria-labelledby", `bodies-tab-${selectedGroup.key}`);
+
+    const tabBodyKeys = this.#bodyKeysForRosterGroup(selectedGroup.configs, childrenByParent);
+    this.#buildRosterTabControls(doc, selectedGroup, tabBodyKeys);
+
+    for (const config of selectedGroup.configs) {
+      const row = this.#createBodyRow(doc, config);
+      this.bodiesList.append(row);
+      const children = childrenByParent.get(config.key);
+      if (children && children.length > 0) {
+        const subList = doc.createElement("ul");
+        subList.className = "bodies__sublist";
+        const satelliteHeading = doc.createElement("li");
+        satelliteHeading.className = "bodies__subheading";
+        const satelliteNoun = children.length === 1 ? "satellite" : "satellites";
+        satelliteHeading.textContent = `${this.#bodyDisplayName(config.key)} · ${children.length} ${satelliteNoun}`;
+        subList.append(satelliteHeading);
+        for (const child of children) {
+          subList.append(this.#createBodyRow(doc, child, { isChild: true }));
+        }
+        row.append(subList);
       }
+    }
+  }
 
-      const divider = doc.createElement("li");
-      divider.className = "bodies__group";
-      divider.setAttribute("role", "presentation");
-      divider.textContent = group.label;
-      this.bodiesList.append(divider);
-
-      for (const config of group.configs) {
-        const row = this.#createBodyRow(doc, config);
-        this.bodiesList.append(row);
-
-        const children = childrenByParent.get(config.key);
-        if (children && children.length > 0) {
-          const subList = doc.createElement("ul");
-          subList.className = "bodies__sublist";
-          for (const child of children) {
-            subList.append(this.#createBodyRow(doc, child, { isChild: true }));
-            placedChildKeys.add(child.key);
-          }
-          row.append(subList);
+  // A category tab owns both its top-level bodies and every nested satellite in
+  // those systems, so its bulk controls are genuinely scoped to what the user
+  // sees in the tab rather than leaving related moons behind.
+  #bodyKeysForRosterGroup(configs, childrenByParent) {
+    const keys = new Set(configs.map((config) => config.key));
+    const pending = [...keys];
+    while (pending.length > 0) {
+      const key = pending.pop();
+      for (const child of childrenByParent.get(key) ?? []) {
+        if (!keys.has(child.key)) {
+          keys.add(child.key);
+          pending.push(child.key);
         }
       }
     }
+    return [...keys];
+  }
 
-    // Safety net: surface any sub-body whose parent isn't a top-level row at the
-    // root so it never silently disappears.
-    for (const config of this.activeBodyConfigs) {
-      if (config.parent && !placedChildKeys.has(config.key)) {
-        const group = rosterGroupFor(config);
-        if (!topLevelGroups.has(group.key)) {
-          const divider = doc.createElement("li");
-          divider.className = "bodies__group";
-          divider.setAttribute("role", "presentation");
-          divider.textContent = group.label;
-          this.bodiesList.append(divider);
-          topLevelGroups.set(group.key, { ...group, configs: [] });
-        }
-        this.bodiesList.append(this.#createBodyRow(doc, config));
+  #buildRosterTabControls(doc, group, bodyKeys) {
+    if (!this.bodiesTabControls) {
+      return;
+    }
+    const visibleCount = bodyKeys.filter((key) => this.bodyMarkers.get(key)?.visible !== false).length;
+    const trailKeys = bodyKeys.filter((key) => this.bodyTrails.has(key));
+    const visibleTrailCount = trailKeys.filter((key) => this.bodyTrails.get(key)?.visible !== false).length;
+    const stateLabel = (onCount, total) => {
+      if (total === 0 || onCount === 0) return "OFF";
+      if (onCount === total) return "ON";
+      return "MIXED";
+    };
+
+    const objectsControl = doc.createElement("button");
+    objectsControl.type = "button";
+    objectsControl.className = "bodies__tab-control";
+    objectsControl.textContent = `Objects ${stateLabel(visibleCount, bodyKeys.length)}`;
+    objectsControl.setAttribute("aria-label", `Toggle all ${group.label} visibility`);
+    objectsControl.setAttribute("aria-pressed", String(visibleCount === bodyKeys.length));
+    objectsControl.addEventListener("click", () => {
+      this.#setBodiesVisible(bodyKeys, visibleCount !== bodyKeys.length);
+    });
+
+    const pathsControl = doc.createElement("button");
+    pathsControl.type = "button";
+    pathsControl.className = "bodies__tab-control";
+    pathsControl.textContent = `Paths ${stateLabel(visibleTrailCount, trailKeys.length)}`;
+    pathsControl.setAttribute("aria-label", `Toggle all ${group.label} orbital paths`);
+    pathsControl.setAttribute("aria-pressed", String(trailKeys.length > 0 && visibleTrailCount === trailKeys.length));
+    pathsControl.disabled = trailKeys.length === 0;
+    pathsControl.addEventListener("click", () => {
+      this.#setBodyTrailsVisible(trailKeys, visibleTrailCount !== trailKeys.length);
+    });
+
+    this.bodiesTabControls.append(objectsControl, pathsControl);
+  }
+
+  #setBodiesVisible(bodyKeys, visible) {
+    const show = Boolean(visible);
+    for (const key of bodyKeys) {
+      this.bodyMarkers.get(key)?.setVisible(show);
+      const config = this.#bodyConfig(key);
+      if (config) {
+        config.visible = show;
+      }
+      if (!show) {
+        this.bodyTrails.get(key)?.setVisible(false);
       }
     }
+    this.#buildBodiesPanel();
+  }
+
+  #setBodyTrailsVisible(bodyKeys, visible) {
+    const show = Boolean(visible);
+    for (const key of bodyKeys) {
+      if (show) {
+        this.timelineController?.ensureTrailForBody?.(key);
+      }
+      this.bodyTrails.get(key)?.setVisible(show);
+    }
+    this.#buildBodiesPanel();
   }
 
   // Build a single Bodies-panel row (`<li>` with swatch + name + distance output)
@@ -1253,6 +1349,16 @@ export class OrbitalApp {
       const show = Boolean(visible);
       this.bodyMarkers.get(config.key)?.setVisible(show);
       config.visible = show;
+      // A hidden object should not leave an orphaned orbital path in the scene.
+      // Re-enabling the object deliberately leaves its path off; the dedicated
+      // orbit control remains the explicit way to bring it back.
+      if (!show) {
+        this.bodyTrails.get(config.key)?.setVisible(false);
+        const trailToggle = this.bodyTrailToggles.get(config.key);
+        if (trailToggle) {
+          trailToggle.checked = false;
+        }
+      }
       row.classList.toggle("bodies__row--inactive", !show);
       row.dataset.visible = String(show);
       row.setAttribute("aria-checked", String(show));
@@ -1305,7 +1411,6 @@ export class OrbitalApp {
           this.timelineController?.ensureTrailForBody?.(config.key);
         }
         trail.setVisible(toggle.checked);
-        this.#syncMasterTrailToggle();
       });
 
       const trailText = doc.createElement("span");
@@ -2037,50 +2142,6 @@ export class OrbitalApp {
     }
     // Keep aria in sync even when the toggled sheet has no registered trigger.
     trigger?.setAttribute?.("aria-expanded", String(willOpen));
-  }
-
-  // Wire the header master "all trails" toggle. Per-row toggles are wired in
-  // #createBodyRow as rows are built; this only handles the master fan-out.
-  #bindTrailControls() {
-    this.trailsMasterToggle?.addEventListener("change", () => {
-      this.#setAllTrailsVisible(this.trailsMasterToggle.checked);
-    });
-  }
-
-  // Fan a single visibility state out to every trail and sync each per-row
-  // checkbox so the panel stays consistent with the master toggle.
-  #setAllTrailsVisible(visible) {
-    const show = Boolean(visible);
-    if (show) {
-      for (const key of this.bodyTrails.keys()) {
-        this.timelineController?.ensureTrailForBody?.(key);
-      }
-    }
-    for (const trail of this.bodyTrails.values()) {
-      trail.setVisible(show);
-    }
-    for (const toggle of this.bodyTrailToggles.values()) {
-      toggle.checked = show;
-    }
-    if (this.trailsMasterToggle) {
-      this.trailsMasterToggle.checked = show;
-      this.trailsMasterToggle.indeterminate = false;
-    }
-  }
-
-  // Reflect the per-row toggles in the master toggle: checked when all visible,
-  // unchecked when none, indeterminate when mixed.
-  #syncMasterTrailToggle() {
-    if (!this.trailsMasterToggle) {
-      return;
-    }
-    const toggles = [...this.bodyTrailToggles.values()];
-    if (toggles.length === 0) {
-      return;
-    }
-    const visibleCount = toggles.filter((t) => t.checked).length;
-    this.trailsMasterToggle.checked = visibleCount === toggles.length;
-    this.trailsMasterToggle.indeterminate = visibleCount > 0 && visibleCount < toggles.length;
   }
 
   #updateBodyDistances(state) {

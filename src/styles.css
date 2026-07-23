@@ -1041,41 +1041,88 @@ label {
   scrollbar-width: thin;
 }
 
-/* Category dividers come from each body's ephemeris `kind`, giving the roster
-   structure without competing with the individual telemetry rows. */
-.bodies__group {
+/* Category tabs keep the roster from becoming a single, ever-growing scroll.
+   The active category owns the list underneath, so each system has room to
+   show its satellites without competing with other object families. */
+.bodies__tabs {
   display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 0.66rem 0 0.18rem;
+  gap: 0.28rem;
+  margin: 0 0 0.45rem;
+  padding-bottom: 0.18rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.bodies__tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.bodies__tab {
+  flex: 0 0 auto;
+  padding: 0.3rem 0.42rem;
   color: var(--faint);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--outline-soft);
+  border-radius: 2px;
   font-family: var(--font-headline);
-  font-size: 0.48rem;
+  font-size: 0.46rem;
   font-weight: 600;
-  letter-spacing: 0.2em;
-  line-height: 1;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
   text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
 }
 
-.bodies__group::before,
-.bodies__group::after {
-  content: "";
-  height: 1px;
+.bodies__tab[aria-selected="true"] {
+  color: var(--secondary);
+  border-color: rgba(74, 248, 227, 0.38);
+  background: rgba(74, 248, 227, 0.08);
 }
 
-.bodies__group::before {
-  width: 0.42rem;
-  background: var(--secondary);
-  box-shadow: 0 0 7px var(--secondary-glow);
+.bodies__tab:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
-.bodies__group::after {
-  flex: 1;
-  background: var(--outline-soft);
+.bodies__tab-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.28rem;
+  margin: 0 0 0.45rem;
 }
 
-.bodies__group:first-child {
-  margin-top: 0.08rem;
+.bodies__tab-control {
+  min-height: 1.8rem;
+  padding: 0.28rem 0.4rem;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--outline-soft);
+  border-radius: 2px;
+  font-family: var(--font-headline);
+  font-size: 0.45rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.bodies__tab-control[aria-pressed="true"] {
+  color: var(--secondary);
+  border-color: rgba(74, 248, 227, 0.34);
+  background: rgba(74, 248, 227, 0.06);
+}
+
+.bodies__tab-control:disabled {
+  color: var(--faint);
+  cursor: default;
+  opacity: 0.45;
+}
+
+.bodies__tab-control:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 /* Each row is an instrument strip: status light, object name + odometer, then
@@ -1083,7 +1130,7 @@ label {
 .bodies__row {
   display: grid;
   grid-template-columns: 0.72rem minmax(0, 1fr) 1.45rem 1.45rem;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   align-items: center;
   column-gap: 0.35rem;
   row-gap: 0.04rem;
@@ -1108,10 +1155,22 @@ label {
 }
 
 .bodies__row--inactive {
+  background: rgba(255, 255, 255, 0.012);
+}
+
+.bodies__row--inactive > .bodies__swatch,
+.bodies__row--inactive > .bodies__name,
+.bodies__row--inactive > .bodies__distance,
+.bodies__row--inactive > .bodies__trail,
+.bodies__row--inactive > .bodies__follow {
   opacity: 0.43;
 }
 
-.bodies__row--inactive:hover {
+.bodies__row--inactive:hover > .bodies__swatch,
+.bodies__row--inactive:hover > .bodies__name,
+.bodies__row--inactive:hover > .bodies__distance,
+.bodies__row--inactive:hover > .bodies__trail,
+.bodies__row--inactive:hover > .bodies__follow {
   opacity: 0.72;
 }
 
@@ -1152,18 +1211,41 @@ label {
   white-space: nowrap;
 }
 
-/* Nested sub-bodies (moons, probes) keep the same command bank but gain a
-   restrained hierarchy guide. */
+/* Nested sub-bodies get a named system branch: this makes a multi-moon system
+   read as part of its parent rather than as an unrelated mini-list. */
 .bodies__sublist {
   grid-column: 1 / -1;
   grid-row: 3;
   list-style: none;
-  margin: 0.12rem 0 0 0.26rem;
-  padding: 0 0 0 0.48rem;
-  border-left: 1px solid var(--outline, rgba(255, 255, 255, 0.14));
+  margin: 0.2rem 0 0 0.34rem;
+  padding: 0 0 0 0.68rem;
+  border-left: 1px solid rgba(74, 248, 227, 0.24);
   display: flex;
   flex-direction: column;
   gap: 0;
+}
+
+.bodies__subheading {
+  margin: 0 0 0.16rem -0.14rem;
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.06em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.bodies__row--child {
+  position: relative;
+}
+
+.bodies__row--child::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -0.69rem;
+  width: 0.5rem;
+  border-top: 1px solid rgba(74, 248, 227, 0.24);
 }
 
 .bodies__row--child .bodies__swatch {
@@ -1255,34 +1337,6 @@ label {
 
 .bodies__follow:active {
   transform: scale(0.94);
-}
-
-/* Header master "show all trails" toggle. */
-.bodies__master-trails {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin: 0 0 0.45rem;
-  font-family: var(--font-headline);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--faint);
-  cursor: pointer;
-}
-
-.bodies__master-toggle {
-  width: 0.78rem;
-  height: 0.78rem;
-  margin: 0;
-  cursor: pointer;
-  accent-color: var(--secondary);
-}
-
-.bodies__master-icon {
-  color: var(--secondary);
-  font-size: 0.9rem;
-  line-height: 0.7;
 }
 
 /* ----------------------------------------------------------------------- */

@@ -164,7 +164,8 @@ function buildUi() {
     timelineStatus: new FakeElement({ id: "timeline-status" }),
     bodiesPanel: new FakeElement(),
     bodiesList,
-    trailsMasterToggle: new FakeElement({ id: "bodies-master-trails" }),
+    bodiesTabs: new FakeElement({ id: "bodies-tabs", ownerDocument: doc }),
+    bodiesTabControls: new FakeElement({ id: "bodies-tab-controls", ownerDocument: doc }),
     trueScaleToggle: new FakeElement({ id: "true-scale-toggle" }),
     labelsToggle: new FakeElement({ id: "labels-toggle" }),
     labelsOverlay: new FakeElement({ id: "scene-labels", ownerDocument: doc }),
@@ -192,7 +193,6 @@ function buildUi() {
     mobileSheetBottom: new FakeElement({ id: "mobile-sheet-bottom" }),
     mobileSheetRight: new FakeElement({ id: "mobile-sheet-right" })
   };
-  ui.trailsMasterToggle.checked = true;
   // The real markup ships these collapsed; mirror that initial aria state.
   for (const trigger of [ui.topbarSigil, ui.mobileDataToggle, ui.mobileMenuRight]) {
     trigger.setAttribute("aria-expanded", "false");
@@ -422,10 +422,13 @@ test("submit builds one Bodies-panel row per body and writes distance travelled"
 
   ui.form.dispatch("submit");
 
-  // Nine top-level rows (the Moon nests under Earth as a sub-body); category
-  // dividers are also present in the roster list.
+  // The Planets tab contains eight major planets; the Moon nests under Earth.
+  // Dwarf planets and smaller objects live in their own category tabs.
   const rows = ui.bodiesList.children.filter((row) => /bodies__row/.test(row.className));
-  assert.equal(rows.length, 9);
+  assert.equal(rows.length, 8);
+  assert.equal(ui.bodiesTabs.children.length, 2, "primary bodies are split into planet and dwarf-planet tabs");
+  assert.equal(ui.bodiesTabs.children[0].getAttribute("aria-selected"), "true");
+  assert.equal(ui.bodiesTabControls.children.length, 2, "each tab exposes object and path bulk controls");
   assert.ok(!rows.some((row) => row.dataset.key === "moon"), "moon is not top-level");
 
   const earthRow = rows.find((row) => row.dataset.key === "earth");
@@ -434,6 +437,8 @@ test("submit builds one Bodies-panel row per body and writes distance travelled"
   // The Moon lives in a nested sublist inside Earth's row.
   const subList = earthRow.children.find((c) => c.className === "bodies__sublist");
   assert.ok(subList, "expected a nested sublist under earth");
+  const satelliteHeading = subList.children.find((row) => row.className === "bodies__subheading");
+  assert.equal(satelliteHeading.textContent, "Earth · 1 satellite");
   const moonRow = subList.children.find((row) => row.dataset.key === "moon");
   assert.ok(moonRow, "expected a moon row nested under earth");
   assert.ok(
@@ -450,8 +455,12 @@ test("submit builds one Bodies-panel row per body and writes distance travelled"
   earthRow.dispatch("click");
   assert.equal(app.bodyMarkers.get("earth").visible, false, "row click hides the body marker");
   assert.equal(earthRow.getAttribute("aria-checked"), "false");
+  assert.equal(app.bodyTrails.get("earth").visible, false, "hiding a body also hides its orbital path");
+  assert.equal(app.bodyMarkers.get("moon").visible, true, "hiding a planet does not hide its moons");
+  assert.equal(moonRow.getAttribute("aria-checked"), "true", "the moon row keeps its own visibility state");
   earthRow.dispatch("click");
   assert.equal(app.bodyMarkers.get("earth").visible, true, "row click shows the body marker again");
+  assert.equal(app.bodyTrails.get("earth").visible, false, "re-enabling leaves the orbital path under its own control");
 
   // At the birthdate nothing has travelled yet.
   assert.equal(earthDistance.textContent, "0 km");
@@ -645,22 +654,6 @@ test("per-row trail toggle drives the matching trail and master fans out to all"
   assert.equal(earthTrail.visible, false);
   assert.equal(app.bodyTrails.get("mars").visible, true, "other trails unaffected");
 
-  // The master toggle fans out: unchecking hides every trail.
-  ui.trailsMasterToggle.checked = false;
-  ui.trailsMasterToggle.dispatch("change");
-  for (const trail of app.bodyTrails.values()) {
-    assert.equal(trail.visible, false);
-  }
-  // Per-row checkboxes track the master state.
-  assert.equal(earthToggle.checked, false);
-
-  // Re-checking the master shows every trail again.
-  ui.trailsMasterToggle.checked = true;
-  ui.trailsMasterToggle.dispatch("change");
-  for (const trail of app.bodyTrails.values()) {
-    assert.equal(trail.visible, true);
-  }
-  assert.equal(earthToggle.checked, true);
 });
 
 test("bottom-right zoom cluster wires presets, +/- buttons, and the zoom bar", (t) => {
