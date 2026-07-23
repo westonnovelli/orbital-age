@@ -5,3 +5,5 @@
 # Re-fetchable auxiliary ephemeris intermediates.
 data/ephemeris/v2/raw-horizons-auxiliary/
 data/ephemeris/v2/auxiliary-snapshots.ndjson
+
+node_modules

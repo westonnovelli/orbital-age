@@ -4,7 +4,7 @@ Client-side WebGL app that accepts a birthday and animates Earth's heliocentric 
 
 ## Prerequisites
 
-- Node.js 20+ (Node 22 recommended)
+- Node.js 20+ (Node 22 recommended) - mise use node@... might be worth a try
 - npm 10+
 - A browser with WebGL enabled
 
@@ -25,7 +25,7 @@ npm test
 3. Run locally in a browser (static hosting):
 
 ```bash
-npx serve .
+npm run dev
 ```
 
 Then open the printed URL (typically `http://localhost:3000`).
