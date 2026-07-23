@@ -86,6 +86,42 @@ test("timeline controller drives multiple bodies to distinct positions", () => {
   );
 });
 
+test("addBodies can defer trail precompute and opt out of distance tracking", () => {
+  const earthMarker = markerStub();
+  const venusMarker = markerStub();
+  const venusTrail = {
+    precomputeCount: 0,
+    cursorDays: [],
+    precomputeTrail() {
+      this.precomputeCount += 1;
+      this.precomputed = true;
+    },
+    setCursorForDay(day) {
+      this.cursorDays.push(day);
+    }
+  };
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-11",
+    bodies: earthBodies(earthMarker, null)
+  });
+
+  controller.init();
+  controller.addBodies(
+    [{ key: "venus", marker: venusMarker, trail: venusTrail, trackDistance: false }],
+    { precomputeTrails: false }
+  );
+
+  assert.equal(venusTrail.precomputeCount, 0);
+  assert.equal(venusMarker.positions.length, 1);
+  assert.equal(controller.getState().bodyTraveledKm.has("venus"), false);
+
+  controller.ensureTrailForBody("venus");
+
+  assert.equal(venusTrail.precomputeCount, 1);
+  assert.equal(venusTrail.cursorDays.at(-1), 0);
+});
+
 function cameraStub() {
   return {
     centers: [],

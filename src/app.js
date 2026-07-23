@@ -487,6 +487,10 @@ export function zoomBarHalfHeightToT(
   return Math.min(1, Math.max(0, t));
 }
 
+function maxOrbitRadiusForBodies(configs) {
+  return Math.max(0, ...configs.map((body) => Number(body.orbitRadiusAu) || 0));
+}
+
 export class OrbitalApp {
   constructor({
     form,
@@ -797,7 +801,8 @@ export class OrbitalApp {
         marker,
         trail,
         parent: config.parent ?? null,
-        relativeScale: config.relativeScale
+        relativeScale: config.relativeScale,
+        trackDistance: config.stream !== AUXILIARY_EPHEMERIS_STREAM
       });
     }
 
@@ -956,7 +961,8 @@ export class OrbitalApp {
         marker,
         trail,
         parent: config.parent ?? null,
-        relativeScale: config.relativeScale
+        relativeScale: config.relativeScale,
+        trackDistance: false
       });
     }
 
@@ -966,14 +972,36 @@ export class OrbitalApp {
     for (const body of bodies) {
       this.scene.add(body.marker);
     }
-    this.timelineController.addBodies(bodies);
+    this.timelineController.addBodies(bodies, { precomputeTrails: false });
     this.activeBodyConfigs = [...this.activeBodyConfigs, ...configs];
     this.auxiliaryBodiesAttached = true;
+    this.#expandAutoFitForActiveBodies();
     this.#buildBodiesPanel();
     this.#buildBodyLabels();
     this.#syncMasterTrailToggle();
     this.#applyTrueScale(this.trueScale);
     this.#updateBodyLabels();
+  }
+
+  #expandAutoFitForActiveBodies() {
+    if (!this.camera) {
+      return;
+    }
+
+    const nextFit = autoFitHalfHeight(maxOrbitRadiusForBodies(this.activeBodyConfigs));
+    if (!Number.isFinite(nextFit) || nextFit <= (this.camera.fitHalfHeight ?? 0)) {
+      return;
+    }
+
+    const wasAutoFit = this.framingMode === "auto-fit";
+    this.camera.fitHalfHeight = nextFit;
+    this.camera.setViewport(this.camera.viewportWidth, this.camera.viewportHeight);
+    if (wasAutoFit) {
+      this.camera.setZoom(this.camera.maxHalfHeight);
+      this.camera.setCenter(0, 0);
+      this.timelineController?.setTrackBodyKey(null);
+    }
+    this.#syncZoomBar();
   }
 
   #showDeepTimeLoader(birthday, loadPlan) {
@@ -1149,6 +1177,9 @@ export class OrbitalApp {
       toggle.setAttribute("aria-label", `Show ${this.#bodyDisplayName(config.key)} trail`);
       toggle.dataset.key = config.key;
       toggle.addEventListener("change", () => {
+        if (toggle.checked) {
+          this.timelineController?.ensureTrailForBody?.(config.key);
+        }
         trail.setVisible(toggle.checked);
         this.#syncMasterTrailToggle();
       });
@@ -1888,6 +1919,11 @@ export class OrbitalApp {
   // checkbox so the panel stays consistent with the master toggle.
   #setAllTrailsVisible(visible) {
     const show = Boolean(visible);
+    if (show) {
+      for (const key of this.bodyTrails.keys()) {
+        this.timelineController?.ensureTrailForBody?.(key);
+      }
+    }
     for (const trail of this.bodyTrails.values()) {
       trail.setVisible(show);
     }
@@ -2058,7 +2094,11 @@ export class OrbitalApp {
     // as a manual zoom (clears the active preset) and re-resolves bodies.
     this.zoomBar?.addEventListener("input", () => {
       const t = Number(this.zoomBar.value) / ZOOM_BAR_STEPS;
-      this.#applyManualZoom(() => this.camera.setZoom(zoomBarTToHalfHeight(t)));
+      this.#applyManualZoom(() =>
+        this.camera.setZoom(
+          zoomBarTToHalfHeight(t, ZOOM_BAR_MIN_HALF_HEIGHT, this.#zoomBarMaxHalfHeight())
+        )
+      );
     });
 
     this.#updateFramingButtons();
@@ -2137,8 +2177,16 @@ export class OrbitalApp {
     if (!this.zoomBar) {
       return;
     }
-    const t = zoomBarHalfHeightToT(this.camera.halfHeight);
+    const t = zoomBarHalfHeightToT(
+      this.camera.halfHeight,
+      ZOOM_BAR_MIN_HALF_HEIGHT,
+      this.#zoomBarMaxHalfHeight()
+    );
     this.zoomBar.value = String(Math.round(t * ZOOM_BAR_STEPS));
+  }
+
+  #zoomBarMaxHalfHeight() {
+    return Math.max(ZOOM_BAR_MAX_HALF_HEIGHT, this.camera?.maxHalfHeight ?? ZOOM_BAR_MAX_HALF_HEIGHT);
   }
 
   #setTimelineEnabled(enabled) {

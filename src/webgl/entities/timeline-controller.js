@@ -166,14 +166,25 @@ export class TimelineControllerEntity {
     });
   }
 
-  addBodies(bodies) {
+  addBodies(bodies, { precomputeTrails = true } = {}) {
     const additions = normalizeBodies({ bodies });
     for (const body of additions) {
       this.bodies.push(body);
-      this.#precomputeTrailForBody(body);
+      if (precomputeTrails) {
+        this.#precomputeTrailForBody(body);
+      }
     }
     this.#applyToBodies();
     this.#emitState(true);
+  }
+
+  ensureTrailForBody(bodyKey) {
+    const body = this.bodies.find((candidate) => candidate.key === bodyKey);
+    if (!body?.trail || body.trail.precomputed) {
+      return;
+    }
+    this.#precomputeTrailForBody(body);
+    body.trail?.setCursorForDay?.(this.timelineDays);
   }
 
   render({ deltaSeconds }) {
@@ -338,7 +349,9 @@ export class TimelineControllerEntity {
       body.trail?.setCursorForDay?.(this.timelineDays);
       resolved.set(body.key, { x: position.xAu, y: position.yAu });
       this.bodyRenderPositions.set(body.key, { x: position.xAu, y: position.yAu });
-      this.bodyTraveledKm.set(body.key, this.#traveledKmForBody(body.key, instant));
+      if (body.trackDistance !== false) {
+        this.bodyTraveledKm.set(body.key, this.#traveledKmForBody(body.key, instant));
+      }
       if (this.trackBodyKey && body.key === this.trackBodyKey) {
         trackedPosition = { x: position.xAu, y: position.yAu };
       }
@@ -377,7 +390,9 @@ export class TimelineControllerEntity {
       // The Moon's odometer is its true distance through space (barycentric path),
       // the same uniform metric as every other body — not the zoom-coupled render
       // offset and not its small path around Earth.
-      this.bodyTraveledKm.set(body.key, this.#traveledKmForBody(body.key, instant));
+      if (body.trackDistance !== false) {
+        this.bodyTraveledKm.set(body.key, this.#traveledKmForBody(body.key, instant));
+      }
       if (this.trackBodyKey && body.key === this.trackBodyKey) {
         trackedPosition = { x, y };
       }
@@ -425,7 +440,8 @@ function normalizeBodies({ bodies, earthMarker, motionTrails }) {
         // Parented bodies (the Moon) are positioned relative to a parent body's
         // resolved render position using the derived Earth-relative offset.
         parent: body.parent ?? null,
-        relativeScale: Number.isFinite(body.relativeScale) ? body.relativeScale : 1
+        relativeScale: Number.isFinite(body.relativeScale) ? body.relativeScale : 1,
+        trackDistance: body.trackDistance !== false
       };
     });
   }
