@@ -2,7 +2,9 @@
 set -euo pipefail
 
 limit=$((100 * 1024 * 1024))
-if git rev-list --objects --all | git cat-file --batch-check='%(objecttype) %(objectsize) %(objectname) %(rest)' | awk -v limit="$limit" '
+# Check branches and tags: these are the refs GitHub receives on a push. Codex
+# keeps private tree snapshots under refs/codex/, which are never pushable refs.
+if git rev-list --objects --branches --tags | git cat-file --batch-check='%(objecttype) %(objectsize) %(objectname) %(rest)' | awk -v limit="$limit" '
   $1 == "blob" && $2 >= limit { print; oversized = 1 }
   END { exit oversized }
 '; then

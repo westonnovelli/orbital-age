@@ -25,8 +25,9 @@ npm test
 
 The auxiliary raw responses and snapshot stream are re-fetchable local
 intermediates and are ignored by Git. The primary source responses and runtime
-chunks are committed. `data:ephemeris:check-size` scans every reachable Git blob
-and fails at or above 100 MiB; run it before pushing rewritten history.
+chunks are committed. `data:ephemeris:check-size` scans every pushable branch
+and tag blob and fails at or above 100 MiB; run it before pushing rewritten
+history.
 
 The sampling contract remains `ECLIPJ2000`, Solar System Barycenter (`SSB`), and
 daily (`P1D`) AU position vectors sourced from NASA/JPL Horizons (DE442s).
