@@ -11,11 +11,16 @@ const snapshotsPath = path.join(v2Dir, "auxiliary-snapshots.ndjson");
 
 function parseArgs(argv) {
   const flags = new Set(argv);
+  const only = process.env.EPHEMERIS_AUXILIARY_KEYS
+    ? new Set(process.env.EPHEMERIS_AUXILIARY_KEYS.split(",").map((key) => key.trim()).filter(Boolean))
+    : null;
   return {
     fetch: flags.has("--fetch"),
     incremental: flags.has("--incremental"),
     yes: flags.has("--yes"),
-    printPlan: flags.has("--print-plan")
+    printPlan: flags.has("--print-plan"),
+    only,
+    append: Boolean(only)
   };
 }
 
@@ -112,6 +117,18 @@ function extractEarliestAvailableDate(text) {
   return new Date(Date.UTC(Number(match[1]), month, Number(match[3]))).toISOString().slice(0, 10);
 }
 
+function extractLatestAvailableDate(text) {
+  const match = /after A\.D\.\s+(\d{4})-([A-Z]{3})-(\d{2})/i.exec(String(text));
+  if (!match) return null;
+  const months = new Map([
+    ["JAN", 0], ["FEB", 1], ["MAR", 2], ["APR", 3], ["MAY", 4], ["JUN", 5],
+    ["JUL", 6], ["AUG", 7], ["SEP", 8], ["OCT", 9], ["NOV", 10], ["DEC", 11]
+  ]);
+  const month = months.get(match[2].toUpperCase());
+  if (month === undefined) return null;
+  return new Date(Date.UTC(Number(match[1]), month, Number(match[3]))).toISOString().slice(0, 10);
+}
+
 function mergeHorizonsPayloads(payloads, target) {
   return { result: `$$SOE\n${payloads.map((payload) => vectorSection(payload.result, target)).filter(Boolean).join("\n")}\n$$EOE\n` };
 }
@@ -157,7 +174,16 @@ function parseHorizonsCsvRows(resultText, target) {
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const header = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
-  const auxiliary = enabledBodies(loadCatalog(cwd), "auxiliary");
+  const allAuxiliary = enabledBodies(loadCatalog(cwd), "auxiliary");
+  const auxiliary = options.only
+    ? allAuxiliary.filter((target) => options.only.has(target.key))
+    : allAuxiliary;
+  if (options.only) {
+    const unknown = [...options.only].filter((key) => !allAuxiliary.some((target) => target.key === key));
+    if (unknown.length > 0) {
+      throw new Error(`Unknown auxiliary target key(s): ${unknown.join(", ")}`);
+    }
+  }
   const currentEndUtc = header.window.endUtc;
   const requestedStartUtc = options.incremental ? addUtcDays(currentEndUtc, 1) : header.window.startUtc;
   const startDate = utcDateFromIso(requestedStartUtc);
@@ -189,33 +215,38 @@ async function main() {
     fs.mkdirSync(rawDir, { recursive: true });
     for (const target of auxiliary) {
       let effectiveStartDate = startDate;
+      let effectiveStopDate = stopDate;
       let payloads = [];
-      for (let recoveryAttempt = 0; recoveryAttempt < 2; recoveryAttempt += 1) {
+      for (let recoveryAttempt = 0; recoveryAttempt < 4; recoveryAttempt += 1) {
         payloads = [];
-        for (const segment of dateSegments(effectiveStartDate, stopDate)) {
+        for (const segment of dateSegments(effectiveStartDate, effectiveStopDate)) {
           const url = buildUrl(horizonsParams({ command: target.horizonsCommand, ...segment }));
           const destination = path.join(rawDir, `${target.key}-${segment.startDate}-${segment.stopDate}.json`);
           payloads.push(await fetchRawJson(url, destination));
           console.log(`Fetched ${target.key} ${segment.startDate}..${segment.stopDate}`);
         }
         const unavailable = payloads.find((payload) => payload.result && !payload.result.includes("$$SOE"));
-        const earliest = unavailable
-          ? extractEarliestAvailableDate(`${unavailable.result} ${unavailable.error ?? ""}`)
-          : null;
-        if (!unavailable || !earliest || earliest <= effectiveStartDate) break;
+        const unavailableText = unavailable ? `${unavailable.result} ${unavailable.error ?? ""}` : "";
+        const earliest = unavailable ? extractEarliestAvailableDate(unavailableText) : null;
+        const latest = unavailable ? extractLatestAvailableDate(unavailableText) : null;
+        if (!unavailable || (!earliest && !latest)) break;
         if (options.incremental) {
-          throw new Error(
-            `${target.key} has no auxiliary ephemeris for ${startDate}; earliest available date is ${earliest}. ` +
-              "Run a full auxiliary backfill so coverage can be represented explicitly."
-          );
+          throw new Error(`${target.key} has no complete auxiliary ephemeris in the requested incremental window.`);
         }
-        console.log(`${target.key} unavailable before ${earliest}; retrying from its first available date.`);
-        effectiveStartDate = earliest;
+        if (earliest && earliest > effectiveStartDate) {
+          console.log(`${target.key} unavailable before ${earliest}; retrying from the next complete UTC day.`);
+          effectiveStartDate = utcDateFromIso(addUtcDays(`${earliest}T00:00:00Z`, 1));
+        } else if (latest && latest < effectiveStopDate) {
+          console.log(`${target.key} unavailable after ${latest}; retrying through its last available day.`);
+          effectiveStopDate = utcDateFromIso(addUtcDays(`${latest}T00:00:00Z`, -2));
+        } else {
+          throw new Error(`Could not find a complete Horizons date range for ${target.key}.`);
+        }
       }
       const destination = path.join(rawDir, `${target.key}.json`);
       fs.writeFileSync(destination, `${JSON.stringify(mergeHorizonsPayloads(payloads, target), null, 2)}\n`);
       console.log(
-        `Merged ${target.key} ${effectiveStartDate}..${stopDate} ` +
+        `Merged ${target.key} ${effectiveStartDate}..${effectiveStopDate} ` +
           `(${payloads.length} segment${payloads.length === 1 ? "" : "s"})`
       );
     }
@@ -234,9 +265,8 @@ async function main() {
     const payload = JSON.parse(fs.readFileSync(rawPath, "utf8"));
     const rows = parseHorizonsCsvRows(payload.result, target);
     const firstRowUtc = rows[0]?.epochUtc;
-    const expectedRows = options.incremental
-      ? Math.round((Date.parse(requestedEndUtc) - Date.parse(currentEndUtc)) / MS_PER_DAY)
-      : Math.round((Date.parse(header.window.endUtc) - Date.parse(firstRowUtc)) / MS_PER_DAY) + 1;
+    const lastRowUtc = rows.at(-1)?.epochUtc;
+    const expectedRows = Math.round((Date.parse(lastRowUtc) - Date.parse(firstRowUtc)) / MS_PER_DAY) + 1;
     if (rows.length !== expectedRows) {
       throw new Error(
         `Row count mismatch for ${target.key}: expected ${expectedRows}, got ${rows.length}`
@@ -262,7 +292,7 @@ async function main() {
 
   // The asteroid-belt catalog produces millions of rows. Write incrementally
   // rather than building one multi-gigabyte string in memory.
-  const snapshotsFd = fs.openSync(snapshotsPath, "w");
+  const snapshotsFd = fs.openSync(snapshotsPath, options.append ? "a" : "w");
   let rowCount = 0;
   try {
     const allRows = auxiliary.flatMap((target) => rowsByTarget.get(target.key));
@@ -274,7 +304,7 @@ async function main() {
   } finally {
     fs.closeSync(snapshotsFd);
   }
-  console.log(`Wrote ${path.relative(cwd, snapshotsPath)} (${rowCount} rows)`);
+  console.log(`${options.append ? "Appended to" : "Wrote"} ${path.relative(cwd, snapshotsPath)} (${rowCount} rows)`);
 }
 
 main().catch((error) => {

@@ -257,6 +257,7 @@ export function manifestRenderConfigs(dataset, bodyRegistry = getBodyRegistry(),
       relativeScale: body.render.relativeScale,
       visible: body.capabilities.canShowByDefault,
       availableFromUtc: body.coverageStartUtc ?? null,
+      availableToUtc: body.coverageEndUtc ?? null,
       cameraFit: body.capabilities.canFitCamera,
       labelEnabled: body.capabilities.canShowLabel,
       // Keep the primary scene readable by default: Earth's Moon is part of
@@ -265,6 +266,7 @@ export function manifestRenderConfigs(dataset, bodyRegistry = getBodyRegistry(),
       labelOffset: body.render.label?.offset,
       followEnabled: body.capabilities.canFollow,
       distanceEnabled: body.capabilities.canShowDistance,
+      layers: body.layers ?? [],
       trail: body.capabilities.canToggleTrail ? {
         ...BASE_TRAIL,
         color: body.render.trail.color,
@@ -511,7 +513,9 @@ export function zoomBarHalfHeightToT(
 }
 
 function maxOrbitRadiusForBodies(configs) {
-  return Math.max(0, ...configs.map((body) => Number(body.orbitRadiusAu) || 0));
+  return Math.max(0, ...configs
+    .filter((body) => body.cameraFit !== false)
+    .map((body) => Number(body.orbitRadiusAu) || 0));
 }
 
 export class OrbitalApp {
@@ -556,6 +560,7 @@ export class OrbitalApp {
     telemetrySubject,
     telemetryBody,
     telemetryPath,
+    telemetryLaunchDate,
     telemetryMetric,
     audioElement,
     audioToggle,
@@ -656,6 +661,7 @@ export class OrbitalApp {
     this.telemetrySubject = telemetrySubject;
     this.telemetryBody = telemetryBody;
     this.telemetryPath = telemetryPath;
+    this.telemetryLaunchDate = telemetryLaunchDate;
     this.telemetryMetric = telemetryMetric;
 
     // Background score: a single looping audio track that begins on the first
@@ -879,6 +885,7 @@ export class OrbitalApp {
         parent: config.parent ?? null,
         relativeScale: config.relativeScale,
         availableFromUtc: config.availableFromUtc,
+        availableToUtc: config.availableToUtc,
         trackDistance: config.distanceEnabled !== false
       });
     }
@@ -1092,6 +1099,7 @@ export class OrbitalApp {
         parent: config.parent ?? null,
         relativeScale: config.relativeScale,
         availableFromUtc: config.availableFromUtc,
+        availableToUtc: config.availableToUtc,
         trackDistance: config.distanceEnabled === undefined ? false : config.distanceEnabled
       });
     }
@@ -2464,6 +2472,15 @@ export class OrbitalApp {
     }
     if (this.telemetryPath) {
       this.telemetryPath.textContent = mechanics ? mechanics.path : SUN_MECHANICS.path;
+    }
+    if (this.telemetryLaunchDate) {
+      this.telemetryLaunchDate.textContent = mechanics?.launchDate
+        ? new Date(`${mechanics.launchDate}T00:00:00Z`).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+          })
+        : "--";
     }
     if (this.telemetryMetric) {
       if (!trackedKey) {

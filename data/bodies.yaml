@@ -2370,3 +2370,243 @@ bodies:
       label: { enabled: true }
       follow: { enabled: true }
       distance: { enabled: false }
+  - key: voyager-1
+    label: Voyager 1
+    kind: spacecraft
+    dataset: auxiliary
+    naifId: -31
+    horizonsCommand: "-31"
+    enabled: true
+    layers:
+      - spacecraft
+    render:
+      enabled: true
+      defaultVisible: true
+      color: [0.55, 0.92, 1]
+      size: 0.026
+      orbitRadiusAu: 170
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color: [0.35, 0.82, 1, 0.045]
+        hueStart: 0.55
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: true }
+  - key: voyager-2
+    label: Voyager 2
+    kind: spacecraft
+    dataset: auxiliary
+    naifId: -32
+    horizonsCommand: "-32"
+    enabled: true
+    layers:
+      - spacecraft
+    render:
+      enabled: true
+      defaultVisible: true
+      color: [0.42, 0.72, 1]
+      size: 0.026
+      orbitRadiusAu: 145
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color: [0.3, 0.62, 1, 0.045]
+        hueStart: 0.62
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: true }
+  - key: new-horizons
+    label: New Horizons
+    kind: spacecraft
+    dataset: auxiliary
+    naifId: -98
+    horizonsCommand: "-98"
+    enabled: true
+    layers:
+      - spacecraft
+    render:
+      enabled: true
+      defaultVisible: true
+      color: [0.72, 0.55, 1]
+      size: 0.025
+      orbitRadiusAu: 65
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color: [0.62, 0.42, 1, 0.045]
+        hueStart: 0.78
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: true }
+  - key: pioneer-10
+    label: Pioneer 10
+    kind: spacecraft
+    dataset: auxiliary
+    naifId: -23
+    horizonsCommand: "-23"
+    enabled: true
+    layers:
+      - spacecraft
+    render:
+      enabled: true
+      defaultVisible: true
+      color: [1, 0.72, 0.35]
+      size: 0.024
+      orbitRadiusAu: 140
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color: [1, 0.62, 0.25, 0.045]
+        hueStart: 0.1
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: true }
+  - key: pioneer-11
+    label: Pioneer 11
+    kind: spacecraft
+    dataset: auxiliary
+    naifId: -24
+    horizonsCommand: "-24"
+    enabled: true
+    layers:
+      - spacecraft
+    render:
+      enabled: true
+      defaultVisible: true
+      color: [1, 0.52, 0.25]
+      size: 0.024
+      orbitRadiusAu: 115
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color: [1, 0.42, 0.2, 0.045]
+        hueStart: 0.04
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: true }
+  - key: curiosity
+    label: Curiosity
+    kind: spacecraft
+    dataset: auxiliary
+    naifId: -76
+    horizonsCommand: "-76"
+    enabled: true
+    layers:
+      - spacecraft
+    render:
+      enabled: true
+      defaultVisible: true
+      color: [1, 0.4, 0.28]
+      size: 0.022
+      orbitRadiusAu: 1.67
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color: [1, 0.3, 0.2, 0.045]
+        hueStart: 0.02
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: true }
+  - key: perseverance
+    label: Perseverance
+    kind: spacecraft
+    dataset: auxiliary
+    naifId: -168
+    horizonsCommand: "-168"
+    enabled: true
+    layers:
+      - spacecraft
+    render:
+      enabled: true
+      defaultVisible: true
+      color: [0.95, 0.68, 0.34]
+      size: 0.022
+      orbitRadiusAu: 1.67
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color: [0.95, 0.58, 0.25, 0.045]
+        hueStart: 0.08
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: true }
+  - key: cassini
+    label: Cassini
+    kind: spacecraft
+    dataset: auxiliary
+    naifId: -82
+    horizonsCommand: "-82"
+    enabled: true
+    layers:
+      - spacecraft
+    render:
+      enabled: true
+      defaultVisible: true
+      color: [0.65, 0.86, 0.92]
+      size: 0.024
+      orbitRadiusAu: 10.2
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color: [0.48, 0.78, 0.9, 0.045]
+        hueStart: 0.48
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: true }
+  - key: juno-spacecraft
+    label: Juno
+    kind: spacecraft
+    dataset: auxiliary
+    naifId: -61
+    horizonsCommand: "-61"
+    enabled: true
+    layers:
+      - spacecraft
+    render:
+      enabled: true
+      defaultVisible: true
+      color: [0.7, 0.88, 0.5]
+      size: 0.023
+      orbitRadiusAu: 5.5
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color: [0.56, 0.8, 0.36, 0.045]
+        hueStart: 0.3
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: true }
+  - key: dawn
+    label: Dawn
+    kind: spacecraft
+    dataset: auxiliary
+    naifId: -203
+    horizonsCommand: "-203"
+    enabled: true
+    layers:
+      - spacecraft
+    render:
+      enabled: true
+      defaultVisible: true
+      color: [0.78, 0.7, 0.95]
+      size: 0.023
+      orbitRadiusAu: 3.6
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color: [0.66, 0.58, 0.9, 0.045]
+        hueStart: 0.72
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: true }

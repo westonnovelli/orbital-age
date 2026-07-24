@@ -81,8 +81,10 @@ export function normalizedBody(body) {
         ? "belt"
         : body.kind === "nearEarthAsteroid"
           ? "near-earth"
-          : body.kind === "comet"
+        : body.kind === "comet"
             ? "comets"
+            : body.kind === "spacecraft"
+              ? "spacecraft"
             : "dwarf-planets");
   return {
     key: body.key, label: body.label ?? body.key, kind: body.kind ?? "smallBody", group, naifId: body.naifId,

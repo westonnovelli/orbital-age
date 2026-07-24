@@ -181,6 +181,7 @@ function buildUi() {
     telemetrySubject: new FakeElement({ id: "telemetry-subject" }),
     telemetryBody: new FakeElement({ id: "telemetry-body" }),
     telemetryPath: new FakeElement({ id: "telemetry-path" }),
+    telemetryLaunchDate: new FakeElement({ id: "telemetry-launch-date" }),
     telemetryMetric: new FakeElement({ id: "telemetry-metric" }),
     autoFitButton: new FakeElement({ id: "framing-auto-fit" }),
     innerPlanetsButton: new FakeElement({ id: "framing-inner-planets" }),

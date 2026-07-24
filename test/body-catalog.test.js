@@ -10,6 +10,26 @@ test("body catalog defines every enabled body through a named dataset", () => {
   assert.equal(catalog.bodies.find((body) => body.key === "moon").relativeTo, "earth");
 });
 
+test("catalog includes the curated spacecraft layer with distinct Horizons targets", () => {
+  const catalog = loadCatalog();
+  const expected = new Map([
+    ["voyager-1", -31], ["voyager-2", -32], ["new-horizons", -98],
+    ["pioneer-10", -23], ["pioneer-11", -24], ["curiosity", -76],
+    ["perseverance", -168], ["cassini", -82], ["juno-spacecraft", -61], ["dawn", -203]
+  ]);
+  const spacecraft = catalog.bodies.filter((body) => body.kind === "spacecraft");
+  assert.equal(spacecraft.length, expected.size);
+  for (const [key, naifId] of expected) {
+    const body = spacecraft.find((candidate) => candidate.key === key);
+    assert.ok(body, `${key} spacecraft entry`);
+    assert.equal(body.naifId, naifId);
+    assert.deepEqual(body.layers, ["spacecraft"]);
+    assert.equal(body.render.defaultVisible, true);
+    assert.equal(body.render.cameraFit, false);
+    assert.equal(body.render.trail.defaultVisible, false);
+  }
+});
+
 test("body catalog rejects duplicate keys and invalid parent references", () => {
   const base = {
     ephemeris: {}, format: {}, datasets: { primary: {} },

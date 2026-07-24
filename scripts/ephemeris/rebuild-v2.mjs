@@ -45,7 +45,7 @@ function subtractUtcYears(iso, years) {
   return date.toISOString().replace(".000Z", "Z");
 }
 
-function planChunks({ stream, group, targets, epochs, vectorsByKey, coverageStartByKey, config, datasetEndUtc }) {
+function planChunks({ stream, group, targets, epochs, vectorsByKey, coverageStartByKey, coverageEndByKey, config, datasetEndUtc }) {
   if (targets.length === 0 || epochs.length === 0) {
     return [];
   }
@@ -67,7 +67,7 @@ function planChunks({ stream, group, targets, epochs, vectorsByKey, coverageStar
     }
     const chunkTargets = targets.filter((target) => {
       const coverageStart = coverageStartByKey.get(target.key);
-      return coverageStart === undefined || Date.parse(coverageStart) <= epochs[startIndex] * 1000;
+      return coverageStart === undefined || Date.parse(coverageStart) <= epochs[endIndex] * 1000;
     });
     if (chunkTargets.length === 0) return;
     chunks.push({
@@ -203,6 +203,7 @@ async function readVectors({ source, targetKeys, auxiliaryKeys }) {
   const selectedKeys = new Set(targetKeys);
   const vectorsByKey = new Map([...selectedKeys].map((key) => [key, []]));
   const coverageStartByKey = new Map();
+  const coverageEndByKey = new Map();
   const epochs = [];
   const primaryTargets = source.targets.filter((target) => target.synthetic !== "origin");
   for (const target of primaryTargets) {
@@ -224,11 +225,13 @@ async function readVectors({ source, targetKeys, auxiliaryKeys }) {
     if (selectedKeys.has(target.key)) {
       vectorsByKey.set(target.key, rows.flatMap((row) => row.values));
       coverageStartByKey.set(target.key, rows[0].epochUtc);
+      coverageEndByKey.set(target.key, rows.at(-1).epochUtc);
     }
   }
   for (const target of source.targets.filter((candidate) => candidate.synthetic === "origin" && selectedKeys.has(candidate.key))) {
     vectorsByKey.set(target.key, new Array(epochs.length * 3).fill(0));
     coverageStartByKey.set(target.key, source.window.startUtc);
+    coverageEndByKey.set(target.key, source.window.endUtc);
   }
 
   if (fs.existsSync(auxiliarySnapshotsPath)) {
@@ -247,6 +250,7 @@ async function readVectors({ source, targetKeys, auxiliaryKeys }) {
       }
       vectorsByKey.get(row.body).push(row.xAu, row.yAu, row.zAu);
       coverageStartByKey.set(row.body, coverageStartByKey.get(row.body) ?? row.epochUtc);
+      coverageEndByKey.set(row.body, row.epochUtc);
     }
   }
 
@@ -274,9 +278,14 @@ async function readVectors({ source, targetKeys, auxiliaryKeys }) {
           "Run the matching refresh script for this stream."
       );
     }
+    if (actualLength > 0 && actualLength < expectedLength) {
+      const values = vectorsByKey.get(key);
+      const last = values.slice(-3);
+      while (values.length < expectedLength) values.push(...last);
+    }
   }
 
-  return { epochs, vectorsByKey, coverageStartByKey };
+  return { epochs, vectorsByKey, coverageStartByKey, coverageEndByKey };
 }
 
 async function main() {
@@ -317,7 +326,7 @@ async function main() {
   }
 
   const allKeys = [...new Set([...primaryTargets, ...auxiliaryTargets].map((target) => target.key))];
-  const { epochs, vectorsByKey, coverageStartByKey } = await readVectors({
+  const { epochs, vectorsByKey, coverageStartByKey, coverageEndByKey } = await readVectors({
     source,
     targetKeys: allKeys,
     auxiliaryKeys: new Set(auxiliaryTargets.map((target) => target.key))
@@ -329,6 +338,10 @@ async function main() {
     const coverageStart = coverageStartByKey.get(target.key);
     if (coverageStart && Date.parse(coverageStart) > Date.parse(source.window.startUtc)) {
       target.coverageStartUtc = coverageStart;
+    }
+    const coverageEnd = coverageEndByKey.get(target.key);
+    if (coverageEnd && Date.parse(coverageEnd) < Date.parse(source.window.endUtc)) {
+      target.coverageEndUtc = coverageEnd;
     }
   }
 
@@ -355,6 +368,7 @@ async function main() {
         epochs,
         vectorsByKey,
         coverageStartByKey,
+        coverageEndByKey,
         config,
         datasetEndUtc: source.window.endUtc
       })) {

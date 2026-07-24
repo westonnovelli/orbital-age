@@ -3,7 +3,7 @@
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v2",
   "encoder": "binary-f32-gzip",
-  "generatedOn": "2026-07-23T21:18:27.133Z",
+  "generatedOn": "2026-07-24T18:15:12.994Z",
   "compatibility": {
     "manifestSchema": "ephemeris.manifest.v2",
     "requiredFrame": "ECLIPJ2000",
@@ -188,7 +188,17 @@
         "proteus",
         "charon",
         "nix",
-        "hydra"
+        "hydra",
+        "voyager-1",
+        "voyager-2",
+        "new-horizons",
+        "pioneer-10",
+        "pioneer-11",
+        "curiosity",
+        "perseverance",
+        "cassini",
+        "juno-spacecraft",
+        "dawn"
       ]
     }
   },
@@ -344,7 +354,17 @@
         "proteus",
         "charon",
         "nix",
-        "hydra"
+        "hydra",
+        "voyager-1",
+        "voyager-2",
+        "new-horizons",
+        "pioneer-10",
+        "pioneer-11",
+        "curiosity",
+        "perseverance",
+        "cassini",
+        "juno-spacecraft",
+        "dawn"
       ]
     }
   },
@@ -8956,6 +8976,668 @@
         }
       },
       "coverageStartUtc": "1800-01-03T00:00:00Z"
+    },
+    "voyager-1": {
+      "key": "voyager-1",
+      "label": "Voyager 1",
+      "kind": "spacecraft",
+      "group": "spacecraft",
+      "naifId": -31,
+      "horizonsCommand": "-31",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
+      "layers": [
+        "spacecraft"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.55,
+          0.92,
+          1
+        ],
+        "size": 0.026,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 170,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            0.35,
+            0.82,
+            1,
+            0.045
+          ],
+          "hueStart": 0.55
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": true
+        }
+      },
+      "coverageStartUtc": "1977-09-06T00:00:00Z"
+    },
+    "voyager-2": {
+      "key": "voyager-2",
+      "label": "Voyager 2",
+      "kind": "spacecraft",
+      "group": "spacecraft",
+      "naifId": -32,
+      "horizonsCommand": "-32",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
+      "layers": [
+        "spacecraft"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.42,
+          0.72,
+          1
+        ],
+        "size": 0.026,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 145,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            0.3,
+            0.62,
+            1,
+            0.045
+          ],
+          "hueStart": 0.62
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": true
+        }
+      },
+      "coverageStartUtc": "1977-08-21T00:00:00Z"
+    },
+    "new-horizons": {
+      "key": "new-horizons",
+      "label": "New Horizons",
+      "kind": "spacecraft",
+      "group": "spacecraft",
+      "naifId": -98,
+      "horizonsCommand": "-98",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
+      "layers": [
+        "spacecraft"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.72,
+          0.55,
+          1
+        ],
+        "size": 0.025,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 65,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            0.62,
+            0.42,
+            1,
+            0.045
+          ],
+          "hueStart": 0.78
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": true
+        }
+      },
+      "coverageStartUtc": "2006-01-20T00:00:00Z"
+    },
+    "pioneer-10": {
+      "key": "pioneer-10",
+      "label": "Pioneer 10",
+      "kind": "spacecraft",
+      "group": "spacecraft",
+      "naifId": -23,
+      "horizonsCommand": "-23",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
+      "layers": [
+        "spacecraft"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          1,
+          0.72,
+          0.35
+        ],
+        "size": 0.024,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 140,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            1,
+            0.62,
+            0.25,
+            0.045
+          ],
+          "hueStart": 0.1
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": true
+        }
+      },
+      "coverageStartUtc": "1972-03-04T00:00:00Z"
+    },
+    "pioneer-11": {
+      "key": "pioneer-11",
+      "label": "Pioneer 11",
+      "kind": "spacecraft",
+      "group": "spacecraft",
+      "naifId": -24,
+      "horizonsCommand": "-24",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
+      "layers": [
+        "spacecraft"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          1,
+          0.52,
+          0.25
+        ],
+        "size": 0.024,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 115,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            1,
+            0.42,
+            0.2,
+            0.045
+          ],
+          "hueStart": 0.04
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": true
+        }
+      },
+      "coverageStartUtc": "1973-04-07T00:00:00Z"
+    },
+    "curiosity": {
+      "key": "curiosity",
+      "label": "Curiosity",
+      "kind": "spacecraft",
+      "group": "spacecraft",
+      "naifId": -76,
+      "horizonsCommand": "-76",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
+      "layers": [
+        "spacecraft"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          1,
+          0.4,
+          0.28
+        ],
+        "size": 0.022,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 1.67,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            1,
+            0.3,
+            0.2,
+            0.045
+          ],
+          "hueStart": 0.02
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": true
+        }
+      },
+      "coverageStartUtc": "2011-11-27T00:00:00Z"
+    },
+    "perseverance": {
+      "key": "perseverance",
+      "label": "Perseverance",
+      "kind": "spacecraft",
+      "group": "spacecraft",
+      "naifId": -168,
+      "horizonsCommand": "-168",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
+      "layers": [
+        "spacecraft"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.95,
+          0.68,
+          0.34
+        ],
+        "size": 0.022,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 1.67,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            0.95,
+            0.58,
+            0.25,
+            0.045
+          ],
+          "hueStart": 0.08
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": true
+        }
+      },
+      "coverageStartUtc": "2020-07-31T00:00:00Z",
+      "coverageEndUtc": "2026-02-17T00:00:00Z"
+    },
+    "cassini": {
+      "key": "cassini",
+      "label": "Cassini",
+      "kind": "spacecraft",
+      "group": "spacecraft",
+      "naifId": -82,
+      "horizonsCommand": "-82",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
+      "layers": [
+        "spacecraft"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.65,
+          0.86,
+          0.92
+        ],
+        "size": 0.024,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 10.2,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            0.48,
+            0.78,
+            0.9,
+            0.045
+          ],
+          "hueStart": 0.48
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": true
+        }
+      },
+      "coverageStartUtc": "1997-10-16T00:00:00Z",
+      "coverageEndUtc": "2017-09-13T00:00:00Z"
+    },
+    "juno-spacecraft": {
+      "key": "juno-spacecraft",
+      "label": "Juno",
+      "kind": "spacecraft",
+      "group": "spacecraft",
+      "naifId": -61,
+      "horizonsCommand": "-61",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
+      "layers": [
+        "spacecraft"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.7,
+          0.88,
+          0.5
+        ],
+        "size": 0.023,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 5.5,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            0.56,
+            0.8,
+            0.36,
+            0.045
+          ],
+          "hueStart": 0.3
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": true
+        }
+      },
+      "coverageStartUtc": "2011-08-06T00:00:00Z"
+    },
+    "dawn": {
+      "key": "dawn",
+      "label": "Dawn",
+      "kind": "spacecraft",
+      "group": "spacecraft",
+      "naifId": -203,
+      "horizonsCommand": "-203",
+      "dataset": "auxiliary",
+      "stream": "auxiliary",
+      "enabled": true,
+      "parent": null,
+      "relativeTo": null,
+      "hasLabel": true,
+      "hasTrail": true,
+      "capabilities": {
+        "canRender": true,
+        "canShowByDefault": true,
+        "canFitCamera": false,
+        "canShowLabel": true,
+        "canToggleTrail": true,
+        "canFollow": true,
+        "canShowDistance": true
+      },
+      "layers": [
+        "spacecraft"
+      ],
+      "render": {
+        "enabled": true,
+        "defaultVisible": true,
+        "color": [
+          0.78,
+          0.7,
+          0.95
+        ],
+        "size": 0.023,
+        "trueSizeAu": null,
+        "orbitRadiusAu": 3.6,
+        "cameraFit": false,
+        "relativeScale": null,
+        "label": {
+          "enabled": true,
+          "offset": [
+            0,
+            0
+          ]
+        },
+        "trail": {
+          "enabled": true,
+          "defaultVisible": false,
+          "color": [
+            0.66,
+            0.58,
+            0.9,
+            0.045
+          ],
+          "hueStart": 0.72
+        },
+        "follow": {
+          "enabled": true
+        },
+        "distance": {
+          "enabled": true
+        }
+      },
+      "coverageStartUtc": "2007-09-28T00:00:00Z"
     }
   },
   "chunks": [
@@ -8977,6 +9659,7 @@
         "jupiter",
         "saturn",
         "uranus",
+        "neptune",
         "moon"
       ],
       "format": "binary-f32-gzip",
@@ -8984,9 +9667,9 @@
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/primary/primary/primary-primary-historical-1766-07-23-1800-01-02.bin.gz",
-      "byteLength": 1084362,
-      "uncompressedByteLength": 1319873,
-      "sha256": "da7b19e4f9ef049a3aafb997c1b050b1137392c4530b1317500e2e63ac8162ae"
+      "byteLength": 1084877,
+      "uncompressedByteLength": 1466487,
+      "sha256": "0fc4d3f99898796bd4405b232289b0557c894cff9cf19b21a15464a4496e30eb"
     },
     {
       "id": "primary-primary-historical-1800-01-02-1800-01-03",
@@ -9007,6 +9690,7 @@
         "saturn",
         "uranus",
         "neptune",
+        "pluto",
         "moon"
       ],
       "format": "binary-f32-gzip",
@@ -9014,9 +9698,9 @@
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/primary/primary/primary-primary-historical-1800-01-02-1800-01-03.bin.gz",
-      "byteLength": 573,
-      "uncompressedByteLength": 683,
-      "sha256": "ac6dbfdd596d4f5e890721a954ac41e167f0b5949532c6752d45c3baecdbebd5"
+      "byteLength": 595,
+      "uncompressedByteLength": 715,
+      "sha256": "ecb840299017f5e241f437ccd6c53b1b93a9944a5f5d8d4c4bea3cf191422e10"
     },
     {
       "id": "primary-primary-historical-1800-01-03-1851-11-10",
@@ -9198,16 +9882,19 @@
         "titan",
         "ariel",
         "titania",
-        "miranda"
+        "miranda",
+        "triton",
+        "larissa",
+        "proteus"
       ],
       "format": "binary-f32-gzip",
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1766-07-23-1800-01-02.bin.gz",
-      "byteLength": 2097490,
-      "uncompressedByteLength": 2346186,
-      "sha256": "6efc47c2bd640412e1d78289013b293ddc1930132a5ca869a3ea874bd7c1c7d3"
+      "byteLength": 2098599,
+      "uncompressedByteLength": 2786027,
+      "sha256": "6836f29ca4fd77bbef03bff17a545a7bf9013d346b4848c1d05d43432f4ba676"
     },
     {
       "id": "auxiliary-dwarf-planets-historical-1800-01-02-1800-01-03",
@@ -9237,16 +9924,19 @@
         "miranda",
         "triton",
         "larissa",
-        "proteus"
+        "proteus",
+        "charon",
+        "nix",
+        "hydra"
       ],
       "format": "binary-f32-gzip",
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1800-01-02-1800-01-03.bin.gz",
-      "byteLength": 877,
-      "uncompressedByteLength": 1003,
-      "sha256": "6bcbb642c3f84ffd8c04990e33d17bf4ca1e57e0cff68afc0dc73e4bd63cedc9"
+      "byteLength": 930,
+      "uncompressedByteLength": 1098,
+      "sha256": "cef005aa8f2910f0c31485d5d1d6a2f03ac7fd4740e9a38feff586d69bde8b17"
     },
     {
       "id": "auxiliary-dwarf-planets-historical-1800-01-03-1836-04-20",
@@ -13242,6 +13932,7 @@
       "samplesPerBody": 48741,
       "bodyKeys": [
         "eros",
+        "bennu",
         "ryugu",
         "apophis"
       ],
@@ -13250,9 +13941,9 @@
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/near-earth/auxiliary-near-earth-historical-1766-07-23-1900-01-02.bin.gz",
-      "byteLength": 1629931,
-      "uncompressedByteLength": 1755074,
-      "sha256": "94909eb4794b548050ddf05ab0eae147b8196d9e4a8cadb0ad153da618854fd9"
+      "byteLength": 1631412,
+      "uncompressedByteLength": 2339974,
+      "sha256": "33d6f3d9afa181c09f29cac36b04a202f4614decb3ff7fccd4d3fb72ae4af94d"
     },
     {
       "id": "auxiliary-near-earth-historical-1900-01-02-2006-07-24",
@@ -13379,6 +14070,203 @@
       "byteLength": 476596,
       "uncompressedByteLength": 526447,
       "sha256": "3b5c0a49a6ef6d532001b46325c7d14ea45d454f68041046063f902ffb78f82e"
+    },
+    {
+      "id": "auxiliary-spacecraft-historical-1926-04-06-1972-03-04",
+      "stream": "auxiliary",
+      "group": "spacecraft",
+      "kind": "historical",
+      "startUtc": "1926-04-06T00:00:00Z",
+      "endUtc": "1972-03-04T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 16770,
+      "bodyKeys": [
+        "pioneer-10"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-historical-1926-04-06-1972-03-04.bin.gz",
+      "byteLength": 538,
+      "uncompressedByteLength": 201626,
+      "sha256": "26853520630bd18b866748e7feb87d7f9aebe1c6b977097a55dbe4859a7a0ec9"
+    },
+    {
+      "id": "auxiliary-spacecraft-historical-1972-03-04-1973-04-07",
+      "stream": "auxiliary",
+      "group": "spacecraft",
+      "kind": "historical",
+      "startUtc": "1972-03-04T00:00:00Z",
+      "endUtc": "1973-04-07T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 400,
+      "bodyKeys": [
+        "pioneer-10",
+        "pioneer-11"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-historical-1972-03-04-1973-04-07.bin.gz",
+      "byteLength": 4844,
+      "uncompressedByteLength": 9997,
+      "sha256": "bb981ce51dda601d7d44a78c77e723c315e27595d5bb2d8b30e410c59224a7bb"
+    },
+    {
+      "id": "auxiliary-spacecraft-historical-1973-04-07-1977-08-21",
+      "stream": "auxiliary",
+      "group": "spacecraft",
+      "kind": "historical",
+      "startUtc": "1973-04-07T00:00:00Z",
+      "endUtc": "1977-08-21T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 1598,
+      "bodyKeys": [
+        "voyager-2",
+        "pioneer-10",
+        "pioneer-11"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-historical-1973-04-07-1977-08-21.bin.gz",
+      "byteLength": 35876,
+      "uncompressedByteLength": 57938,
+      "sha256": "e5f59b4d52d1787fb21ff811da43cf433e41872a71109ea13e59c43cbf82f56b"
+    },
+    {
+      "id": "auxiliary-spacecraft-historical-1977-08-21-1977-09-06",
+      "stream": "auxiliary",
+      "group": "spacecraft",
+      "kind": "historical",
+      "startUtc": "1977-08-21T00:00:00Z",
+      "endUtc": "1977-09-06T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 17,
+      "bodyKeys": [
+        "voyager-1",
+        "voyager-2",
+        "pioneer-10",
+        "pioneer-11"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-historical-1977-08-21-1977-09-06.bin.gz",
+      "byteLength": 941,
+      "uncompressedByteLength": 1236,
+      "sha256": "7c29fd47890ddb85d135ea479cb29d65d0e04fdb2b213706f852d334028d9db9"
+    },
+    {
+      "id": "auxiliary-spacecraft-historical-1977-09-06-1997-10-16",
+      "stream": "auxiliary",
+      "group": "spacecraft",
+      "kind": "historical",
+      "startUtc": "1977-09-06T00:00:00Z",
+      "endUtc": "1997-10-16T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 7346,
+      "bodyKeys": [
+        "voyager-1",
+        "voyager-2",
+        "pioneer-10",
+        "pioneer-11",
+        "cassini"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-historical-1977-09-06-1997-10-16.bin.gz",
+      "byteLength": 317905,
+      "uncompressedByteLength": 441192,
+      "sha256": "17a5f56782d4aad7ac67d13e45f6387ca70025211708b7ca3868abb5f10a77f6"
+    },
+    {
+      "id": "auxiliary-spacecraft-historical-1997-10-16-2006-01-20",
+      "stream": "auxiliary",
+      "group": "spacecraft",
+      "kind": "historical",
+      "startUtc": "1997-10-16T00:00:00Z",
+      "endUtc": "2006-01-20T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 3019,
+      "bodyKeys": [
+        "voyager-1",
+        "voyager-2",
+        "new-horizons",
+        "pioneer-10",
+        "pioneer-11",
+        "cassini"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-historical-1997-10-16-2006-01-20.bin.gz",
+      "byteLength": 162202,
+      "uncompressedByteLength": 217815,
+      "sha256": "cc43d73ff2b55762bc4ab2c6a47a95e6f8d88d6dfbe0f1ffb50d8c90b1ae91bc"
+    },
+    {
+      "id": "auxiliary-spacecraft-historical-2006-01-20-2006-07-24",
+      "stream": "auxiliary",
+      "group": "spacecraft",
+      "kind": "historical",
+      "startUtc": "2006-01-20T00:00:00Z",
+      "endUtc": "2006-07-24T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 186,
+      "bodyKeys": [
+        "voyager-1",
+        "voyager-2",
+        "new-horizons",
+        "pioneer-10",
+        "pioneer-11",
+        "cassini"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-historical-2006-01-20-2006-07-24.bin.gz",
+      "byteLength": 12807,
+      "uncompressedByteLength": 13838,
+      "sha256": "ba7305f0a0548e0bf076965afbcd02f9f86213fa2cede375e99fe5f639c4079b"
+    },
+    {
+      "id": "auxiliary-spacecraft-recent-2006-07-24-2026-07-24",
+      "stream": "auxiliary",
+      "group": "spacecraft",
+      "kind": "recent",
+      "startUtc": "2006-07-24T00:00:00Z",
+      "endUtc": "2026-07-24T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 7306,
+      "bodyKeys": [
+        "voyager-1",
+        "voyager-2",
+        "new-horizons",
+        "pioneer-10",
+        "pioneer-11",
+        "curiosity",
+        "perseverance",
+        "cassini",
+        "juno-spacecraft",
+        "dawn"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-recent-2006-07-24-2026-07-24.bin.gz",
+      "byteLength": 648501,
+      "uncompressedByteLength": 877215,
+      "sha256": "c4ac995f8dfd63da545f1b999c10e628978c3c237871f015630eeb8765b7b291"
     }
   ]
 }

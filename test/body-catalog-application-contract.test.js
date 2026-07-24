@@ -19,6 +19,9 @@ test("Spec: every enabled followable body has Orbital Mechanics copy", () => {
     assert.ok(mechanics, `${body.key} mechanics entry`);
     assert.ok(mechanics.path, `${body.key} orbit path`);
     assert.ok(mechanics.body, `${body.key} orbit description`);
+    if (body.kind === "spacecraft") {
+      assert.match(mechanics.launchDate ?? "", /^\d{4}-\d{2}-\d{2}$/, `${body.key} launch date`);
+    }
   }
 });
 
@@ -31,7 +34,7 @@ test("Spec: every enabled body in bodies.yaml must be emitted unchanged into the
   assert.deepEqual(Object.keys(manifest.bodies), expected.map((body) => body.key));
 
   for (const body of expected) {
-    const { coverageStartUtc: _sourceCoverage, ...manifestBody } = manifest.bodies[body.key];
+    const { coverageStartUtc: _sourceCoverage, coverageEndUtc: _endCoverage, ...manifestBody } = manifest.bodies[body.key];
     assert.deepEqual(manifestBody, normalizedBody(body));
     assert.ok(manifest.datasets[body.dataset].bodyKeys.includes(body.key));
   }

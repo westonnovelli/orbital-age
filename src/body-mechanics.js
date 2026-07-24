@@ -13,6 +13,17 @@ export const BODY_MECHANICS = {
   pluto: { path: "Eccentric", body: "Pluto's eccentric, inclined orbit ranges from ~30 to ~49 AU over a 248-year journey." },
   moon: { path: "Geocentric", body: "The Moon orbits Earth every ~27 days while riding along Earth's own path around the Sun." },
 
+  "voyager-1": { path: "Solar escape", launchDate: "1977-09-05", body: "Voyager 1 is the farthest human-made object, climbing outward beyond the heliosphere after flybys of Jupiter and Saturn." },
+  "voyager-2": { path: "Solar escape", launchDate: "1977-08-20", body: "Voyager 2 is the only spacecraft to visit all four giant planets and continues its long outward journey beyond Neptune." },
+  "new-horizons": { path: "Trans-Neptunian flyby", launchDate: "2006-01-19", body: "New Horizons crossed the Pluto system and Arrokoth before continuing through the Kuiper Belt." },
+  "pioneer-10": { path: "Solar escape", launchDate: "1972-03-03", body: "Pioneer 10 was the first spacecraft to traverse the asteroid belt and fly past Jupiter on a path leaving the solar system." },
+  "pioneer-11": { path: "Solar escape", launchDate: "1973-04-06", body: "Pioneer 11 was the first spacecraft to encounter Saturn, using the giant planets to reshape its outward trajectory." },
+  curiosity: { path: "Mars surface mission", launchDate: "2011-11-26", body: "Curiosity is a mobile Mars laboratory exploring Gale Crater while Mars carries it around the Sun." },
+  perseverance: { path: "Mars surface mission", launchDate: "2020-07-30", body: "Perseverance is exploring Jezero Crater on Mars and searching for signs of ancient habitability and preserved biosignatures." },
+  cassini: { path: "Saturnian mission", launchDate: "1997-10-15", body: "Cassini spent thirteen years touring Saturn, its rings, and moons before ending in a planned dive into the planet's atmosphere." },
+  "juno-spacecraft": { path: "Jovian orbit", launchDate: "2011-08-05", body: "Juno follows a highly elongated polar orbit around Jupiter to study its gravity, magnetic field, atmosphere, and interior." },
+  dawn: { path: "Asteroid-belt mission", launchDate: "2007-09-27", body: "Dawn became the first spacecraft to orbit two extraterrestrial bodies, surveying Vesta before entering orbit around Ceres." },
+
   eros: { path: "Near-Earth ellipse", body: "Eros is a stony near-Earth asteroid that circles the Sun in about 1.76 years." },
   bennu: { path: "Near-Earth ellipse", body: "Bennu is a near-Earth asteroid with a ~1.2-year solar orbit that brings it close to Earth's neighborhood." },
   ryugu: { path: "Near-Earth ellipse", body: "Ryugu completes an orbit around the Sun in about 1.3 years on a path that crosses Earth's orbital region." },

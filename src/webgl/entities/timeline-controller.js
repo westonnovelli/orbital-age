@@ -148,7 +148,9 @@ export class TimelineControllerEntity {
         const birthdayMs = this.birthdayUtc.getTime();
         const coverageMs = body.availableFromUtc ? Date.parse(body.availableFromUtc) : birthdayMs;
         const trailStartDay = (Math.max(birthdayMs, Number.isFinite(coverageMs) ? coverageMs : birthdayMs) - birthdayMs) / MS_PER_DAY;
-        await body.trail.precomputeTrailAsync(this.totalDays, (day) => {
+        const coverageEndMs = body.availableToUtc ? Date.parse(body.availableToUtc) : this.maxTimelineUtc.getTime();
+        const trailDays = Math.min(this.totalDays, Math.max(0, (coverageEndMs - birthdayMs) / MS_PER_DAY));
+        await body.trail.precomputeTrailAsync(trailDays, (day) => {
           const position = bodyHeliocentricPositionAuAtInstant(body.key, new Date(birthdayMs + day * MS_PER_DAY));
           return { x: position.xAu, y: position.yAu };
         }, trailStartDay, { signal });
@@ -175,11 +177,13 @@ export class TimelineControllerEntity {
     const coverageMs = body.availableFromUtc ? Date.parse(body.availableFromUtc) : birthdayMs;
     const trailStartMs = Math.max(birthdayMs, Number.isFinite(coverageMs) ? coverageMs : birthdayMs);
     const trailStartDay = (trailStartMs - birthdayMs) / MS_PER_DAY;
+    const coverageEndMs = body.availableToUtc ? Date.parse(body.availableToUtc) : this.maxTimelineUtc.getTime();
+    const trailDays = Math.min(this.totalDays, Math.max(0, (coverageEndMs - birthdayMs) / MS_PER_DAY));
 
     if (body.parent && typeof trail.precomputeParentedTrail === "function") {
       const scale = body.relativeScale ?? 1;
       body.trailBakedScale = scale;
-      trail.precomputeParentedTrail(this.totalDays, (day) => {
+      trail.precomputeParentedTrail(trailDays, (day) => {
         const instant = new Date(birthdayMs + day * MS_PER_DAY);
         const parent = bodyHeliocentricPositionAuAtInstant(body.parent, instant);
         const delta = bodyEarthRelativePositionAuAtInstant(body.key, instant);
@@ -188,7 +192,7 @@ export class TimelineControllerEntity {
       return;
     }
 
-    trail.precomputeTrail(this.totalDays, (day) => {
+    trail.precomputeTrail(trailDays, (day) => {
       const instant = new Date(birthdayMs + day * MS_PER_DAY);
       const position = bodyHeliocentricPositionAuAtInstant(body.key, instant);
       return { x: position.xAu, y: position.yAu };
@@ -447,7 +451,9 @@ export class TimelineControllerEntity {
   }
 
   #hideUnavailableBody(body, instant) {
-    const unavailable = body.availableFromUtc && instant.getTime() < Date.parse(body.availableFromUtc);
+    const unavailable =
+      (body.availableFromUtc && instant.getTime() < Date.parse(body.availableFromUtc)) ||
+      (body.availableToUtc && instant.getTime() > Date.parse(body.availableToUtc));
     if (unavailable) {
       if (!body.availabilityHidden) {
         body.availabilityHidden = true;
@@ -505,7 +511,8 @@ function normalizeBodies({ bodies, earthMarker, motionTrails }) {
         parent: body.parent ?? null,
         relativeScale: Number.isFinite(body.relativeScale) ? body.relativeScale : 1,
         trackDistance: body.trackDistance !== false,
-        availableFromUtc: body.availableFromUtc ?? null
+        availableFromUtc: body.availableFromUtc ?? null,
+        availableToUtc: body.availableToUtc ?? null
       };
     });
   }
