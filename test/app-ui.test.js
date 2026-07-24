@@ -2,7 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { OrbitalApp } from "../src/app.js";
+import { ephemerisBootPromise } from "../src/orbital-time.js";
 import { WebGLRenderer } from "../src/webgl/renderer.js";
+
+// Submit tests assert the synchronous scene-hydration path. Ensure the v2
+// primary stream's asynchronous boot preload has completed before registering
+// those assertions.
+await ephemerisBootPromise;
 
 class FakeClassList {
   constructor(initial = []) {
@@ -57,9 +63,11 @@ class FakeElement {
 
   dispatch(type, payload = {}) {
     const event = { preventDefault() {}, target: this, ...payload };
+    let result;
     for (const callback of this.listeners.get(type) ?? []) {
-      callback(event);
+      result = callback(event);
     }
+    return result;
   }
 
   getBoundingClientRect() {
@@ -282,7 +290,7 @@ test("initialize handles unavailable WebGL with an accessible fallback message",
   assert.equal(ui.timelinePlayToggle.getAttribute("aria-label"), null);
 });
 
-test("submit flow enables timeline controls and updates playback UI state", (t) => {
+test("submit flow enables timeline controls and updates playback UI state", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -317,7 +325,7 @@ test("submit flow enables timeline controls and updates playback UI state", (t) 
   assert.equal(ui.submitButton.getAttribute("disabled"), null);
   assert.equal(ui.root.classList.contains("journey-active"), false);
 
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
 
   assert.equal(ui.root.classList.contains("journey-active"), true);
   assert.equal(ui.validationMessage.textContent, "");
@@ -341,7 +349,7 @@ test("submit flow enables timeline controls and updates playback UI state", (t) 
   assert.equal(ui.timelinePlayToggle.textContent, "Play");
 });
 
-test("first journey starts looping audio; mute toggle pauses and resumes it", (t) => {
+test("first journey starts looping audio; mute toggle pauses and resumes it", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -373,7 +381,7 @@ test("first journey starts looping audio; mute toggle pauses and resumes it", (t
   assert.equal(ui.audioToggle.getAttribute("aria-pressed"), "false");
 
   // First Begin Journey starts playback.
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
   assert.equal(ui.audioElement.playCount, 1);
   assert.equal(ui.audioElement.paused, false);
 
@@ -390,11 +398,11 @@ test("first journey starts looping audio; mute toggle pauses and resumes it", (t
   assert.equal(ui.audioToggle.getAttribute("aria-pressed"), "false");
 
   // A second journey leaves the already-looping track running (no restart).
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
   assert.equal(ui.audioElement.playCount, 2);
 });
 
-test("submit builds one Bodies-panel row per body and writes distance travelled", (t) => {
+test("submit builds one Bodies-panel row per body and writes distance travelled", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -420,7 +428,7 @@ test("submit builds one Bodies-panel row per body and writes distance travelled"
   const app = new OrbitalApp(ui);
   app.initialize();
 
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
 
   // The Planets tab contains eight major planets; the Moon nests under Earth.
   // Dwarf planets and smaller objects live in their own category tabs.
@@ -481,7 +489,7 @@ test("submit builds one Bodies-panel row per body and writes distance travelled"
   assert.ok(Number.parseFloat(moonDistance.textContent) > 0);
 });
 
-test("per-row follow control tracks that body without changing zoom", (t) => {
+test("per-row follow control tracks that body without changing zoom", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -506,7 +514,7 @@ test("per-row follow control tracks that body without changing zoom", (t) => {
 
   const app = new OrbitalApp(ui);
   app.initialize();
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
 
   // Spy on the controller's tracking entry point and its camera zoom so we can
   // confirm follow recenters only (zoom untouched).
@@ -541,7 +549,7 @@ test("per-row follow control tracks that body without changing zoom", (t) => {
   assert.deepEqual(trackCalls, ["mars", "moon"]);
 });
 
-test("true-scale toggle resizes every body and locks the Moon's separation", (t) => {
+test("true-scale toggle resizes every body and locks the Moon's separation", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -566,7 +574,7 @@ test("true-scale toggle resizes every body and locks the Moon's separation", (t)
 
   const app = new OrbitalApp(ui);
   app.initialize();
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
 
   // Record relative-scale changes so we can confirm the Moon locks to 1x and back.
   const scaleCalls = [];
@@ -610,7 +618,7 @@ test("true-scale toggle resizes every body and locks the Moon's separation", (t)
   assert.ok(app.camera.halfHeight >= 0.3, "zoom re-clamped to the normal minimum");
 });
 
-test("per-row trail toggle drives the matching trail and master fans out to all", (t) => {
+test("per-row trail toggle drives the matching trail and master fans out to all", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -635,7 +643,7 @@ test("per-row trail toggle drives the matching trail and master fans out to all"
 
   const app = new OrbitalApp(ui);
   app.initialize();
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
 
   // Earth has a trail, so its row carries a labeled trail-toggle checkbox.
   const rows = ui.bodiesList.children;
@@ -656,7 +664,7 @@ test("per-row trail toggle drives the matching trail and master fans out to all"
 
 });
 
-test("bottom-right zoom cluster wires presets, +/- buttons, and the zoom bar", (t) => {
+test("bottom-right zoom cluster wires presets, +/- buttons, and the zoom bar", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -681,7 +689,7 @@ test("bottom-right zoom cluster wires presets, +/- buttons, and the zoom bar", (
 
   const app = new OrbitalApp(ui);
   app.initialize();
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
 
   // Spy on the camera + controller so we can confirm the wiring dispatches the
   // documented preset contract (setZoom / setTrackBodyKey / setCenter / zoomBy).
@@ -769,7 +777,7 @@ function projectToScreen(camera, sceneX, sceneY, width, height) {
   };
 }
 
-test("clicking near a body's projected position follows it", (t) => {
+test("clicking near a body's projected position follows it", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -795,7 +803,7 @@ test("clicking near a body's projected position follows it", (t) => {
 
   const app = new OrbitalApp(ui);
   app.initialize();
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
 
   // Frame the inner planets and advance so Earth is off the origin, then read its
   // live render position and aim a click there.
@@ -825,7 +833,7 @@ test("clicking near a body's projected position follows it", (t) => {
   }
 });
 
-test("labels toggle flips overlay visibility and positions labels", (t) => {
+test("labels toggle flips overlay visibility and positions labels", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -851,7 +859,7 @@ test("labels toggle flips overlay visibility and positions labels", (t) => {
 
   const app = new OrbitalApp(ui);
   app.initialize();
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
 
   // One label per rendered body is built in the overlay, hidden by default.
   assert.equal(app.bodyLabels.size, 10);
@@ -888,7 +896,7 @@ test("labels toggle flips overlay visibility and positions labels", (t) => {
   assert.equal(ui.labelsOverlay.classList.contains("scene-labels--hidden"), true);
 });
 
-test("mobile sheet toggles flip open + aria state and are mutually exclusive", (t) => {
+test("mobile sheet toggles flip open + aria state and are mutually exclusive", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -917,7 +925,7 @@ test("mobile sheet toggles flip open + aria state and are mutually exclusive", (
   app.initialize();
   // The Chronos (left) sheet is only reachable from the sigil once a journey has
   // begun; start one so the sigil trigger is active.
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
 
   // Each trigger starts collapsed.
   assert.equal(ui.topbarSigil.getAttribute("aria-expanded"), "false");
@@ -947,7 +955,7 @@ test("mobile sheet toggles flip open + aria state and are mutually exclusive", (
   assert.equal(ui.mobileDataToggle.getAttribute("aria-expanded"), "false");
 });
 
-test("mobile sheets reparent chrome after a journey begins and restore it on desktop", (t) => {
+test("mobile sheets reparent chrome after a journey begins and restore it on desktop", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -981,7 +989,7 @@ test("mobile sheets reparent chrome after a journey begins and restore it on des
   assert.equal(ui.mobileSheetLeft.children.length, 0, "left sheet empty pre-journey");
 
   // Beginning the journey collapses the chrome into the matching sheets.
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
   assert.equal(ui.entryPanel.parentNode, ui.mobileSheetLeft, "entry -> left sheet");
   assert.equal(ui.sceneControls.parentNode, ui.mobileSheetRight, "scene controls -> right sheet");
   assert.equal(ui.zoomCluster.parentNode, ui.mobileSheetRight, "zoom cluster -> right sheet");
@@ -1008,7 +1016,7 @@ test("mobile sheets reparent chrome after a journey begins and restore it on des
   assert.equal(ui.topbarSigil.getAttribute("aria-expanded"), "false");
 });
 
-test("mobile sheets leave the DOM untouched on desktop widths", (t) => {
+test("mobile sheets leave the DOM untouched on desktop widths", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalFieldSet = globalThis.HTMLFieldSetElement;
   const originalOutput = globalThis.HTMLOutputElement;
@@ -1060,7 +1068,7 @@ function installTouchEnv() {
 
 // Boot an app with the standard WebGL stubs and a submitted journey, returning
 // the app + ui. `touch` controls whether the touch gesture layer is bound.
-function bootJourney(t, { touch = false } = {}) {
+async function bootJourney(t, { touch = false } = {}) {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -1087,12 +1095,12 @@ function bootJourney(t, { touch = false } = {}) {
   ui.canvas.rect = { left: 0, top: 0, width: 200, height: 200 };
   const app = new OrbitalApp(ui);
   app.initialize();
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
   return { app, ui };
 }
 
-test("two-finger pinch zooms the camera through zoomBy", (t) => {
-  const { app, ui } = bootJourney(t, { touch: true });
+test("two-finger pinch zooms the camera through zoomBy", async (t) => {
+  const { app, ui } = await bootJourney(t, { touch: true });
 
   const zoomByCalls = [];
   const realZoomBy = app.camera.zoomBy.bind(app.camera);
@@ -1133,8 +1141,8 @@ test("two-finger pinch zooms the camera through zoomBy", (t) => {
   assert.ok(zoomByCalls.at(-1) > 1, "pinching together zooms out (factor > 1)");
 });
 
-test("single-finger drag pans the camera through setCenter", (t) => {
-  const { app, ui } = bootJourney(t, { touch: true });
+test("single-finger drag pans the camera through setCenter", async (t) => {
+  const { app, ui } = await bootJourney(t, { touch: true });
 
   const centerCalls = [];
   const realSetCenter = app.camera.setCenter.bind(app.camera);
@@ -1151,8 +1159,8 @@ test("single-finger drag pans the camera through setCenter", (t) => {
   assert.ok(centerCalls.at(-1)[0] < 0, "rightward drag pans center left");
 });
 
-test("a low-movement tap follows the body under the finger", (t) => {
-  const { app, ui } = bootJourney(t, { touch: true });
+test("a low-movement tap follows the body under the finger", async (t) => {
+  const { app, ui } = await bootJourney(t, { touch: true });
 
   // Frame the inner planets and advance so Earth is off the origin.
   ui.innerPlanetsButton.dispatch("click");
@@ -1175,8 +1183,8 @@ test("a low-movement tap follows the body under the finger", (t) => {
   assert.equal(trackCalls.at(-1), "earth", "tap near Earth follows Earth");
 });
 
-test("a drag past the tap threshold does not resolve to follow", (t) => {
-  const { app, ui } = bootJourney(t, { touch: true });
+test("a drag past the tap threshold does not resolve to follow", async (t) => {
+  const { app, ui } = await bootJourney(t, { touch: true });
 
   ui.innerPlanetsButton.dispatch("click");
   const controller = app.timelineController;
@@ -1199,10 +1207,10 @@ test("a drag past the tap threshold does not resolve to follow", (t) => {
   assert.equal(trackCalls.length, 0, "a pan drag does not follow");
 });
 
-test("touch gestures do not bind in a non-touch (desktop) environment", (t) => {
+test("touch gestures do not bind in a non-touch (desktop) environment", async (t) => {
   // bootJourney without touch leaves globalThis.ontouchstart undefined, and the
   // default matchMedia (pointer: coarse) does not match, so #isTouchEnv is false.
-  const { app, ui } = bootJourney(t, { touch: false });
+  const { app, ui } = await bootJourney(t, { touch: false });
 
   const zoomByCalls = [];
   const centerCalls = [];
@@ -1250,7 +1258,7 @@ test("touch gestures do not bind in a non-touch (desktop) environment", (t) => {
   assert.equal(zoomByCalls.length, 0);
 });
 
-test("keyboard shortcuts drive play/pause, stepping, and follow", (t) => {
+test("keyboard shortcuts drive play/pause, stepping, and follow", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -1276,7 +1284,7 @@ test("keyboard shortcuts drive play/pause, stepping, and follow", (t) => {
 
   const app = new OrbitalApp(ui);
   app.initialize();
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
 
   const controller = app.timelineController;
   // Playback starts true after submit; space pauses it.
@@ -1319,7 +1327,7 @@ test("keyboard shortcuts drive play/pause, stepping, and follow", (t) => {
   assert.equal(controller.timelineDays, before, "ignored while typing in an input");
 });
 
-test("Orbital Mechanics panel describes the followed body and falls back to the Sun", (t) => {
+test("Orbital Mechanics panel describes the followed body and falls back to the Sun", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -1344,7 +1352,7 @@ test("Orbital Mechanics panel describes the followed body and falls back to the 
 
   const app = new OrbitalApp(ui);
   app.initialize();
-  ui.form.dispatch("submit");
+  await ui.form.dispatch("submit");
 
   // First load is Auto-fit (nothing followed), so the panel describes the Sun.
   assert.equal(ui.telemetrySubject.textContent, "Sun");

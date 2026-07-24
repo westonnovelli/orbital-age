@@ -25,15 +25,6 @@ const DEFAULT_SPEED_DAYS_PER_SECOND = 120;
 const PRIMARY_EPHEMERIS_STREAM = "primary";
 const AUXILIARY_EPHEMERIS_STREAM = "auxiliary";
 
-function waitForLoaderPaint() {
-  if (typeof requestAnimationFrame === "function") {
-    return new Promise((resolve) => {
-      requestAnimationFrame(() => requestAnimationFrame(resolve));
-    });
-  }
-  return new Promise((resolve) => setTimeout(resolve, 0));
-}
-
 // Declarative registry of rendered bodies. Each entry builds one marker and,
 // when `trail` is provided, one orbital trail. Earth's color reproduces the
 // previous baked-in teal so its appearance is unchanged.
@@ -765,7 +756,7 @@ export class OrbitalApp {
     this.#bindMobileSheets();
     this.form.addEventListener("submit", (event) => {
       event.preventDefault();
-      this.#handleRenderSubmit();
+      return this.#handleRenderSubmit();
     });
     ephemerisBootPromise?.catch?.(() => {
       // Submit-time loading will surface the actionable message. Boot loading is
@@ -806,13 +797,6 @@ export class OrbitalApp {
     // visible for that compute phase instead of allowing a post-load freeze to
     // appear as a hung simulation.
     this.#showDeepTimeLoader(validation.date, loadPlan);
-    // Let the browser paint the overlay before cached-data computation begins.
-    // Without this yield, recent-date submissions can do all work in one task,
-    // making the app appear frozen even though the loader DOM was updated.
-    await waitForLoaderPaint();
-    if (journeySignal.aborted) {
-      return;
-    }
     if (!loadPlan.loaded) {
       try {
         await ensureEphemerisLoaded({

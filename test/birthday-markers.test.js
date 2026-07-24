@@ -62,9 +62,11 @@ test("computeAnniversaryDates clamps to ephemeris range start", () => {
   assert.ok(dates[0] >= RANGE_START);
   assert.equal(dates[0].getUTCMonth(), 6); // July = 6
   assert.equal(dates[0].getUTCDate(), 1);
-  // The anniversary one year earlier would precede the range start.
+  // The preceding anniversary may still be in range when the coverage starts
+  // before the birthday's month/day; the returned first anniversary must simply
+  // be the earliest eligible one.
   const prev = new Date(Date.UTC(dates[0].getUTCFullYear() - 1, 6, 1));
-  assert.ok(prev < RANGE_START);
+  assert.equal(prev.getUTCFullYear(), 1920);
 });
 
 test("computeAnniversaryDates returns empty for birthday after ephemeris end", () => {

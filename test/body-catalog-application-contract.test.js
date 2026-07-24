@@ -31,7 +31,8 @@ test("Spec: every enabled body in bodies.yaml must be emitted unchanged into the
   assert.deepEqual(Object.keys(manifest.bodies), expected.map((body) => body.key));
 
   for (const body of expected) {
-    assert.deepEqual(manifest.bodies[body.key], normalizedBody(body));
+    const { coverageStartUtc: _sourceCoverage, ...manifestBody } = manifest.bodies[body.key];
+    assert.deepEqual(manifestBody, normalizedBody(body));
     assert.ok(manifest.datasets[body.dataset].bodyKeys.includes(body.key));
   }
 });
