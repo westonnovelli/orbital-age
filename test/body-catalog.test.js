@@ -18,6 +18,7 @@ test("catalog includes the curated spacecraft layer with distinct Horizons targe
     ["perseverance", -168], ["cassini", -82], ["juno-spacecraft", -61], ["dawn", -203]
   ]);
   const spacecraft = catalog.bodies.filter((body) => body.kind === "spacecraft");
+  expected.set("artemis-ii", -1024);
   assert.equal(spacecraft.length, expected.size);
   for (const [key, naifId] of expected) {
     const body = spacecraft.find((candidate) => candidate.key === key);
@@ -28,6 +29,11 @@ test("catalog includes the curated spacecraft layer with distinct Horizons targe
     assert.equal(body.render.cameraFit, false);
     assert.equal(body.render.trail.defaultVisible, false);
   }
+  const artemis = spacecraft.find((body) => body.key === "artemis-ii");
+  assert.deepEqual(
+    { start: artemis.coverageStartUtc, end: artemis.coverageEndUtc },
+    { start: "2026-04-03T00:00:00Z", end: "2026-04-08T00:00:00Z" }
+  );
 });
 
 test("body catalog rejects duplicate keys and invalid parent references", () => {

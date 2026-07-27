@@ -315,6 +315,9 @@ async function main() {
     ...target,
     ...(sourceTargetsByKey.get(target.key)?.coverageStartUtc
       ? { coverageStartUtc: sourceTargetsByKey.get(target.key).coverageStartUtc }
+      : {}),
+    ...(sourceTargetsByKey.get(target.key)?.coverageEndUtc
+      ? { coverageEndUtc: sourceTargetsByKey.get(target.key).coverageEndUtc }
       : {})
   }));
   const primaryTargets = catalogTargets.filter((target) => target.stream === "primary");

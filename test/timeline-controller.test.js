@@ -27,8 +27,25 @@ function markerStub() {
 function trailStub() {
   return {
     cursorDays: [],
+    available: true,
     setCursorForDay(day) {
       this.cursorDays.push(day);
+    },
+    setAvailable(available) {
+      this.available = available;
+    }
+  };
+}
+
+function availabilityMarkerStub() {
+  return {
+    positions: [],
+    available: true,
+    setPosition(x, y) {
+      this.positions.push({ x, y });
+    },
+    setAvailable(available) {
+      this.available = available;
     }
   };
 }
@@ -84,6 +101,35 @@ test("timeline controller drives multiple bodies to distinct positions", () => {
     earthPos.x !== venusPos.x || earthPos.y !== venusPos.y,
     "earth and venus should resolve to distinct positions"
   );
+});
+
+test("timeline controller keeps a mission listed but hides its marker and trail outside coverage", () => {
+  const marker = availabilityMarkerStub();
+  const trail = trailStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-12",
+    initialTimelineDate: "2000-01-01",
+    bodies: [{
+      key: "earth",
+      marker,
+      trail,
+      availableFromUtc: "2000-01-02T02:00:00Z",
+      availableToUtc: "2000-01-10T23:00:00Z"
+    }]
+  });
+
+  controller.init();
+  assert.equal(marker.available, false);
+  assert.equal(trail.available, false);
+
+  controller.setTimelineDate("2000-01-05");
+  assert.equal(marker.available, true);
+  assert.equal(trail.available, true);
+
+  controller.setTimelineDate("2000-01-11");
+  assert.equal(marker.available, false);
+  assert.equal(trail.available, false);
 });
 
 test("addBodies can defer trail precompute and opt out of distance tracking", () => {

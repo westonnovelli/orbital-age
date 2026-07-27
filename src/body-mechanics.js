@@ -23,6 +23,7 @@ export const BODY_MECHANICS = {
   cassini: { path: "Saturnian mission", launchDate: "1997-10-15", body: "Cassini spent thirteen years touring Saturn, its rings, and moons before ending in a planned dive into the planet's atmosphere." },
   "juno-spacecraft": { path: "Jovian orbit", launchDate: "2011-08-05", body: "Juno follows a highly elongated polar orbit around Jupiter to study its gravity, magnetic field, atmosphere, and interior." },
   dawn: { path: "Asteroid-belt mission", launchDate: "2007-09-27", body: "Dawn became the first spacecraft to orbit two extraterrestrial bodies, surveying Vesta before entering orbit around Ceres." },
+  "artemis-ii": { path: "Lunar free-return", launchDate: "2026-04-01", body: "Artemis II's Orion spacecraft carried four astronauts on a lunar free-return mission before splashing down in the Pacific." },
 
   eros: { path: "Near-Earth ellipse", body: "Eros is a stony near-Earth asteroid that circles the Sun in about 1.76 years." },
   bennu: { path: "Near-Earth ellipse", body: "Bennu is a near-Earth asteroid with a ~1.2-year solar orbit that brings it close to Earth's neighborhood." },

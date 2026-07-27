@@ -2610,3 +2610,33 @@ bodies:
       label: { enabled: true }
       follow: { enabled: true }
       distance: { enabled: true }
+  - key: artemis-ii
+    label: Artemis II · Orion Integrity
+    kind: spacecraft
+    dataset: auxiliary
+    naifId: -1024
+    horizonsCommand: "-1024"
+    # The packaged daily samples begin/end on these UTC boundaries. Horizons'
+    # underlying navigation file begins shortly after Apr 2 02:00 and runs
+    # through late Apr 10, but the refresh pipeline intentionally stores only
+    # complete daily samples.
+    coverageStartUtc: 2026-04-03T00:00:00Z
+    coverageEndUtc: 2026-04-08T00:00:00Z
+    enabled: true
+    layers:
+      - spacecraft
+    render:
+      enabled: true
+      defaultVisible: true
+      color: [0.42, 0.9, 0.82]
+      size: 0.026
+      orbitRadiusAu: 0.003
+      cameraFit: false
+      trail:
+        enabled: true
+        defaultVisible: false
+        color: [0.28, 0.82, 0.72, 0.06]
+        hueStart: 0.44
+      label: { enabled: true }
+      follow: { enabled: true }
+      distance: { enabled: true }
