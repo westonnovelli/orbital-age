@@ -35,6 +35,12 @@ function addUtcDays(iso, days) {
   return new Date(Date.parse(iso) + days * MS_PER_DAY).toISOString().replace(".000Z", "Z");
 }
 
+// Keep the auxiliary refresh window aligned with the primary refresh. The
+// extra day makes today's sample interpolable at runtime.
+function targetEndUtcIso() {
+  return new Date(Date.now() + MS_PER_DAY).toISOString().replace(/T.*$/, "T00:00:00.000Z");
+}
+
 function dateSegments(startDate, stopDate) {
   const segments = [];
   let cursor = new Date(`${startDate}T00:00:00Z`);
@@ -186,18 +192,23 @@ async function main() {
   }
   const currentEndUtc = header.window.endUtc;
   const requestedStartUtc = options.incremental ? addUtcDays(currentEndUtc, 1) : header.window.startUtc;
-  const startDate = utcDateFromIso(requestedStartUtc);
-  const requestedEndUtc = options.incremental ? addUtcDays(currentEndUtc, 1) : header.window.endUtc;
-  const stopDate = utcDateFromIso(requestedEndUtc);
-
-  if (options.incremental && Date.parse(requestedStartUtc) > Date.parse(requestedEndUtc)) {
+  const requestedEndUtc = options.incremental ? targetEndUtcIso() : header.window.endUtc;
+  if (options.incremental && Date.parse(currentEndUtc) >= Date.parse(requestedEndUtc)) {
     console.log(`No auxiliary refresh needed; window already ends ${header.window.endUtc}.`);
     return;
   }
 
+  const startDate = utcDateFromIso(requestedStartUtc);
+  const stopDate = utcDateFromIso(requestedEndUtc);
+  // Horizons rejects a one-day request where START_TIME equals STOP_TIME. Ask
+  // for the preceding sample too, then discard that overlap before appending.
+  const requestStartDate = options.incremental && startDate === stopDate
+    ? utcDateFromIso(addUtcDays(`${startDate}T00:00:00Z`, -1))
+    : startDate;
+
   const planLines = [
     "Auxiliary Horizons refresh plan:",
-    `- window: ${startDate}..${stopDate}${options.incremental ? " (incremental)" : ""}`,
+    `- window: ${requestStartDate}..${stopDate}${options.incremental ? " (incremental)" : ""}`,
     "- requests:"
   ];
   for (const target of auxiliary) {
@@ -214,7 +225,7 @@ async function main() {
   if (options.fetch) {
     fs.mkdirSync(rawDir, { recursive: true });
     for (const target of auxiliary) {
-      let effectiveStartDate = startDate;
+      let effectiveStartDate = requestStartDate;
       let effectiveStopDate = stopDate;
       let payloads = [];
       for (let recoveryAttempt = 0; recoveryAttempt < 4; recoveryAttempt += 1) {
@@ -263,7 +274,10 @@ async function main() {
       throw new Error(`Missing raw Horizons response: ${path.relative(cwd, rawPath)}`);
     }
     const payload = JSON.parse(fs.readFileSync(rawPath, "utf8"));
-    const rows = parseHorizonsCsvRows(payload.result, target);
+    const parsedRows = parseHorizonsCsvRows(payload.result, target);
+    const rows = options.incremental
+      ? parsedRows.filter((row) => Date.parse(row.epochUtc) >= Date.parse(`${startDate}T00:00:00Z`))
+      : parsedRows;
     const firstRowUtc = rows[0]?.epochUtc;
     const lastRowUtc = rows.at(-1)?.epochUtc;
     const expectedRows = Math.round((Date.parse(lastRowUtc) - Date.parse(firstRowUtc)) / MS_PER_DAY) + 1;

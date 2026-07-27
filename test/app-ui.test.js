@@ -1322,6 +1322,23 @@ test("keyboard shortcuts drive play/pause, stepping, and follow", async (t) => {
   doc.dispatch("keydown", { key: "f" });
   assert.equal(trackCalls.at(-1), "mars", "f re-follows the tracked body");
 
+  // `a` reveals every loaded body and every available orbital path, regardless
+  // of which Bodies tab is selected.
+  app.bodyMarkers.get("earth").setVisible(false);
+  app.bodyTrails.get("earth")?.setVisible(false);
+  doc.dispatch("keydown", { key: "a" });
+  assert.equal(app.bodyMarkers.get("earth").visible, true, "a shows hidden bodies");
+  assert.equal(app.bodyTrails.get("earth")?.visible, true, "a shows hidden paths");
+
+  // `p` toggles paths globally while leaving body visibility untouched.
+  const earthVisibleBeforePathsToggle = app.bodyMarkers.get("earth").visible;
+  doc.dispatch("keydown", { key: "p" });
+  assert.equal(app.bodyMarkers.get("earth").visible, earthVisibleBeforePathsToggle);
+  assert.equal(app.bodyTrails.get("earth")?.visible, false, "p hides all paths");
+  doc.dispatch("keydown", { key: "P" });
+  assert.equal(app.bodyMarkers.get("earth").visible, earthVisibleBeforePathsToggle);
+  assert.equal(app.bodyTrails.get("earth")?.visible, true, "P shows all paths");
+
   // Shortcuts ignore keystrokes while typing in a form field.
   const before = controller.timelineDays;
   doc.dispatch("keydown", { key: "ArrowRight", target: { tagName: "INPUT" } });

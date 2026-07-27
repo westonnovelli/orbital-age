@@ -1510,6 +1510,36 @@ export class OrbitalApp {
     this.#buildBodiesPanel();
   }
 
+  // Global reveal command used by the `a` keyboard shortcut. Keep this scoped
+  // to the currently loaded scene so auxiliary layers are included when they
+  // are present, while the command remains a no-op before a journey starts.
+  #showAllBodiesAndPaths() {
+    const bodyKeys = [...this.bodyMarkers.keys()];
+    for (const key of bodyKeys) {
+      this.bodyMarkers.get(key)?.setVisible(true);
+      const config = this.#bodyConfig(key);
+      if (config) {
+        config.visible = true;
+      }
+    }
+
+    for (const key of this.bodyTrails.keys()) {
+      this.timelineController?.ensureTrailForBody?.(key);
+      this.bodyTrails.get(key)?.setVisible(true);
+    }
+    this.#buildBodiesPanel();
+  }
+
+  // Toggle every loaded orbital path without changing any body's visibility.
+  #toggleAllPaths() {
+    const pathKeys = [...this.bodyTrails.keys()];
+    if (pathKeys.length === 0) {
+      return;
+    }
+    const allVisible = pathKeys.every((key) => this.bodyTrails.get(key)?.visible !== false);
+    this.#setBodyTrailsVisible(pathKeys, !allVisible);
+  }
+
   // Build a single Bodies-panel row (`<li>` with swatch + name + distance output)
   // and register its distance output for live updates. Child rows (nested
   // sub-bodies) get an extra modifier class for indentation.
@@ -2138,8 +2168,9 @@ export class OrbitalApp {
   }
 
   // Keyboard shortcuts: space = play/pause, arrows = step, `f` = follow the
-  // currently-tracked body (refocus the camera on it). Guards on the controller
-  // and ignores keystrokes while a form control is focused.
+  // currently-tracked body (refocus the camera on it), `a` = show every loaded
+  // body and orbital path, and `p` = toggle every loaded orbital path. Guards
+  // on the controller and ignores keystrokes while a form control is focused.
   #handleKeydown(event) {
     if (!this.timelineController) {
       return;
@@ -2181,6 +2212,16 @@ export class OrbitalApp {
         }
         break;
       }
+      case "a":
+      case "A":
+        event.preventDefault?.();
+        this.#showAllBodiesAndPaths();
+        break;
+      case "p":
+      case "P":
+        event.preventDefault?.();
+        this.#toggleAllPaths();
+        break;
       default:
         break;
     }
