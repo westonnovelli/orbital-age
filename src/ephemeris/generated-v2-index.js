@@ -4,7 +4,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v2",
   "encoder": "binary-f32-gzip",
-  "generatedOn": "2026-07-27T15:49:26.026Z",
+  "generatedOn": "2026-07-27T16:48:50.532Z",
   "compatibility": {
     "manifestSchema": "ephemeris.manifest.v2",
     "requiredFrame": "ECLIPJ2000",
@@ -381,8 +381,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "10",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -437,8 +435,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "199",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -476,7 +472,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         },
         "trail": {
           "enabled": true,
-          "defaultVisible": true,
+          "defaultVisible": false,
           "color": [
             0.78,
             0.72,
@@ -502,8 +498,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "299",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -567,8 +561,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "399",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -632,8 +624,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "499",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -697,8 +687,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "599",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -762,8 +750,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "699",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -827,8 +813,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "799",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -892,8 +876,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "899",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": "1800-01-02T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -946,7 +928,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-02T00:00:00Z"
     },
     "pluto": {
       "key": "pluto",
@@ -957,8 +940,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "999",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": "1800-01-03T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1011,7 +992,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-03T00:00:00Z"
     },
     "moon": {
       "key": "moon",
@@ -1022,8 +1004,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "301",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "earth",
       "relativeTo": "earth",
@@ -1087,8 +1067,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "1;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1116,7 +1094,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.00000318,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1150,8 +1128,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "2;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1178,7 +1154,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.00000171,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1212,8 +1188,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "4;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1241,7 +1215,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.00000176,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1275,8 +1249,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "10;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1303,7 +1275,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.00000145,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1337,8 +1309,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "16;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1365,7 +1335,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 7.6e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1399,8 +1369,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "3;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1427,7 +1395,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 7.8e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1461,8 +1429,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "5;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1489,7 +1455,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1523,8 +1489,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "6;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1551,7 +1515,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1585,8 +1549,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "7;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1613,7 +1575,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1647,8 +1609,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "8;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1675,7 +1635,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1709,8 +1669,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "9;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1737,7 +1695,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1771,8 +1729,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "11;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1799,7 +1755,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1833,8 +1789,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "12;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1861,7 +1815,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1895,8 +1849,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "13;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1923,7 +1875,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1957,8 +1909,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "14;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1985,7 +1935,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2019,8 +1969,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "15;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2047,7 +1995,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2081,8 +2029,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "17;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2109,7 +2055,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2143,8 +2089,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "18;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2171,7 +2115,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2205,8 +2149,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "19;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2233,7 +2175,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2267,8 +2209,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "20;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2295,7 +2235,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2329,8 +2269,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "21;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2357,7 +2295,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2391,8 +2329,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "22;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2419,7 +2355,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2453,8 +2389,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "23;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2481,7 +2415,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2515,8 +2449,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "24;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2543,7 +2475,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2577,8 +2509,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "25;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2605,7 +2535,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2639,8 +2569,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "26;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2667,7 +2595,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2701,8 +2629,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "27;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2729,7 +2655,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2763,8 +2689,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "28;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2791,7 +2715,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2825,8 +2749,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "29;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2853,7 +2775,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2887,8 +2809,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "30;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2915,7 +2835,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2949,8 +2869,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "31;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2977,7 +2895,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3011,8 +2929,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "32;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3039,7 +2955,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3073,8 +2989,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "33;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3101,7 +3015,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3135,8 +3049,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "34;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3163,7 +3075,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3197,8 +3109,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "35;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3225,7 +3135,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3259,8 +3169,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "36;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3287,7 +3195,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3321,8 +3229,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "37;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3349,7 +3255,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3383,8 +3289,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "38;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3411,7 +3315,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3445,8 +3349,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "39;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3473,7 +3375,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3507,8 +3409,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "40;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3535,7 +3435,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3569,8 +3469,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "41;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3597,7 +3495,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3631,8 +3529,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "42;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3659,7 +3555,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3693,8 +3589,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "43;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3721,7 +3615,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3755,8 +3649,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "44;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3783,7 +3675,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3817,8 +3709,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "45;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3845,7 +3735,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3879,8 +3769,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "46;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3907,7 +3795,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3941,8 +3829,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "47;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3969,7 +3855,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4003,8 +3889,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "48;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4031,7 +3915,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4065,8 +3949,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "49;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4093,7 +3975,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4127,8 +4009,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "50;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4155,7 +4035,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4189,8 +4069,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "51;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4217,7 +4095,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4251,8 +4129,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "52;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4279,7 +4155,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4313,8 +4189,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "53;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4341,7 +4215,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4375,8 +4249,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "54;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4403,7 +4275,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4437,8 +4309,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "55;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4465,7 +4335,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4499,8 +4369,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "56;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4527,7 +4395,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4561,8 +4429,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "57;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4589,7 +4455,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4623,8 +4489,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "58;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4651,7 +4515,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4685,8 +4549,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "59;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4713,7 +4575,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4747,8 +4609,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "60;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4775,7 +4635,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4809,8 +4669,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "61;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4837,7 +4695,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4871,8 +4729,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "62;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4899,7 +4755,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4933,8 +4789,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "63;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4961,7 +4815,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4995,8 +4849,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "64;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5023,7 +4875,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5057,8 +4909,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "65;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5085,7 +4935,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5119,8 +4969,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "66;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5147,7 +4995,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5181,8 +5029,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "67;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5209,7 +5055,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5243,8 +5089,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "68;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5271,7 +5115,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5305,8 +5149,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "69;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5333,7 +5175,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5367,8 +5209,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "70;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5395,7 +5235,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5429,8 +5269,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "71;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5457,7 +5295,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5491,8 +5329,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "72;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5519,7 +5355,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5553,8 +5389,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "73;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5581,7 +5415,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5615,8 +5449,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "74;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5643,7 +5475,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5677,8 +5509,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "75;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5705,7 +5535,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5739,8 +5569,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "76;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5767,7 +5595,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5801,8 +5629,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "77;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5829,7 +5655,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5863,8 +5689,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "78;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5891,7 +5715,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5925,8 +5749,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "79;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5953,7 +5775,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5987,8 +5809,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "80;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6015,7 +5835,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6049,8 +5869,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "81;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6077,7 +5895,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6111,8 +5929,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "82;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6139,7 +5955,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6173,8 +5989,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "83;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6201,7 +6015,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6235,8 +6049,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "84;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6263,7 +6075,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6297,8 +6109,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "85;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6325,7 +6135,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6359,8 +6169,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "86;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6387,7 +6195,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6421,8 +6229,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "87;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6449,7 +6255,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6483,8 +6289,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "88;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6511,7 +6315,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6545,8 +6349,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "89;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6573,7 +6375,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6607,8 +6409,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "90;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6635,7 +6435,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6669,8 +6469,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "91;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6697,7 +6495,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6731,8 +6529,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "92;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6759,7 +6555,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6793,8 +6589,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "93;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6821,7 +6615,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6855,8 +6649,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "94;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6883,7 +6675,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6917,8 +6709,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "95;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6945,7 +6735,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6979,8 +6769,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "96;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7007,7 +6795,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -7041,8 +6829,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "97;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7069,7 +6855,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -7103,8 +6889,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "98;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7131,7 +6915,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -7165,8 +6949,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "99;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7193,7 +6975,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -7227,8 +7009,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "100;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7255,7 +7035,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -7289,8 +7069,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "433;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7318,7 +7096,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.36
         ],
         "size": 0.016,
-        "trueSizeAu": null,
+        "trueSizeAu": 5.6e-8,
         "orbitRadiusAu": 1.78,
         "cameraFit": true,
         "relativeScale": null,
@@ -7357,8 +7135,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "101955;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1900-01-02T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7385,7 +7161,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.72
         ],
         "size": 0.016,
-        "trueSizeAu": null,
+        "trueSizeAu": 1.6e-9,
         "orbitRadiusAu": 1.36,
         "cameraFit": false,
         "relativeScale": null,
@@ -7413,7 +7189,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1900-01-02T00:00:00Z"
     },
     "ryugu": {
       "key": "ryugu",
@@ -7424,8 +7201,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "162173;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7452,7 +7227,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.92
         ],
         "size": 0.016,
-        "trueSizeAu": null,
+        "trueSizeAu": 2.9e-9,
         "orbitRadiusAu": 1.42,
         "cameraFit": false,
         "relativeScale": null,
@@ -7491,8 +7266,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "99942;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7519,7 +7292,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.3
         ],
         "size": 0.016,
-        "trueSizeAu": null,
+        "trueSizeAu": 1.2e-9,
         "orbitRadiusAu": 1.1,
         "cameraFit": false,
         "relativeScale": null,
@@ -7558,8 +7331,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "90000001",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7587,7 +7358,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           1
         ],
         "size": 0.02,
-        "trueSizeAu": null,
+        "trueSizeAu": 3.7e-8,
         "orbitRadiusAu": 35.1,
         "cameraFit": true,
         "relativeScale": null,
@@ -7626,8 +7397,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "90000694",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7655,7 +7424,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.9
         ],
         "size": 0.017,
-        "trueSizeAu": null,
+        "trueSizeAu": 1.3e-8,
         "orbitRadiusAu": 5.68,
         "cameraFit": true,
         "relativeScale": null,
@@ -7694,8 +7463,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "90000091",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7722,7 +7489,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.78
         ],
         "size": 0.017,
-        "trueSizeAu": null,
+        "trueSizeAu": 1.6e-8,
         "orbitRadiusAu": 4.1,
         "cameraFit": false,
         "relativeScale": null,
@@ -7761,8 +7528,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "90000192",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7789,7 +7554,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.96
         ],
         "size": 0.017,
-        "trueSizeAu": null,
+        "trueSizeAu": 2e-8,
         "orbitRadiusAu": 4.7,
         "cameraFit": false,
         "relativeScale": null,
@@ -7828,8 +7593,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "90000862",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7856,7 +7619,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.92
         ],
         "size": 0.017,
-        "trueSizeAu": null,
+        "trueSizeAu": 1.3e-8,
         "orbitRadiusAu": 5.5,
         "cameraFit": false,
         "relativeScale": null,
@@ -7895,8 +7658,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "90000959",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7923,7 +7684,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.7
         ],
         "size": 0.017,
-        "trueSizeAu": null,
+        "trueSizeAu": 3.9e-9,
         "orbitRadiusAu": 5.9,
         "cameraFit": false,
         "relativeScale": null,
@@ -7962,8 +7723,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "136199;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7990,7 +7749,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.92
         ],
         "size": 0.021,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.0000078,
         "orbitRadiusAu": 97.6,
         "cameraFit": false,
         "relativeScale": null,
@@ -8024,8 +7783,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "136472;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -8052,7 +7809,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.58
         ],
         "size": 0.02,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.0000048,
         "orbitRadiusAu": 52.7,
         "cameraFit": false,
         "relativeScale": null,
@@ -8086,8 +7843,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "136108;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -8114,7 +7869,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.9
         ],
         "size": 0.019,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.0000041,
         "orbitRadiusAu": 51.6,
         "cameraFit": false,
         "relativeScale": null,
@@ -8148,8 +7903,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "50000;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -8176,7 +7929,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.84
         ],
         "size": 0.019,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.0000037,
         "orbitRadiusAu": 45.2,
         "cameraFit": false,
         "relativeScale": null,
@@ -8210,8 +7963,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "90482;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -8238,7 +7989,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.86
         ],
         "size": 0.019,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.000003,
         "orbitRadiusAu": 48.1,
         "cameraFit": false,
         "relativeScale": null,
@@ -8272,8 +8023,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "501",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "jupiter",
       "relativeTo": "jupiter",
@@ -8334,8 +8083,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "502",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "jupiter",
       "relativeTo": "jupiter",
@@ -8396,8 +8143,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "503",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "jupiter",
       "relativeTo": "jupiter",
@@ -8458,8 +8203,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "504",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "jupiter",
       "relativeTo": "jupiter",
@@ -8520,8 +8263,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "602",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "saturn",
       "relativeTo": "saturn",
@@ -8582,8 +8323,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "605",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "saturn",
       "relativeTo": "saturn",
@@ -8644,8 +8383,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "606",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "saturn",
       "relativeTo": "saturn",
@@ -8706,8 +8443,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "701",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "uranus",
       "relativeTo": "uranus",
@@ -8768,8 +8503,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "703",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "uranus",
       "relativeTo": "uranus",
@@ -8830,8 +8563,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "705",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "uranus",
       "relativeTo": "uranus",
@@ -8892,8 +8623,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "801",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1800-01-02T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "neptune",
       "relativeTo": "neptune",
@@ -8943,7 +8672,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-02T00:00:00Z"
     },
     "larissa": {
       "key": "larissa",
@@ -8954,8 +8684,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "807",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1800-01-02T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "neptune",
       "relativeTo": "neptune",
@@ -9005,7 +8733,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-02T00:00:00Z"
     },
     "proteus": {
       "key": "proteus",
@@ -9016,8 +8745,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "808",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1800-01-02T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "neptune",
       "relativeTo": "neptune",
@@ -9067,7 +8794,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-02T00:00:00Z"
     },
     "charon": {
       "key": "charon",
@@ -9078,8 +8806,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "901",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1800-01-03T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "pluto",
       "relativeTo": "pluto",
@@ -9129,7 +8855,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-03T00:00:00Z"
     },
     "nix": {
       "key": "nix",
@@ -9140,8 +8867,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "902",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1800-01-03T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "pluto",
       "relativeTo": "pluto",
@@ -9191,7 +8916,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-03T00:00:00Z"
     },
     "hydra": {
       "key": "hydra",
@@ -9202,8 +8928,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "903",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1800-01-03T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "pluto",
       "relativeTo": "pluto",
@@ -9253,7 +8977,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-03T00:00:00Z"
     },
     "voyager-1": {
       "key": "voyager-1",
@@ -9264,8 +8989,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "-31",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1977-09-06T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9292,7 +9015,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           1
         ],
         "size": 0.026,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 170,
         "cameraFit": false,
         "relativeScale": null,
@@ -9320,7 +9043,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1977-09-06T00:00:00Z"
     },
     "voyager-2": {
       "key": "voyager-2",
@@ -9331,8 +9055,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "-32",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1977-08-21T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9359,7 +9081,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           1
         ],
         "size": 0.026,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 145,
         "cameraFit": false,
         "relativeScale": null,
@@ -9387,7 +9109,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1977-08-21T00:00:00Z"
     },
     "new-horizons": {
       "key": "new-horizons",
@@ -9398,8 +9121,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "-98",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "2006-01-20T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9426,7 +9147,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           1
         ],
         "size": 0.025,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 65,
         "cameraFit": false,
         "relativeScale": null,
@@ -9454,7 +9175,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "2006-01-20T00:00:00Z"
     },
     "pioneer-10": {
       "key": "pioneer-10",
@@ -9465,8 +9187,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "-23",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1972-03-04T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9493,7 +9213,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.35
         ],
         "size": 0.024,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 140,
         "cameraFit": false,
         "relativeScale": null,
@@ -9521,7 +9241,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1972-03-04T00:00:00Z"
     },
     "pioneer-11": {
       "key": "pioneer-11",
@@ -9532,8 +9253,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "-24",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1973-04-07T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9560,7 +9279,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.25
         ],
         "size": 0.024,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 115,
         "cameraFit": false,
         "relativeScale": null,
@@ -9588,7 +9307,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1973-04-07T00:00:00Z"
     },
     "curiosity": {
       "key": "curiosity",
@@ -9599,8 +9319,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "-76",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "2011-11-27T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9627,7 +9345,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.28
         ],
         "size": 0.022,
-        "trueSizeAu": null,
+        "trueSizeAu": 1e-11,
         "orbitRadiusAu": 1.67,
         "cameraFit": false,
         "relativeScale": null,
@@ -9655,7 +9373,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "2011-11-27T00:00:00Z"
     },
     "perseverance": {
       "key": "perseverance",
@@ -9666,8 +9385,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "-168",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "2020-07-31T00:00:00Z",
-      "coverageEndUtc": "2026-02-17T00:00:00Z",
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9694,7 +9411,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.34
         ],
         "size": 0.022,
-        "trueSizeAu": null,
+        "trueSizeAu": 1e-11,
         "orbitRadiusAu": 1.67,
         "cameraFit": false,
         "relativeScale": null,
@@ -9722,7 +9439,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "2020-07-31T00:00:00Z",
+      "coverageEndUtc": "2026-02-17T00:00:00Z"
     },
     "cassini": {
       "key": "cassini",
@@ -9733,8 +9452,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "-82",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1997-10-16T00:00:00Z",
-      "coverageEndUtc": "2017-09-13T00:00:00Z",
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9761,7 +9478,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.92
         ],
         "size": 0.024,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 10.2,
         "cameraFit": false,
         "relativeScale": null,
@@ -9789,7 +9506,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1997-10-16T00:00:00Z",
+      "coverageEndUtc": "2017-09-13T00:00:00Z"
     },
     "juno-spacecraft": {
       "key": "juno-spacecraft",
@@ -9800,8 +9519,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "-61",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "2011-08-06T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9828,7 +9545,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.5
         ],
         "size": 0.023,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 5.5,
         "cameraFit": false,
         "relativeScale": null,
@@ -9856,7 +9573,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "2011-08-06T00:00:00Z"
     },
     "dawn": {
       "key": "dawn",
@@ -9867,8 +9585,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "-203",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "2007-09-28T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9895,7 +9611,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.95
         ],
         "size": 0.023,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 3.6,
         "cameraFit": false,
         "relativeScale": null,
@@ -9923,7 +9639,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "2007-09-28T00:00:00Z"
     },
     "artemis-ii": {
       "key": "artemis-ii",
@@ -9934,8 +9651,6 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "horizonsCommand": "-1024",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "2026-04-03T00:00:00Z",
-      "coverageEndUtc": "2026-04-08T00:00:00Z",
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9962,7 +9677,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           0.82
         ],
         "size": 0.026,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.0000012,
         "orbitRadiusAu": 0.003,
         "cameraFit": false,
         "relativeScale": null,
@@ -9990,7 +9705,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "2026-04-03T00:00:00Z",
+      "coverageEndUtc": "2026-04-10T23:00:00Z"
     }
   },
   "chunks": [
@@ -14618,9 +14335,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-recent-2006-07-24-2026-07-24.bin.gz",
-      "byteLength": 648860,
+      "byteLength": 648883,
       "uncompressedByteLength": 964900,
-      "sha256": "1905fe679f88be8861c0150b6b2f5c9ba170b68271513deb6913643f473448dd"
+      "sha256": "efc641fc8157d797517accf0504f6052be5e14a1a8c36f18455782566eb7688e"
     }
   ]
 });

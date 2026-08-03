@@ -88,7 +88,7 @@ bodies:
       cameraFit: true
       trail:
         enabled: true
-        defaultVisible: true
+        defaultVisible: false
         color:
           - 0.78
           - 0.72
@@ -2616,12 +2616,10 @@ bodies:
     dataset: auxiliary
     naifId: -1024
     horizonsCommand: "-1024"
-    # The packaged daily samples begin/end on these UTC boundaries. Horizons'
-    # underlying navigation file begins shortly after Apr 2 02:00 and runs
-    # through late Apr 10, but the refresh pipeline intentionally stores only
-    # complete daily samples.
+    # The packaged samples begin on Apr 3 00:00 and use a verified terminal
+    # return sample at Apr 10 23:00, close to Earth before splashdown.
     coverageStartUtc: 2026-04-03T00:00:00Z
-    coverageEndUtc: 2026-04-08T00:00:00Z
+    coverageEndUtc: 2026-04-10T23:00:00Z
     enabled: true
     layers:
       - spacecraft
@@ -2630,6 +2628,9 @@ bodies:
       defaultVisible: true
       color: [0.42, 0.9, 0.82]
       size: 0.026
+      # Deliberately visible spacecraft proxy for True Scale: much smaller
+      # than the Moon while remaining inspectable at the Earth framing.
+      trueSizeAu: 0.0000012
       orbitRadiusAu: 0.003
       cameraFit: false
       trail:

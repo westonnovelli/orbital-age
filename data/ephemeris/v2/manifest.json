@@ -3,7 +3,7 @@
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v2",
   "encoder": "binary-f32-gzip",
-  "generatedOn": "2026-07-27T15:49:26.026Z",
+  "generatedOn": "2026-07-27T16:48:50.532Z",
   "compatibility": {
     "manifestSchema": "ephemeris.manifest.v2",
     "requiredFrame": "ECLIPJ2000",
@@ -380,8 +380,6 @@
       "horizonsCommand": "10",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -436,8 +434,6 @@
       "horizonsCommand": "199",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -475,7 +471,7 @@
         },
         "trail": {
           "enabled": true,
-          "defaultVisible": true,
+          "defaultVisible": false,
           "color": [
             0.78,
             0.72,
@@ -501,8 +497,6 @@
       "horizonsCommand": "299",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -566,8 +560,6 @@
       "horizonsCommand": "399",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -631,8 +623,6 @@
       "horizonsCommand": "499",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -696,8 +686,6 @@
       "horizonsCommand": "599",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -761,8 +749,6 @@
       "horizonsCommand": "699",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -826,8 +812,6 @@
       "horizonsCommand": "799",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -891,8 +875,6 @@
       "horizonsCommand": "899",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": "1800-01-02T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -945,7 +927,8 @@
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-02T00:00:00Z"
     },
     "pluto": {
       "key": "pluto",
@@ -956,8 +939,6 @@
       "horizonsCommand": "999",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": "1800-01-03T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1010,7 +991,8 @@
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-03T00:00:00Z"
     },
     "moon": {
       "key": "moon",
@@ -1021,8 +1003,6 @@
       "horizonsCommand": "301",
       "dataset": "primary",
       "stream": "primary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "earth",
       "relativeTo": "earth",
@@ -1086,8 +1066,6 @@
       "horizonsCommand": "1;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1115,7 +1093,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.00000318,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1149,8 +1127,6 @@
       "horizonsCommand": "2;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1177,7 +1153,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.00000171,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1211,8 +1187,6 @@
       "horizonsCommand": "4;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1240,7 +1214,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.00000176,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1274,8 +1248,6 @@
       "horizonsCommand": "10;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1302,7 +1274,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.00000145,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1336,8 +1308,6 @@
       "horizonsCommand": "16;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1364,7 +1334,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 7.6e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1398,8 +1368,6 @@
       "horizonsCommand": "3;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1426,7 +1394,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 7.8e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1460,8 +1428,6 @@
       "horizonsCommand": "5;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1488,7 +1454,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1522,8 +1488,6 @@
       "horizonsCommand": "6;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1550,7 +1514,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1584,8 +1548,6 @@
       "horizonsCommand": "7;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1612,7 +1574,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1646,8 +1608,6 @@
       "horizonsCommand": "8;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1674,7 +1634,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1708,8 +1668,6 @@
       "horizonsCommand": "9;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1736,7 +1694,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1770,8 +1728,6 @@
       "horizonsCommand": "11;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1798,7 +1754,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1832,8 +1788,6 @@
       "horizonsCommand": "12;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1860,7 +1814,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1894,8 +1848,6 @@
       "horizonsCommand": "13;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1922,7 +1874,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -1956,8 +1908,6 @@
       "horizonsCommand": "14;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -1984,7 +1934,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2018,8 +1968,6 @@
       "horizonsCommand": "15;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2046,7 +1994,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2080,8 +2028,6 @@
       "horizonsCommand": "17;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2108,7 +2054,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2142,8 +2088,6 @@
       "horizonsCommand": "18;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2170,7 +2114,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2204,8 +2148,6 @@
       "horizonsCommand": "19;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2232,7 +2174,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2266,8 +2208,6 @@
       "horizonsCommand": "20;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2294,7 +2234,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2328,8 +2268,6 @@
       "horizonsCommand": "21;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2356,7 +2294,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2390,8 +2328,6 @@
       "horizonsCommand": "22;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2418,7 +2354,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2452,8 +2388,6 @@
       "horizonsCommand": "23;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2480,7 +2414,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2514,8 +2448,6 @@
       "horizonsCommand": "24;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2542,7 +2474,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2576,8 +2508,6 @@
       "horizonsCommand": "25;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2604,7 +2534,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2638,8 +2568,6 @@
       "horizonsCommand": "26;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2666,7 +2594,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2700,8 +2628,6 @@
       "horizonsCommand": "27;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2728,7 +2654,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2762,8 +2688,6 @@
       "horizonsCommand": "28;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2790,7 +2714,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2824,8 +2748,6 @@
       "horizonsCommand": "29;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2852,7 +2774,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2886,8 +2808,6 @@
       "horizonsCommand": "30;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2914,7 +2834,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -2948,8 +2868,6 @@
       "horizonsCommand": "31;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -2976,7 +2894,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3010,8 +2928,6 @@
       "horizonsCommand": "32;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3038,7 +2954,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3072,8 +2988,6 @@
       "horizonsCommand": "33;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3100,7 +3014,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3134,8 +3048,6 @@
       "horizonsCommand": "34;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3162,7 +3074,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3196,8 +3108,6 @@
       "horizonsCommand": "35;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3224,7 +3134,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3258,8 +3168,6 @@
       "horizonsCommand": "36;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3286,7 +3194,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3320,8 +3228,6 @@
       "horizonsCommand": "37;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3348,7 +3254,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3382,8 +3288,6 @@
       "horizonsCommand": "38;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3410,7 +3314,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3444,8 +3348,6 @@
       "horizonsCommand": "39;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3472,7 +3374,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3506,8 +3408,6 @@
       "horizonsCommand": "40;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3534,7 +3434,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3568,8 +3468,6 @@
       "horizonsCommand": "41;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3596,7 +3494,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3630,8 +3528,6 @@
       "horizonsCommand": "42;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3658,7 +3554,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3692,8 +3588,6 @@
       "horizonsCommand": "43;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3720,7 +3614,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3754,8 +3648,6 @@
       "horizonsCommand": "44;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3782,7 +3674,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3816,8 +3708,6 @@
       "horizonsCommand": "45;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3844,7 +3734,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3878,8 +3768,6 @@
       "horizonsCommand": "46;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3906,7 +3794,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -3940,8 +3828,6 @@
       "horizonsCommand": "47;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -3968,7 +3854,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4002,8 +3888,6 @@
       "horizonsCommand": "48;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4030,7 +3914,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4064,8 +3948,6 @@
       "horizonsCommand": "49;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4092,7 +3974,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4126,8 +4008,6 @@
       "horizonsCommand": "50;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4154,7 +4034,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4188,8 +4068,6 @@
       "horizonsCommand": "51;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4216,7 +4094,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4250,8 +4128,6 @@
       "horizonsCommand": "52;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4278,7 +4154,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4312,8 +4188,6 @@
       "horizonsCommand": "53;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4340,7 +4214,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4374,8 +4248,6 @@
       "horizonsCommand": "54;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4402,7 +4274,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4436,8 +4308,6 @@
       "horizonsCommand": "55;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4464,7 +4334,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4498,8 +4368,6 @@
       "horizonsCommand": "56;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4526,7 +4394,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4560,8 +4428,6 @@
       "horizonsCommand": "57;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4588,7 +4454,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4622,8 +4488,6 @@
       "horizonsCommand": "58;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4650,7 +4514,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4684,8 +4548,6 @@
       "horizonsCommand": "59;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4712,7 +4574,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4746,8 +4608,6 @@
       "horizonsCommand": "60;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4774,7 +4634,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4808,8 +4668,6 @@
       "horizonsCommand": "61;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4836,7 +4694,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4870,8 +4728,6 @@
       "horizonsCommand": "62;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4898,7 +4754,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4932,8 +4788,6 @@
       "horizonsCommand": "63;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -4960,7 +4814,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -4994,8 +4848,6 @@
       "horizonsCommand": "64;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5022,7 +4874,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5056,8 +4908,6 @@
       "horizonsCommand": "65;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5084,7 +4934,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5118,8 +4968,6 @@
       "horizonsCommand": "66;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5146,7 +4994,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5180,8 +5028,6 @@
       "horizonsCommand": "67;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5208,7 +5054,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5242,8 +5088,6 @@
       "horizonsCommand": "68;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5270,7 +5114,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5304,8 +5148,6 @@
       "horizonsCommand": "69;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5332,7 +5174,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5366,8 +5208,6 @@
       "horizonsCommand": "70;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5394,7 +5234,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5428,8 +5268,6 @@
       "horizonsCommand": "71;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5456,7 +5294,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5490,8 +5328,6 @@
       "horizonsCommand": "72;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5518,7 +5354,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5552,8 +5388,6 @@
       "horizonsCommand": "73;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5580,7 +5414,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5614,8 +5448,6 @@
       "horizonsCommand": "74;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5642,7 +5474,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5676,8 +5508,6 @@
       "horizonsCommand": "75;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5704,7 +5534,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5738,8 +5568,6 @@
       "horizonsCommand": "76;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5766,7 +5594,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5800,8 +5628,6 @@
       "horizonsCommand": "77;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5828,7 +5654,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5862,8 +5688,6 @@
       "horizonsCommand": "78;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5890,7 +5714,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5924,8 +5748,6 @@
       "horizonsCommand": "79;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -5952,7 +5774,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -5986,8 +5808,6 @@
       "horizonsCommand": "80;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6014,7 +5834,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6048,8 +5868,6 @@
       "horizonsCommand": "81;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6076,7 +5894,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6110,8 +5928,6 @@
       "horizonsCommand": "82;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6138,7 +5954,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6172,8 +5988,6 @@
       "horizonsCommand": "83;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6200,7 +6014,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6234,8 +6048,6 @@
       "horizonsCommand": "84;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6262,7 +6074,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6296,8 +6108,6 @@
       "horizonsCommand": "85;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6324,7 +6134,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6358,8 +6168,6 @@
       "horizonsCommand": "86;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6386,7 +6194,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6420,8 +6228,6 @@
       "horizonsCommand": "87;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6448,7 +6254,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6482,8 +6288,6 @@
       "horizonsCommand": "88;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6510,7 +6314,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6544,8 +6348,6 @@
       "horizonsCommand": "89;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6572,7 +6374,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6606,8 +6408,6 @@
       "horizonsCommand": "90;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6634,7 +6434,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6668,8 +6468,6 @@
       "horizonsCommand": "91;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6696,7 +6494,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6730,8 +6528,6 @@
       "horizonsCommand": "92;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6758,7 +6554,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6792,8 +6588,6 @@
       "horizonsCommand": "93;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6820,7 +6614,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6854,8 +6648,6 @@
       "horizonsCommand": "94;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6882,7 +6674,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6916,8 +6708,6 @@
       "horizonsCommand": "95;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -6944,7 +6734,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -6978,8 +6768,6 @@
       "horizonsCommand": "96;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7006,7 +6794,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -7040,8 +6828,6 @@
       "horizonsCommand": "97;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7068,7 +6854,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -7102,8 +6888,6 @@
       "horizonsCommand": "98;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7130,7 +6914,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -7164,8 +6948,6 @@
       "horizonsCommand": "99;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7192,7 +6974,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -7226,8 +7008,6 @@
       "horizonsCommand": "100;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7254,7 +7034,7 @@
           0.58
         ],
         "size": 0.014,
-        "trueSizeAu": null,
+        "trueSizeAu": 5e-7,
         "orbitRadiusAu": 3,
         "cameraFit": false,
         "relativeScale": null,
@@ -7288,8 +7068,6 @@
       "horizonsCommand": "433;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7317,7 +7095,7 @@
           0.36
         ],
         "size": 0.016,
-        "trueSizeAu": null,
+        "trueSizeAu": 5.6e-8,
         "orbitRadiusAu": 1.78,
         "cameraFit": true,
         "relativeScale": null,
@@ -7356,8 +7134,6 @@
       "horizonsCommand": "101955;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1900-01-02T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7384,7 +7160,7 @@
           0.72
         ],
         "size": 0.016,
-        "trueSizeAu": null,
+        "trueSizeAu": 1.6e-9,
         "orbitRadiusAu": 1.36,
         "cameraFit": false,
         "relativeScale": null,
@@ -7412,7 +7188,8 @@
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1900-01-02T00:00:00Z"
     },
     "ryugu": {
       "key": "ryugu",
@@ -7423,8 +7200,6 @@
       "horizonsCommand": "162173;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7451,7 +7226,7 @@
           0.92
         ],
         "size": 0.016,
-        "trueSizeAu": null,
+        "trueSizeAu": 2.9e-9,
         "orbitRadiusAu": 1.42,
         "cameraFit": false,
         "relativeScale": null,
@@ -7490,8 +7265,6 @@
       "horizonsCommand": "99942;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7518,7 +7291,7 @@
           0.3
         ],
         "size": 0.016,
-        "trueSizeAu": null,
+        "trueSizeAu": 1.2e-9,
         "orbitRadiusAu": 1.1,
         "cameraFit": false,
         "relativeScale": null,
@@ -7557,8 +7330,6 @@
       "horizonsCommand": "90000001",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7586,7 +7357,7 @@
           1
         ],
         "size": 0.02,
-        "trueSizeAu": null,
+        "trueSizeAu": 3.7e-8,
         "orbitRadiusAu": 35.1,
         "cameraFit": true,
         "relativeScale": null,
@@ -7625,8 +7396,6 @@
       "horizonsCommand": "90000694",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7654,7 +7423,7 @@
           0.9
         ],
         "size": 0.017,
-        "trueSizeAu": null,
+        "trueSizeAu": 1.3e-8,
         "orbitRadiusAu": 5.68,
         "cameraFit": true,
         "relativeScale": null,
@@ -7693,8 +7462,6 @@
       "horizonsCommand": "90000091",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7721,7 +7488,7 @@
           0.78
         ],
         "size": 0.017,
-        "trueSizeAu": null,
+        "trueSizeAu": 1.6e-8,
         "orbitRadiusAu": 4.1,
         "cameraFit": false,
         "relativeScale": null,
@@ -7760,8 +7527,6 @@
       "horizonsCommand": "90000192",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7788,7 +7553,7 @@
           0.96
         ],
         "size": 0.017,
-        "trueSizeAu": null,
+        "trueSizeAu": 2e-8,
         "orbitRadiusAu": 4.7,
         "cameraFit": false,
         "relativeScale": null,
@@ -7827,8 +7592,6 @@
       "horizonsCommand": "90000862",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7855,7 +7618,7 @@
           0.92
         ],
         "size": 0.017,
-        "trueSizeAu": null,
+        "trueSizeAu": 1.3e-8,
         "orbitRadiusAu": 5.5,
         "cameraFit": false,
         "relativeScale": null,
@@ -7894,8 +7657,6 @@
       "horizonsCommand": "90000959",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7922,7 +7683,7 @@
           0.7
         ],
         "size": 0.017,
-        "trueSizeAu": null,
+        "trueSizeAu": 3.9e-9,
         "orbitRadiusAu": 5.9,
         "cameraFit": false,
         "relativeScale": null,
@@ -7961,8 +7722,6 @@
       "horizonsCommand": "136199;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -7989,7 +7748,7 @@
           0.92
         ],
         "size": 0.021,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.0000078,
         "orbitRadiusAu": 97.6,
         "cameraFit": false,
         "relativeScale": null,
@@ -8023,8 +7782,6 @@
       "horizonsCommand": "136472;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -8051,7 +7808,7 @@
           0.58
         ],
         "size": 0.02,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.0000048,
         "orbitRadiusAu": 52.7,
         "cameraFit": false,
         "relativeScale": null,
@@ -8085,8 +7842,6 @@
       "horizonsCommand": "136108;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -8113,7 +7868,7 @@
           0.9
         ],
         "size": 0.019,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.0000041,
         "orbitRadiusAu": 51.6,
         "cameraFit": false,
         "relativeScale": null,
@@ -8147,8 +7902,6 @@
       "horizonsCommand": "50000;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -8175,7 +7928,7 @@
           0.84
         ],
         "size": 0.019,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.0000037,
         "orbitRadiusAu": 45.2,
         "cameraFit": false,
         "relativeScale": null,
@@ -8209,8 +7962,6 @@
       "horizonsCommand": "90482;",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -8237,7 +7988,7 @@
           0.86
         ],
         "size": 0.019,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.000003,
         "orbitRadiusAu": 48.1,
         "cameraFit": false,
         "relativeScale": null,
@@ -8271,8 +8022,6 @@
       "horizonsCommand": "501",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "jupiter",
       "relativeTo": "jupiter",
@@ -8333,8 +8082,6 @@
       "horizonsCommand": "502",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "jupiter",
       "relativeTo": "jupiter",
@@ -8395,8 +8142,6 @@
       "horizonsCommand": "503",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "jupiter",
       "relativeTo": "jupiter",
@@ -8457,8 +8202,6 @@
       "horizonsCommand": "504",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "jupiter",
       "relativeTo": "jupiter",
@@ -8519,8 +8262,6 @@
       "horizonsCommand": "602",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "saturn",
       "relativeTo": "saturn",
@@ -8581,8 +8322,6 @@
       "horizonsCommand": "605",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "saturn",
       "relativeTo": "saturn",
@@ -8643,8 +8382,6 @@
       "horizonsCommand": "606",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "saturn",
       "relativeTo": "saturn",
@@ -8705,8 +8442,6 @@
       "horizonsCommand": "701",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "uranus",
       "relativeTo": "uranus",
@@ -8767,8 +8502,6 @@
       "horizonsCommand": "703",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "uranus",
       "relativeTo": "uranus",
@@ -8829,8 +8562,6 @@
       "horizonsCommand": "705",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": null,
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "uranus",
       "relativeTo": "uranus",
@@ -8891,8 +8622,6 @@
       "horizonsCommand": "801",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1800-01-02T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "neptune",
       "relativeTo": "neptune",
@@ -8942,7 +8671,8 @@
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-02T00:00:00Z"
     },
     "larissa": {
       "key": "larissa",
@@ -8953,8 +8683,6 @@
       "horizonsCommand": "807",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1800-01-02T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "neptune",
       "relativeTo": "neptune",
@@ -9004,7 +8732,8 @@
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-02T00:00:00Z"
     },
     "proteus": {
       "key": "proteus",
@@ -9015,8 +8744,6 @@
       "horizonsCommand": "808",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1800-01-02T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "neptune",
       "relativeTo": "neptune",
@@ -9066,7 +8793,8 @@
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-02T00:00:00Z"
     },
     "charon": {
       "key": "charon",
@@ -9077,8 +8805,6 @@
       "horizonsCommand": "901",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1800-01-03T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "pluto",
       "relativeTo": "pluto",
@@ -9128,7 +8854,8 @@
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-03T00:00:00Z"
     },
     "nix": {
       "key": "nix",
@@ -9139,8 +8866,6 @@
       "horizonsCommand": "902",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1800-01-03T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "pluto",
       "relativeTo": "pluto",
@@ -9190,7 +8915,8 @@
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-03T00:00:00Z"
     },
     "hydra": {
       "key": "hydra",
@@ -9201,8 +8927,6 @@
       "horizonsCommand": "903",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1800-01-03T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": "pluto",
       "relativeTo": "pluto",
@@ -9252,7 +8976,8 @@
         "distance": {
           "enabled": false
         }
-      }
+      },
+      "coverageStartUtc": "1800-01-03T00:00:00Z"
     },
     "voyager-1": {
       "key": "voyager-1",
@@ -9263,8 +8988,6 @@
       "horizonsCommand": "-31",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1977-09-06T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9291,7 +9014,7 @@
           1
         ],
         "size": 0.026,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 170,
         "cameraFit": false,
         "relativeScale": null,
@@ -9319,7 +9042,8 @@
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1977-09-06T00:00:00Z"
     },
     "voyager-2": {
       "key": "voyager-2",
@@ -9330,8 +9054,6 @@
       "horizonsCommand": "-32",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1977-08-21T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9358,7 +9080,7 @@
           1
         ],
         "size": 0.026,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 145,
         "cameraFit": false,
         "relativeScale": null,
@@ -9386,7 +9108,8 @@
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1977-08-21T00:00:00Z"
     },
     "new-horizons": {
       "key": "new-horizons",
@@ -9397,8 +9120,6 @@
       "horizonsCommand": "-98",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "2006-01-20T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9425,7 +9146,7 @@
           1
         ],
         "size": 0.025,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 65,
         "cameraFit": false,
         "relativeScale": null,
@@ -9453,7 +9174,8 @@
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "2006-01-20T00:00:00Z"
     },
     "pioneer-10": {
       "key": "pioneer-10",
@@ -9464,8 +9186,6 @@
       "horizonsCommand": "-23",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1972-03-04T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9492,7 +9212,7 @@
           0.35
         ],
         "size": 0.024,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 140,
         "cameraFit": false,
         "relativeScale": null,
@@ -9520,7 +9240,8 @@
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1972-03-04T00:00:00Z"
     },
     "pioneer-11": {
       "key": "pioneer-11",
@@ -9531,8 +9252,6 @@
       "horizonsCommand": "-24",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1973-04-07T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9559,7 +9278,7 @@
           0.25
         ],
         "size": 0.024,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 115,
         "cameraFit": false,
         "relativeScale": null,
@@ -9587,7 +9306,8 @@
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1973-04-07T00:00:00Z"
     },
     "curiosity": {
       "key": "curiosity",
@@ -9598,8 +9318,6 @@
       "horizonsCommand": "-76",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "2011-11-27T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9626,7 +9344,7 @@
           0.28
         ],
         "size": 0.022,
-        "trueSizeAu": null,
+        "trueSizeAu": 1e-11,
         "orbitRadiusAu": 1.67,
         "cameraFit": false,
         "relativeScale": null,
@@ -9654,7 +9372,8 @@
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "2011-11-27T00:00:00Z"
     },
     "perseverance": {
       "key": "perseverance",
@@ -9665,8 +9384,6 @@
       "horizonsCommand": "-168",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "2020-07-31T00:00:00Z",
-      "coverageEndUtc": "2026-02-17T00:00:00Z",
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9693,7 +9410,7 @@
           0.34
         ],
         "size": 0.022,
-        "trueSizeAu": null,
+        "trueSizeAu": 1e-11,
         "orbitRadiusAu": 1.67,
         "cameraFit": false,
         "relativeScale": null,
@@ -9721,7 +9438,9 @@
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "2020-07-31T00:00:00Z",
+      "coverageEndUtc": "2026-02-17T00:00:00Z"
     },
     "cassini": {
       "key": "cassini",
@@ -9732,8 +9451,6 @@
       "horizonsCommand": "-82",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "1997-10-16T00:00:00Z",
-      "coverageEndUtc": "2017-09-13T00:00:00Z",
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9760,7 +9477,7 @@
           0.92
         ],
         "size": 0.024,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 10.2,
         "cameraFit": false,
         "relativeScale": null,
@@ -9788,7 +9505,9 @@
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "1997-10-16T00:00:00Z",
+      "coverageEndUtc": "2017-09-13T00:00:00Z"
     },
     "juno-spacecraft": {
       "key": "juno-spacecraft",
@@ -9799,8 +9518,6 @@
       "horizonsCommand": "-61",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "2011-08-06T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9827,7 +9544,7 @@
           0.5
         ],
         "size": 0.023,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 5.5,
         "cameraFit": false,
         "relativeScale": null,
@@ -9855,7 +9572,8 @@
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "2011-08-06T00:00:00Z"
     },
     "dawn": {
       "key": "dawn",
@@ -9866,8 +9584,6 @@
       "horizonsCommand": "-203",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "2007-09-28T00:00:00Z",
-      "coverageEndUtc": null,
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9894,7 +9610,7 @@
           0.95
         ],
         "size": 0.023,
-        "trueSizeAu": null,
+        "trueSizeAu": 3e-11,
         "orbitRadiusAu": 3.6,
         "cameraFit": false,
         "relativeScale": null,
@@ -9922,7 +9638,8 @@
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "2007-09-28T00:00:00Z"
     },
     "artemis-ii": {
       "key": "artemis-ii",
@@ -9933,8 +9650,6 @@
       "horizonsCommand": "-1024",
       "dataset": "auxiliary",
       "stream": "auxiliary",
-      "coverageStartUtc": "2026-04-03T00:00:00Z",
-      "coverageEndUtc": "2026-04-08T00:00:00Z",
       "enabled": true,
       "parent": null,
       "relativeTo": null,
@@ -9961,7 +9676,7 @@
           0.82
         ],
         "size": 0.026,
-        "trueSizeAu": null,
+        "trueSizeAu": 0.0000012,
         "orbitRadiusAu": 0.003,
         "cameraFit": false,
         "relativeScale": null,
@@ -9989,7 +9704,9 @@
         "distance": {
           "enabled": true
         }
-      }
+      },
+      "coverageStartUtc": "2026-04-03T00:00:00Z",
+      "coverageEndUtc": "2026-04-10T23:00:00Z"
     }
   },
   "chunks": [
@@ -14617,9 +14334,9 @@
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-recent-2006-07-24-2026-07-24.bin.gz",
-      "byteLength": 648860,
+      "byteLength": 648883,
       "uncompressedByteLength": 964900,
-      "sha256": "1905fe679f88be8861c0150b6b2f5c9ba170b68271513deb6913643f473448dd"
+      "sha256": "efc641fc8157d797517accf0504f6052be5e14a1a8c36f18455782566eb7688e"
     }
   ]
 }

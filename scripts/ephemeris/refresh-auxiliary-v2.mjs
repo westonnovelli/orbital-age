@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import readline from "node:readline";
 import { enabledBodies, loadCatalog } from "./catalog.mjs";
 
 const HORIZONS_API_URL = "https://ssd.jpl.nasa.gov/api/horizons.api";
@@ -9,6 +10,22 @@ const sourcePath = path.resolve(cwd, process.env.EPHEMERIS_V2_SOURCE ?? path.joi
 const rawDir = path.join(v2Dir, "raw-horizons-auxiliary");
 const snapshotsPath = path.join(v2Dir, "auxiliary-snapshots.ndjson");
 
+// Horizons' one-day query lands on Apr 10 00:00, which is still roughly
+// 200,000 km from Earth. Preserve the verified 23:00 terminal sample from a
+// one-hour Horizons query so the packaged daily stream has a return endpoint.
+const VERIFIED_TERMINAL_SAMPLES = new Map([
+  [
+    "artemis-ii",
+    {
+      epochUtc: "2026-04-10T23:00:00Z",
+      epochUnixS: 1775862000,
+      xAu: -0.9394815632014956,
+      yAu: -0.359964939498795,
+      zAu: 0.00009737640195218598
+    }
+  ]
+]);
+
 function parseArgs(argv) {
   const flags = new Set(argv);
   const only = process.env.EPHEMERIS_AUXILIARY_KEYS
@@ -17,6 +34,7 @@ function parseArgs(argv) {
   return {
     fetch: flags.has("--fetch"),
     incremental: flags.has("--incremental"),
+    replace: flags.has("--replace"),
     yes: flags.has("--yes"),
     printPlan: flags.has("--print-plan"),
     only,
@@ -222,12 +240,14 @@ async function main() {
     throw new Error("Pass --fetch, --yes, or --print-plan.");
   }
 
+  const unavailableIncrementalKeys = new Set();
   if (options.fetch) {
     fs.mkdirSync(rawDir, { recursive: true });
     for (const target of auxiliary) {
       let effectiveStartDate = requestStartDate;
       let effectiveStopDate = stopDate;
       let payloads = [];
+      let skipIncrementalTarget = false;
       for (let recoveryAttempt = 0; recoveryAttempt < 4; recoveryAttempt += 1) {
         payloads = [];
         for (const segment of dateSegments(effectiveStartDate, effectiveStopDate)) {
@@ -242,6 +262,16 @@ async function main() {
         const latest = unavailable ? extractLatestAvailableDate(unavailableText) : null;
         if (!unavailable || (!earliest && !latest)) break;
         if (options.incremental) {
+          if (latest && latest < effectiveStartDate) {
+            console.log(`${target.key} has no auxiliary coverage after ${latest}; skipping this incremental refresh.`);
+            skipIncrementalTarget = true;
+            break;
+          }
+          if (latest && latest < effectiveStopDate) {
+            console.log(`${target.key} auxiliary coverage ends at ${latest}; retrying through its last available day.`);
+            effectiveStopDate = latest;
+            continue;
+          }
           throw new Error(`${target.key} has no complete auxiliary ephemeris in the requested incremental window.`);
         }
         if (earliest && earliest > effectiveStartDate) {
@@ -249,10 +279,14 @@ async function main() {
           effectiveStartDate = utcDateFromIso(addUtcDays(`${earliest}T00:00:00Z`, 1));
         } else if (latest && latest < effectiveStopDate) {
           console.log(`${target.key} unavailable after ${latest}; retrying through its last available day.`);
-          effectiveStopDate = utcDateFromIso(addUtcDays(`${latest}T00:00:00Z`, -2));
+          effectiveStopDate = latest;
         } else {
           throw new Error(`Could not find a complete Horizons date range for ${target.key}.`);
         }
+      }
+      if (skipIncrementalTarget) {
+        unavailableIncrementalKeys.add(target.key);
+        continue;
       }
       const destination = path.join(rawDir, `${target.key}.json`);
       fs.writeFileSync(destination, `${JSON.stringify(mergeHorizonsPayloads(payloads, target), null, 2)}\n`);
@@ -269,19 +303,25 @@ async function main() {
 
   const rowsByTarget = new Map();
   for (const target of auxiliary) {
+    if (unavailableIncrementalKeys.has(target.key)) continue;
     const rawPath = path.join(rawDir, `${target.key}.json`);
     if (!fs.existsSync(rawPath)) {
       throw new Error(`Missing raw Horizons response: ${path.relative(cwd, rawPath)}`);
     }
     const payload = JSON.parse(fs.readFileSync(rawPath, "utf8"));
     const parsedRows = parseHorizonsCsvRows(payload.result, target);
-    const rows = options.incremental
+    let rows = options.incremental
       ? parsedRows.filter((row) => Date.parse(row.epochUtc) >= Date.parse(`${startDate}T00:00:00Z`))
       : parsedRows;
+    const terminalSample = VERIFIED_TERMINAL_SAMPLES.get(target.key);
+    if (!options.incremental && terminalSample && rows.at(-1)?.epochUtc === "2026-04-10T00:00:00Z") {
+      rows = [...rows.slice(0, -1), { ...rows.at(-1), ...terminalSample }];
+    }
     const firstRowUtc = rows[0]?.epochUtc;
     const lastRowUtc = rows.at(-1)?.epochUtc;
     const expectedRows = Math.round((Date.parse(lastRowUtc) - Date.parse(firstRowUtc)) / MS_PER_DAY) + 1;
-    if (rows.length !== expectedRows) {
+    const hasVerifiedTerminalSample = Boolean(terminalSample && rows.at(-1)?.epochUtc === terminalSample.epochUtc);
+    if (rows.length !== expectedRows && !hasVerifiedTerminalSample) {
       throw new Error(
         `Row count mismatch for ${target.key}: expected ${expectedRows}, got ${rows.length}`
       );
@@ -292,7 +332,7 @@ async function main() {
   if (options.incremental) {
     const snapshotsFd = fs.openSync(snapshotsPath, "a");
     try {
-      const newRows = auxiliary.flatMap((target) => rowsByTarget.get(target.key));
+      const newRows = auxiliary.flatMap((target) => rowsByTarget.get(target.key) ?? []);
       newRows.sort((a, b) => a.epochUnixS - b.epochUnixS || a.naifId - b.naifId);
       for (const row of newRows) {
         fs.writeSync(snapshotsFd, `${JSON.stringify(row)}\n`);
@@ -306,7 +346,29 @@ async function main() {
 
   // The asteroid-belt catalog produces millions of rows. Write incrementally
   // rather than building one multi-gigabyte string in memory.
-  const snapshotsFd = fs.openSync(snapshotsPath, options.append ? "a" : "w");
+  if (options.replace) {
+    if (!options.only) {
+      throw new Error("--replace requires EPHEMERIS_AUXILIARY_KEYS to limit the replacement scope.");
+    }
+    const replacementPath = `${snapshotsPath}.replace`;
+    const input = readline.createInterface({
+      input: fs.createReadStream(snapshotsPath, { encoding: "utf8" }),
+      crlfDelay: Infinity
+    });
+    const output = fs.createWriteStream(replacementPath, { encoding: "utf8" });
+    for await (const line of input) {
+      if (!line.trim()) continue;
+      const row = JSON.parse(line);
+      if (!options.only.has(row.body)) output.write(`${line}\n`);
+    }
+    await new Promise((resolve, reject) => {
+      output.once("error", reject);
+      output.end(resolve);
+    });
+    fs.renameSync(replacementPath, snapshotsPath);
+  }
+
+  const snapshotsFd = fs.openSync(snapshotsPath, options.append || options.replace ? "a" : "w");
   let rowCount = 0;
   try {
     const allRows = auxiliary.flatMap((target) => rowsByTarget.get(target.key));

@@ -40,6 +40,19 @@ test("Spec: every enabled body in bodies.yaml must be emitted unchanged into the
   }
 });
 
+test("Spec: every enabled renderable body has a true-scale radius", () => {
+  for (const body of enabledCatalogBodies()) {
+    const normalized = normalizedBody(body);
+    if (!normalized.capabilities.canRender) continue;
+    assert.ok(Number.isFinite(normalized.render.trueSizeAu), `${body.key} trueSizeAu`);
+    assert.ok(normalized.render.trueSizeAu > 0, `${body.key} trueSizeAu must be positive`);
+    assert.ok(
+      normalized.render.trueSizeAu <= normalized.render.size,
+      `${body.key} trueSizeAu must not exceed its display size`
+    );
+  }
+});
+
 test("Spec: a body whose explicit render capabilities are on must be attached to the application's default scene", () => {
   for (const dataset of Object.keys(catalog.datasets)) {
     const expectedKeys = enabledCatalogBodies()

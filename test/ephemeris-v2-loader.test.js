@@ -103,3 +103,21 @@ test("auxiliary bodies load on demand", async () => {
     EphemerisDataMissingError
   );
 });
+
+test("Artemis II terminal sample returns to Earth's vicinity", async () => {
+  await ensureEphemerisLoaded({
+    startUtc: "2026-04-10T23:00:00Z",
+    endUtc: "2026-04-10T23:00:00Z",
+    streams: ["auxiliary"],
+    bodyKeys: ["artemis-ii"]
+  });
+
+  const artemis = getBodyPositionAuAtInstant("artemis-ii", "2026-04-10T23:00:00Z");
+  const earth = getBodyPositionAuAtInstant("earth", "2026-04-10T23:00:00Z");
+  const distanceKm = Math.hypot(
+    artemis.xAu - earth.xAu,
+    artemis.yAu - earth.yAu,
+    artemis.zAu - earth.zAu
+  ) * 149597870.7;
+  assert.ok(distanceKm < 100_000, `expected terminal distance under 100,000 km, got ${distanceKm}`);
+});

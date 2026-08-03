@@ -252,6 +252,7 @@ export function manifestRenderConfigs(dataset, bodyRegistry = getBodyRegistry(),
       stream: body.dataset ?? body.stream,
       color: body.render.color,
       size: body.render.size,
+      trueSizeAu: body.render.trueSizeAu,
       orbitRadiusAu: body.render.orbitRadiusAu,
       parent: body.parent,
       relativeScale: body.render.relativeScale,
@@ -880,6 +881,7 @@ export class OrbitalApp {
       }
       bodies.push({
         key: config.key,
+        kind: config.kind,
         marker,
         trail,
         parent: config.parent ?? null,
@@ -1721,7 +1723,7 @@ export class OrbitalApp {
     this.trueScale = Boolean(enabled);
     for (const [key, marker] of this.bodyMarkers) {
       const config = this.#bodyConfig(key);
-      const trueSize = TRUE_RADIUS_AU[key];
+      const trueSize = config?.trueSizeAu ?? TRUE_RADIUS_AU[key];
       marker.setSize(this.trueScale && Number.isFinite(trueSize) ? trueSize : config?.size);
     }
     this.sunEntity?.setSize(this.trueScale ? TRUE_RADIUS_AU.sun : SUN_DISPLAY_SIZE);
@@ -2094,6 +2096,11 @@ export class OrbitalApp {
     for (const [key, label] of this.bodyLabels) {
       const pos = positions.get(key);
       if (!pos) {
+        // Availability-bound bodies (for example Artemis II before launch and
+        // after splashdown) are removed from the controller's live position map.
+        // Hide the HTML label too; otherwise it retains its last projected
+        // transform and appears frozen on the canvas.
+        label.style.display = "none";
         continue;
       }
       const config = this.#bodyConfig(key);
@@ -2119,7 +2126,9 @@ export class OrbitalApp {
       const onScreen =
         screen.ndcX >= -1 && screen.ndcX <= 1 && screen.ndcY >= -1 && screen.ndcY <= 1;
       const visible =
-        this.bodyMarkers.get(key)?.visible !== false && config?.labelVisible !== false;
+        this.bodyMarkers.get(key)?.visible !== false &&
+        this.bodyMarkers.get(key)?.available !== false &&
+        config?.labelVisible !== false;
       label.style.display = onScreen && visible ? "" : "none";
       // Fold any per-body label offset (e.g. the Moon, nudged clear of Earth)
       // into the transform so the per-frame write stays transform-only.

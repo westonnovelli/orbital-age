@@ -132,6 +132,30 @@ test("timeline controller keeps a mission listed but hides its marker and trail 
   assert.equal(trail.available, false);
 });
 
+test("completed spacecraft keeps its painted trail after marker coverage ends", () => {
+  const marker = availabilityMarkerStub();
+  const trail = trailStub();
+  const controller = new TimelineControllerEntity({
+    birthday: "2000-01-01",
+    maxTimelineDate: "2000-01-12",
+    initialTimelineDate: "2000-01-11",
+    bodies: [{
+      key: "test-spacecraft",
+      kind: "spacecraft",
+      marker,
+      trail,
+      availableFromUtc: "2000-01-02T00:00:00Z",
+      availableToUtc: "2000-01-10T23:00:00Z"
+    }]
+  });
+
+  controller.init();
+
+  assert.equal(marker.available, false);
+  assert.equal(trail.available, true);
+  assert.equal(trail.cursorDays.at(-1), Number.POSITIVE_INFINITY);
+});
+
 test("addBodies can defer trail precompute and opt out of distance tracking", () => {
   const earthMarker = markerStub();
   const venusMarker = markerStub();

@@ -32,8 +32,9 @@ test("catalog includes the curated spacecraft layer with distinct Horizons targe
   const artemis = spacecraft.find((body) => body.key === "artemis-ii");
   assert.deepEqual(
     { start: artemis.coverageStartUtc, end: artemis.coverageEndUtc },
-    { start: "2026-04-03T00:00:00Z", end: "2026-04-08T00:00:00Z" }
+    { start: "2026-04-03T00:00:00Z", end: "2026-04-10T23:00:00Z" }
   );
+  assert.equal(artemis.render.trueSizeAu, 0.0000012);
 });
 
 test("body catalog rejects duplicate keys and invalid parent references", () => {

@@ -393,7 +393,7 @@ export class TimelineControllerEntity {
       }
       const position = bodyHeliocentricPositionAuAtInstant(body.key, instant);
       body.marker.setPosition(position.xAu, position.yAu);
-      body.trail?.setCursorForDay?.(this.timelineDays);
+      this.#setTrailCursor(body);
       resolved.set(body.key, { x: position.xAu, y: position.yAu });
       this.bodyRenderPositions.set(body.key, { x: position.xAu, y: position.yAu });
       if (updateDistances && body.trackDistance !== false) {
@@ -431,7 +431,7 @@ export class TimelineControllerEntity {
       const rosetteScale =
         bakedScale > 0 ? effectiveScaleFactor * (body.relativeScale / bakedScale) : effectiveScaleFactor;
       body.trail?.setRosetteScale?.(rosetteScale);
-      body.trail?.setCursorForDay?.(this.timelineDays);
+      this.#setTrailCursor(body);
       resolved.set(body.key, { x, y });
       this.bodyRenderPositions.set(body.key, { x, y });
       // The Moon's odometer is its true distance through space (barycentric path),
@@ -451,15 +451,19 @@ export class TimelineControllerEntity {
   }
 
   #hideUnavailableBody(body, instant) {
-    const unavailable =
-      (body.availableFromUtc && instant.getTime() < Date.parse(body.availableFromUtc)) ||
-      (body.availableToUtc && instant.getTime() > Date.parse(body.availableToUtc));
+    const beforeCoverage = body.availableFromUtc && instant.getTime() < Date.parse(body.availableFromUtc);
+    const afterCoverage = body.availableToUtc && instant.getTime() > Date.parse(body.availableToUtc);
+    const unavailable = beforeCoverage || afterCoverage;
     if (unavailable) {
       if (!body.availabilityHidden) {
         body.availabilityHidden = true;
       }
       body.marker.setAvailable?.(false);
-      body.trail?.setAvailable?.(false);
+      const retainCompletedSpacecraftTrail = afterCoverage && body.kind === "spacecraft";
+      body.trail?.setAvailable?.(!beforeCoverage && retainCompletedSpacecraftTrail);
+      if (retainCompletedSpacecraftTrail) {
+        this.#setTrailCursor(body, { completed: true });
+      }
       this.bodyRenderPositions.delete(body.key);
       this.bodyTraveledKm.delete(body.key);
       return true;
@@ -470,6 +474,16 @@ export class TimelineControllerEntity {
       body.availabilityHidden = false;
     }
     return false;
+  }
+
+  #setTrailCursor(body, { completed = false } = {}) {
+    if (!body.trail?.setCursorForDay) return;
+    const lastSampleDay = body.trail.samples?.at?.(-1)?.day;
+    if (completed || (body.kind === "spacecraft" && Number.isFinite(lastSampleDay) && this.timelineDays >= lastSampleDay)) {
+      body.trail.setCursorForDay(Number.POSITIVE_INFINITY);
+      return;
+    }
+    body.trail.setCursorForDay(this.timelineDays);
   }
 
   #syncPlaybackForBounds() {
@@ -504,6 +518,7 @@ function normalizeBodies({ bodies, earthMarker, motionTrails }) {
       }
       return {
         key: body.key,
+        kind: body.kind ?? null,
         marker: body.marker,
         trail: body.trail ?? null,
         // Parented bodies (the Moon) are positioned relative to a parent body's

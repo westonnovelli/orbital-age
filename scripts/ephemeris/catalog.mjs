@@ -4,6 +4,59 @@ import { parseDocument } from "yaml";
 
 export const DEFAULT_CATALOG_PATH = "data/bodies.yaml";
 
+// Render sizes are radii in AU, matching the existing planet values. Small
+// bodies and spacecraft do not all have a reliable, catalog-level radius, so
+// keep their fallback deliberately physical and let a body-specific YAML value
+// override it whenever one is available.
+const DEFAULT_TRUE_SIZE_AU_BY_KIND = Object.freeze({
+  asteroid: 0.0000005,
+  nearEarthAsteroid: 0.00000001,
+  comet: 0.00000002,
+  dwarfPlanet: 0.000004,
+  spacecraft: 0.00000000003
+});
+
+const TRUE_SIZE_AU_BY_BODY = Object.freeze({
+  ceres: 0.00000318,
+  pallas: 0.00000171,
+  vesta: 0.00000176,
+  hygiea: 0.00000145,
+  psyche: 0.00000076,
+  juno: 0.00000078,
+  eros: 0.000000056,
+  bennu: 0.0000000016,
+  ryugu: 0.0000000029,
+  apophis: 0.0000000012,
+  halley: 0.000000037,
+  "67p": 0.000000013,
+  encke: 0.000000016,
+  "tempel-1": 0.00000002,
+  "wild-2": 0.000000013,
+  "hartley-2": 0.0000000039,
+  eris: 0.0000078,
+  makemake: 0.0000048,
+  haumea: 0.0000041,
+  quaoar: 0.0000037,
+  orcus: 0.000003,
+  // A spacecraft's physical body is intentionally tiny at AU scale. The
+  // catalog may provide a larger inspectable proxy when product UX requires it.
+  "voyager-1": 0.00000000003,
+  "voyager-2": 0.00000000003,
+  "new-horizons": 0.00000000003,
+  "pioneer-10": 0.00000000003,
+  "pioneer-11": 0.00000000003,
+  curiosity: 0.00000000001,
+  perseverance: 0.00000000001,
+  cassini: 0.00000000003,
+  "juno-spacecraft": 0.00000000003,
+  dawn: 0.00000000003
+});
+
+function trueSizeAuFor(body, render) {
+  if (Number.isFinite(render.trueSizeAu)) return render.trueSizeAu;
+  return TRUE_SIZE_AU_BY_BODY[body.key] ?? DEFAULT_TRUE_SIZE_AU_BY_KIND[body.kind] ?? null;
+}
+
 export function loadCatalog(cwd = process.cwd(), sourcePath = process.env.BODY_CATALOG_PATH ?? DEFAULT_CATALOG_PATH) {
   const filePath = path.resolve(cwd, sourcePath);
   let catalog;
@@ -52,6 +105,7 @@ export function validateCatalog(catalog) {
     // of those settings can make it into a generated manifest or the app.
     // The remaining checks validate values, not feature combinations.
     if (body.enabled !== false && render.enabled && (!Array.isArray(render.color) || render.color.length !== 3 || !Number.isFinite(render.size))) fail(`${body.key} render.enabled requires RGB color and size`);
+    if (body.enabled !== false && render.enabled && !Number.isFinite(trueSizeAuFor(body, render))) fail(`${body.key} render.enabled requires trueSizeAu or a supported body kind`);
     for (const value of render.color ?? []) if (!Number.isFinite(value) || value < 0 || value > 1) fail(`${body.key} color channels must be 0..1`);
   }
   for (const body of catalog.bodies) if (body.relativeTo && !keys.has(body.relativeTo)) fail(`${body.key} references unknown parent '${body.relativeTo}'`);
@@ -94,7 +148,7 @@ export function normalizedBody(body) {
     hasLabel, hasTrail, capabilities,
     layers: body.layers ?? [], render: {
       enabled: capabilities.canRender, defaultVisible: capabilities.canShowByDefault, color: render.color ?? null,
-      size: render.size ?? null, trueSizeAu: render.trueSizeAu ?? null, orbitRadiusAu: render.orbitRadiusAu ?? null,
+      size: render.size ?? null, trueSizeAu: trueSizeAuFor(body, render), orbitRadiusAu: render.orbitRadiusAu ?? null,
       cameraFit: capabilities.canFitCamera, relativeScale: render.relativeScale ?? null,
       label: { enabled: capabilities.canShowLabel, offset: render.label?.offset ?? [0, 0] },
       trail: { enabled: capabilities.canToggleTrail, defaultVisible: Boolean(render.trail?.defaultVisible), color: render.trail?.color ?? null, hueStart: render.trail?.hueStart ?? 0 },
