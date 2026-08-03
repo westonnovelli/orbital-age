@@ -236,7 +236,20 @@ function extractEarliestAvailableDate(text) {
 }
 
 function mergeHorizonsPayloads(payloads, target) {
-  const rows = payloads.map((payload) => vectorSection(payload.result, target)).filter(Boolean);
+  // Incremental retries may find a raw payload that was written before a
+  // later validation step failed. Deduplicate by Julian-day epoch so merging
+  // that payload with the freshly fetched window is idempotent.
+  const seenEpochs = new Set();
+  const rows = payloads
+    .flatMap((payload) => vectorSection(payload.result, target).split(/\r?\n/))
+    .map((line) => line.trim())
+    .filter((line) => {
+      if (!line) return false;
+      const epoch = line.split(",", 1)[0].trim();
+      if (seenEpochs.has(epoch)) return false;
+      seenEpochs.add(epoch);
+      return true;
+    });
   return {
     result: `$$SOE\n${rows.join("\n")}\n$$EOE\n`,
     signature: payloads[0]?.signature,
@@ -357,7 +370,13 @@ async function main() {
         payloads.unshift(JSON.parse(fs.readFileSync(destination, "utf8")));
       }
       fs.writeFileSync(destination, `${JSON.stringify(mergeHorizonsPayloads(payloads, target), null, 2)}\n`);
-      coverageStartByNaifId.set(target.naifId, `${effectiveStartDate}T00:00:00Z`);
+      // Incremental refreshes prepend the existing raw payload, so preserve
+      // its original coverage start. A full refresh may legitimately begin at
+      // a later first-available date after Horizons recovery.
+      const coverageStartUtc = options.incremental
+        ? target.coverageStartUtc ?? header.window.startUtc
+        : `${effectiveStartDate}T00:00:00Z`;
+      coverageStartByNaifId.set(target.naifId, coverageStartUtc);
       console.log(`Merged ${target.key} -> ${path.relative(cwd, destination)} (${payloads.length} segment${payloads.length === 1 ? "" : "s"})`);
     }
   }
