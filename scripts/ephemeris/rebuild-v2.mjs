@@ -67,7 +67,10 @@ function planChunks({ stream, group, targets, epochs, vectorsByKey, coverageStar
     }
     const chunkTargets = targets.filter((target) => {
       const coverageStart = coverageStartByKey.get(target.key);
-      return coverageStart === undefined || Date.parse(coverageStart) <= epochs[endIndex] * 1000;
+      // A body with no samples in the snapshot stream has no coverage for the
+      // generated dataset. Do not emit it in a chunk with an empty vector
+      // payload; the binary encoder requires one complete vector per body.
+      return coverageStart !== undefined && Date.parse(coverageStart) <= epochs[endIndex] * 1000;
     });
     if (chunkTargets.length === 0) return;
     chunks.push({
