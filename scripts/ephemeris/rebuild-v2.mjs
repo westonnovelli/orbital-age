@@ -4,7 +4,7 @@ import path from "node:path";
 import readline from "node:readline";
 import zlib from "node:zlib";
 import { enabledBodies, loadCatalog, normalizedBody } from "./catalog.mjs";
-import { encodeBinaryChunk } from "../../src/ephemeris/binary-chunk.js";
+import { decodeBinaryChunk, encodeBinaryChunk } from "../../src/ephemeris/binary-chunk.js";
 
 const cwd = process.cwd();
 const v2Dir = path.resolve(cwd, process.env.EPHEMERIS_V2_DATA_DIR ?? "data/ephemeris/v2");
@@ -24,6 +24,50 @@ const ENCODERS = {
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+function readExistingAuxiliaryChunks({ epochs, selectedKeys, vectorsByKey, coverageStartByKey, coverageEndByKey }) {
+  const manifestPath = path.join(v2Dir, "manifest.json");
+  if (!fs.existsSync(manifestPath)) return;
+
+  const manifest = readJson(manifestPath);
+  for (const chunk of manifest.chunks.filter((candidate) => candidate.stream === "auxiliary")) {
+    const relativePath = chunk.url.replace("../../data/ephemeris/v2/", "");
+    const chunkPath = path.join(v2Dir, relativePath);
+    if (!fs.existsSync(chunkPath)) continue;
+
+    const compressed = fs.readFileSync(chunkPath);
+    const payload = chunk.format === "binary-f32-gzip"
+      ? decodeBinaryChunk(zlib.gunzipSync(compressed))
+      : JSON.parse(compressed.toString("utf8"));
+    const startIndex = epochs.findIndex((epoch) => epoch * 1000 >= Date.parse(chunk.startUtc));
+    if (startIndex < 0) continue;
+
+    for (const key of chunk.bodyKeys) {
+      if (!selectedKeys.has(key)) continue;
+      const values = chunk.format === "binary-f32-gzip"
+        ? payload.vectors[key]
+        : (() => {
+            const bytes = Buffer.from(payload.vectors[key], "base64");
+            return new Float32Array(bytes.buffer, bytes.byteOffset, bytes.byteLength / 4);
+          })();
+      const aligned = vectorsByKey.get(key).length === 0
+        ? new Array(epochs.length * 3).fill(0)
+        : vectorsByKey.get(key);
+      if (aligned.length !== epochs.length * 3) continue;
+      for (let sample = 0; sample < chunk.samplesPerBody && startIndex + sample < epochs.length; sample += 1) {
+        const sourceOffset = sample * 3;
+        const targetOffset = (startIndex + sample) * 3;
+        aligned[targetOffset] = values[sourceOffset];
+        aligned[targetOffset + 1] = values[sourceOffset + 1];
+        aligned[targetOffset + 2] = values[sourceOffset + 2];
+      }
+      vectorsByKey.set(key, aligned);
+      const manifestBody = manifest.bodies[key];
+      if (manifestBody?.coverageStartUtc) coverageStartByKey.set(key, manifestBody.coverageStartUtc);
+      if (manifestBody?.coverageEndUtc) coverageEndByKey.set(key, manifestBody.coverageEndUtc);
+    }
+  }
 }
 
 function sha256(buffer) {
@@ -231,13 +275,21 @@ async function readVectors({ source, targetKeys, auxiliaryKeys }) {
       coverageEndByKey.set(target.key, rows.at(-1).epochUtc);
     }
   }
+
+  const epochIndexByUnixS = new Map(epochs.map((epoch, index) => [epoch, index]));
   for (const target of source.targets.filter((candidate) => candidate.synthetic === "origin" && selectedKeys.has(candidate.key))) {
     vectorsByKey.set(target.key, new Array(epochs.length * 3).fill(0));
     coverageStartByKey.set(target.key, source.window.startUtc);
     coverageEndByKey.set(target.key, source.window.endUtc);
   }
 
+  // Auxiliary snapshots are intentionally ignored by Git. On a clean CI
+  // checkout, recover the historical auxiliary vectors from the committed
+  // chunks before overlaying the newly fetched daily rows.
+  readExistingAuxiliaryChunks({ epochs, selectedKeys, vectorsByKey, coverageStartByKey, coverageEndByKey });
+
   if (fs.existsSync(auxiliarySnapshotsPath)) {
+    const snapshotRowsByKey = new Map();
     const auxiliaryLineReader = readline.createInterface({
       input: fs.createReadStream(auxiliarySnapshotsPath, { encoding: "utf8" }),
       crlfDelay: Infinity
@@ -251,9 +303,25 @@ async function readVectors({ source, targetKeys, auxiliaryKeys }) {
       if (!auxiliaryKeys.has(row.body)) {
         continue;
       }
-      vectorsByKey.get(row.body).push(row.xAu, row.yAu, row.zAu);
+      const rows = snapshotRowsByKey.get(row.body) ?? new Map();
+      rows.set(row.epochUnixS, [row.xAu, row.yAu, row.zAu]);
+      snapshotRowsByKey.set(row.body, rows);
       coverageStartByKey.set(row.body, coverageStartByKey.get(row.body) ?? row.epochUtc);
       coverageEndByKey.set(row.body, row.epochUtc);
+    }
+
+    for (const [key, rows] of snapshotRowsByKey) {
+      const values = vectorsByKey.get(key).length === epochs.length * 3
+        ? vectorsByKey.get(key)
+        : new Array(epochs.length * 3).fill(0);
+      for (const [epochUnixS, vector] of rows) {
+        const index = epochIndexByUnixS.get(epochUnixS);
+        if (index === undefined) continue;
+        values[index * 3] = vector[0];
+        values[index * 3 + 1] = vector[1];
+        values[index * 3 + 2] = vector[2];
+      }
+      vectorsByKey.set(key, values);
     }
   }
 
@@ -264,7 +332,7 @@ async function readVectors({ source, targetKeys, auxiliaryKeys }) {
     const coverageStart = coverageStartByKey.get(key);
     if (!coverageStart) continue;
     const firstIndex = epochs.findIndex((epoch) => epoch * 1000 >= Date.parse(coverageStart));
-    if (firstIndex > 0) {
+    if (firstIndex > 0 && vectorsByKey.get(key).length < epochs.length * 3) {
       vectorsByKey.set(key, [
         ...new Array(firstIndex * 3).fill(0),
         ...vectorsByKey.get(key)

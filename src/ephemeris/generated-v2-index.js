@@ -4,7 +4,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v2",
   "encoder": "binary-f32-gzip",
-  "generatedOn": "2026-08-03T19:51:41.364Z",
+  "generatedOn": "2026-08-03T20:44:46.074Z",
   "compatibility": {
     "manifestSchema": "ephemeris.manifest.v2",
     "requiredFrame": "ECLIPJ2000",
