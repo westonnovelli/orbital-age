@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import readline from "node:readline";
 import { enabledBodies, loadCatalog } from "./catalog.mjs";
+import { buildIncrementalWindow } from "./refresh-window.mjs";
 
 const HORIZONS_API_URL = "https://ssd.jpl.nasa.gov/api/horizons.api";
 const cwd = process.cwd();
@@ -51,12 +52,6 @@ const MAX_HORIZONS_DAYS_PER_REQUEST = 40000;
 
 function addUtcDays(iso, days) {
   return new Date(Date.parse(iso) + days * MS_PER_DAY).toISOString().replace(".000Z", "Z");
-}
-
-// Keep the auxiliary refresh window aligned with the primary refresh. The
-// extra day makes today's sample interpolable at runtime.
-function targetEndUtcIso() {
-  return new Date(Date.now() + MS_PER_DAY).toISOString().replace(/T.*$/, "T00:00:00.000Z");
 }
 
 function dateSegments(startDate, stopDate) {
@@ -209,20 +204,22 @@ async function main() {
     }
   }
   const currentEndUtc = header.window.endUtc;
-  const requestedStartUtc = options.incremental ? addUtcDays(currentEndUtc, 1) : header.window.startUtc;
-  const requestedEndUtc = options.incremental ? targetEndUtcIso() : header.window.endUtc;
+  const incrementalWindow = options.incremental
+    ? buildIncrementalWindow({
+        currentEndUtc,
+        nowUtc: process.env.EPHEMERIS_REFRESH_NOW_UTC ?? new Date().toISOString()
+      })
+    : null;
+  const requestedStartUtc = incrementalWindow?.requestedStartUtc ?? header.window.startUtc;
+  const requestedEndUtc = incrementalWindow?.requestedEndUtc ?? header.window.endUtc;
   if (options.incremental && Date.parse(currentEndUtc) >= Date.parse(requestedEndUtc)) {
     console.log(`No auxiliary refresh needed; window already ends ${header.window.endUtc}.`);
     return;
   }
 
-  const startDate = utcDateFromIso(requestedStartUtc);
-  const stopDate = utcDateFromIso(requestedEndUtc);
-  // Horizons rejects a one-day request where START_TIME equals STOP_TIME. Ask
-  // for the preceding sample too, then discard that overlap before appending.
-  const requestStartDate = options.incremental && startDate === stopDate
-    ? utcDateFromIso(addUtcDays(`${startDate}T00:00:00Z`, -1))
-    : startDate;
+  const startDate = incrementalWindow?.startDate ?? utcDateFromIso(requestedStartUtc);
+  const stopDate = incrementalWindow?.stopDate ?? utcDateFromIso(requestedEndUtc);
+  const requestStartDate = incrementalWindow?.requestStartDate ?? startDate;
 
   const planLines = [
     "Auxiliary Horizons refresh plan:",

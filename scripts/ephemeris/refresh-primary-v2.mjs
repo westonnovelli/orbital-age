@@ -3,6 +3,7 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import { createInterface } from "node:readline/promises";
 import { enabledBodies, loadCatalog } from "./catalog.mjs";
+import { buildIncrementalWindow } from "./refresh-window.mjs";
 
 const HORIZONS_API_URL = "https://ssd.jpl.nasa.gov/api/horizons.api";
 const DEFAULT_DATA_DIR = "data/ephemeris/v2";
@@ -76,7 +77,10 @@ function targetEndUtcIso(options) {
   if (options.endUtc) {
     return utcMidnightIso(new Date(options.endUtc));
   }
-  const tomorrow = new Date(Date.now() + MS_PER_DAY);
+  const now = process.env.EPHEMERIS_REFRESH_NOW_UTC
+    ? new Date(process.env.EPHEMERIS_REFRESH_NOW_UTC)
+    : new Date();
+  const tomorrow = new Date(now.getTime() + MS_PER_DAY);
   return utcMidnightIso(tomorrow);
 }
 
@@ -310,14 +314,20 @@ async function main() {
   }
 
   const currentEndUtc = JSON.parse(fs.readFileSync(headerPath, "utf8")).window.endUtc;
-  const requestedStartUtc = options.incremental ? addUtcDays(currentEndUtc, 1) : header.window.startUtc;
-  const startDate = utcDateFromIso(requestedStartUtc);
-  const stopDate = utcDateFromIso(header.window.endUtc);
+  const incrementalWindow = options.incremental
+    ? buildIncrementalWindow({
+        currentEndUtc,
+        nowUtc: process.env.EPHEMERIS_REFRESH_NOW_UTC ?? new Date().toISOString(),
+        endUtc: options.endUtc
+      })
+    : null;
+  const requestedStartUtc = incrementalWindow?.requestedStartUtc ?? header.window.startUtc;
+  const requestedEndUtc = incrementalWindow?.requestedEndUtc ?? header.window.endUtc;
+  const startDate = incrementalWindow?.startDate ?? utcDateFromIso(requestedStartUtc);
+  const stopDate = incrementalWindow?.stopDate ?? utcDateFromIso(requestedEndUtc);
+  const requestStartDate = incrementalWindow?.requestStartDate ?? startDate;
 
-  if (options.incremental && Date.parse(requestedStartUtc) > Date.parse(header.window.endUtc)) {
-    console.log(`No ephemeris refresh needed; window already ends ${header.window.endUtc}.`);
-    return;
-  }
+  const noRefreshNeeded = options.incremental && Date.parse(requestedStartUtc) > Date.parse(requestedEndUtc);
 
   const nonSunTargets = header.targets.filter((target) => target.key !== "sun");
   const sunTarget = header.targets.find((target) => target.key === "sun") ?? null;
@@ -327,7 +337,7 @@ async function main() {
     "Horizons refresh plan:",
     `- data dir: ${path.relative(cwd, dataDir)}`,
     `- raw dir: ${path.relative(cwd, rawDir)}`,
-    `- window: ${startDate}..${stopDate}${options.incremental ? " (incremental)" : ""}`,
+    `- window: ${requestStartDate}..${stopDate}${options.incremental ? " (incremental)" : ""}`,
     "- requests:"
   ];
 
@@ -340,11 +350,15 @@ async function main() {
   if (options.printPlan) {
     console.log(planLines.join("\n"));
   }
+  if (noRefreshNeeded) {
+    console.log(`No ephemeris refresh needed; window already ends ${currentEndUtc}.`);
+    return;
+  }
 
   if (options.fetch) {
     fs.mkdirSync(rawDir, { recursive: true });
     for (const target of nonSunTargets) {
-      let effectiveStartDate = startDate;
+      let effectiveStartDate = requestStartDate;
       let payloads = [];
       for (let recoveryAttempt = 0; recoveryAttempt < 2; recoveryAttempt += 1) {
         const segments = dateSegments(effectiveStartDate, stopDate);
