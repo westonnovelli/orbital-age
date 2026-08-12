@@ -4,7 +4,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v2",
   "encoder": "binary-f32-gzip",
-  "generatedOn": "2026-08-11T08:15:27.836Z",
+  "generatedOn": "2026-08-12T08:38:33.448Z",
   "compatibility": {
     "manifestSchema": "ephemeris.manifest.v2",
     "requiredFrame": "ECLIPJ2000",
@@ -15,7 +15,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
   "source": {
     "provider": "JPL NAIF / JPL Horizons",
     "kernel": "de442s.bsp",
-    "retrievedOn": "2026-08-11",
+    "retrievedOn": "2026-08-12",
     "canonicalDataset": "data/ephemeris/v2/source.json"
   },
   "frame": "ECLIPJ2000",
@@ -30,8 +30,8 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
   },
   "window": {
     "startUtc": "1766-07-23T00:00:00Z",
-    "endUtc": "2026-08-12T00:00:00Z",
-    "days": 94984
+    "endUtc": "2026-08-13T00:00:00Z",
+    "days": 94985
   },
   "datasets": {
     "primary": {
@@ -9990,14 +9990,14 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "sha256": "8d4945edced99751390635c8a7959d4f0d6fc64375511e2d05c83d5d7a004a5b"
     },
     {
-      "id": "primary-primary-historical-1955-07-24-1986-08-12",
+      "id": "primary-primary-historical-1955-07-24-1986-08-13",
       "stream": "primary",
       "group": "primary",
       "kind": "historical",
       "startUtc": "1955-07-24T00:00:00Z",
-      "endUtc": "1986-08-12T00:00:00Z",
+      "endUtc": "1986-08-13T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 11343,
+      "samplesPerBody": 11344,
       "bodyKeys": [
         "sun",
         "mercury",
@@ -10015,18 +10015,18 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/primary/primary/primary-primary-historical-1955-07-24-1986-08-12.bin.gz",
-      "byteLength": 1239369,
-      "uncompressedByteLength": 1497731,
-      "sha256": "4259b067cf9ad73419ed58995d9b2790c7a864e5eb2a01c1cca1bf34c2daeef6"
+      "url": "../../data/ephemeris/v2/chunks/primary/primary/primary-primary-historical-1955-07-24-1986-08-13.bin.gz",
+      "byteLength": 1239487,
+      "uncompressedByteLength": 1497863,
+      "sha256": "16dda6cb054d75eb8d20f97272be9124674a6add3900246c0ffdb04cfc4b5a9d"
     },
     {
-      "id": "primary-primary-recent-1986-08-12-2026-08-12",
+      "id": "primary-primary-recent-1986-08-13-2026-08-13",
       "stream": "primary",
       "group": "primary",
       "kind": "recent",
-      "startUtc": "1986-08-12T00:00:00Z",
-      "endUtc": "2026-08-12T00:00:00Z",
+      "startUtc": "1986-08-13T00:00:00Z",
+      "endUtc": "2026-08-13T00:00:00Z",
       "stepSeconds": 86400,
       "samplesPerBody": 14611,
       "bodyKeys": [
@@ -10046,10 +10046,10 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/primary/primary/primary-primary-recent-1986-08-12-2026-08-12.bin.gz",
-      "byteLength": 1605276,
+      "url": "../../data/ephemeris/v2/chunks/primary/primary/primary-primary-recent-1986-08-13-2026-08-13.bin.gz",
+      "byteLength": 1605282,
       "uncompressedByteLength": 1929103,
-      "sha256": "b5bdc488f7a9cf466e7b58ef8a3d685e4aa4a41e436512b714dc47b8924923a1"
+      "sha256": "f9bd8311d90197a510fee7c68ff20d80672fe62d57459dbf9d6671a95f9dd858"
     },
     {
       "id": "auxiliary-dwarf-planets-historical-1766-07-23-1800-01-02",
@@ -10231,14 +10231,14 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "sha256": "cf991d40bb959c8db099584d0ffdcd75f33c84b16a880ba1a09a959a4fd88636"
     },
     {
-      "id": "auxiliary-dwarf-planets-historical-1981-06-23-2006-08-12",
+      "id": "auxiliary-dwarf-planets-historical-1981-06-23-2006-08-13",
       "stream": "auxiliary",
       "group": "dwarf-planets",
       "kind": "historical",
       "startUtc": "1981-06-23T00:00:00Z",
-      "endUtc": "2006-08-12T00:00:00Z",
+      "endUtc": "2006-08-13T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 9182,
+      "samplesPerBody": 9183,
       "bodyKeys": [
         "triton",
         "larissa",
@@ -10251,18 +10251,18 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1981-06-23-2006-08-12.bin.gz",
-      "byteLength": 581696,
-      "uncompressedByteLength": 661534,
-      "sha256": "24a7b778e23f49c15d8eb7e67bb0e02a3c6ede7c2d7ab837f7761460b5ceb973"
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1981-06-23-2006-08-13.bin.gz",
+      "byteLength": 581764,
+      "uncompressedByteLength": 661606,
+      "sha256": "68e77742c78461dded4ed9f347b5d718b9cdfa79fd7d3d21aa66e354c0770f49"
     },
     {
-      "id": "auxiliary-dwarf-planets-recent-2006-08-12-2026-08-12",
+      "id": "auxiliary-dwarf-planets-recent-2006-08-13-2026-08-13",
       "stream": "auxiliary",
       "group": "dwarf-planets",
       "kind": "recent",
-      "startUtc": "2006-08-12T00:00:00Z",
-      "endUtc": "2026-08-12T00:00:00Z",
+      "startUtc": "2006-08-13T00:00:00Z",
+      "endUtc": "2026-08-13T00:00:00Z",
       "stepSeconds": 86400,
       "samplesPerBody": 7306,
       "bodyKeys": [
@@ -10293,18 +10293,18 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-recent-2006-08-12-2026-08-12.bin.gz",
-      "byteLength": 1711472,
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-recent-2006-08-13-2026-08-13.bin.gz",
+      "byteLength": 1711482,
       "uncompressedByteLength": 1929353,
-      "sha256": "200ed6a55a6b8657e6fef488a69add28062f5d7a7445317a5db5d515799d2c3d"
+      "sha256": "25e34f8fd65515adf3affd864a6ee1875fcad9203e29dadc8964e5e0ca1b4cfc"
     },
     {
-      "id": "auxiliary-belt-recent-2006-08-12-2026-08-12",
+      "id": "auxiliary-belt-recent-2006-08-13-2026-08-13",
       "stream": "auxiliary",
       "group": "belt",
       "kind": "recent",
-      "startUtc": "2006-08-12T00:00:00Z",
-      "endUtc": "2026-08-12T00:00:00Z",
+      "startUtc": "2006-08-13T00:00:00Z",
+      "endUtc": "2026-08-13T00:00:00Z",
       "stepSeconds": 86400,
       "samplesPerBody": 7306,
       "bodyKeys": [
@@ -10412,10 +10412,10 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-recent-2006-08-12-2026-08-12.bin.gz",
-      "byteLength": 8090087,
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-recent-2006-08-13-2026-08-13.bin.gz",
+      "byteLength": 8090076,
       "uncompressedByteLength": 8680840,
-      "sha256": "ee80c928a065789fe8799b427d0a21b5b7032b810baf8cf92436826525bf8868"
+      "sha256": "04335a37b18027872f93241fc3cc16567632783d500e07f7f3e246d7108e4cb5"
     },
     {
       "id": "auxiliary-near-earth-historical-1766-07-23-1900-01-02",
@@ -10439,14 +10439,14 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "sha256": "8cf353b4c11cb3b167603718a95c7104abb856a2afc298d34a44322f7a781fd3"
     },
     {
-      "id": "auxiliary-near-earth-historical-1900-01-02-2006-08-12",
+      "id": "auxiliary-near-earth-historical-1900-01-02-2006-08-13",
       "stream": "auxiliary",
       "group": "near-earth",
       "kind": "historical",
       "startUtc": "1900-01-02T00:00:00Z",
-      "endUtc": "2006-08-12T00:00:00Z",
+      "endUtc": "2006-08-13T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 38939,
+      "samplesPerBody": 38940,
       "bodyKeys": [
         "bennu"
       ],
@@ -10454,18 +10454,18 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/near-earth/auxiliary-near-earth-historical-1900-01-02-2006-08-12.bin.gz",
-      "byteLength": 434483,
-      "uncompressedByteLength": 467649,
-      "sha256": "76828170ac2fb193bc73fc266cc6574bc3855cc708f3c8ac288404fbc86f9e4a"
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/near-earth/auxiliary-near-earth-historical-1900-01-02-2006-08-13.bin.gz",
+      "byteLength": 434494,
+      "uncompressedByteLength": 467661,
+      "sha256": "886db07ea7ba30b69eb6d1fcc4c9574239fe8662144bcdbacbef702c813d0380"
     },
     {
-      "id": "auxiliary-near-earth-recent-2006-08-12-2026-08-12",
+      "id": "auxiliary-near-earth-recent-2006-08-13-2026-08-13",
       "stream": "auxiliary",
       "group": "near-earth",
       "kind": "recent",
-      "startUtc": "2006-08-12T00:00:00Z",
-      "endUtc": "2026-08-12T00:00:00Z",
+      "startUtc": "2006-08-13T00:00:00Z",
+      "endUtc": "2026-08-13T00:00:00Z",
       "stepSeconds": 86400,
       "samplesPerBody": 7306,
       "bodyKeys": [
@@ -10478,18 +10478,18 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/near-earth/auxiliary-near-earth-recent-2006-08-12-2026-08-12.bin.gz",
-      "byteLength": 326064,
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/near-earth/auxiliary-near-earth-recent-2006-08-13-2026-08-13.bin.gz",
+      "byteLength": 326065,
       "uncompressedByteLength": 351089,
-      "sha256": "5025935cc4e7df9d35a726cf8aeeee93bb8eea40eb1d2cfd1bdc6af477025ccd"
+      "sha256": "9fd585a8f4f3f01bae405022cb2ea524fc12961ce9d55e98ebfc717c03e66ac3"
     },
     {
-      "id": "auxiliary-comets-recent-2006-08-12-2026-08-12",
+      "id": "auxiliary-comets-recent-2006-08-13-2026-08-13",
       "stream": "auxiliary",
       "group": "comets",
       "kind": "recent",
-      "startUtc": "2006-08-12T00:00:00Z",
-      "endUtc": "2026-08-12T00:00:00Z",
+      "startUtc": "2006-08-13T00:00:00Z",
+      "endUtc": "2026-08-13T00:00:00Z",
       "stepSeconds": 86400,
       "samplesPerBody": 7306,
       "bodyKeys": [
@@ -10504,10 +10504,10 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/comets/auxiliary-comets-recent-2006-08-12-2026-08-12.bin.gz",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/comets/auxiliary-comets-recent-2006-08-13-2026-08-13.bin.gz",
       "byteLength": 476612,
       "uncompressedByteLength": 526447,
-      "sha256": "c95fd6937eb155cd75491771fd9fd5af5a5000d3d63ff6d23e574108493a24a6"
+      "sha256": "15028fc613963f2c1456e8cac6739b2c1ac20d2e1d7af7201d50b1127537da3d"
     },
     {
       "id": "auxiliary-spacecraft-historical-1911-09-30-1972-03-04",
@@ -10651,14 +10651,14 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "sha256": "cc43d73ff2b55762bc4ab2c6a47a95e6f8d88d6dfbe0f1ffb50d8c90b1ae91bc"
     },
     {
-      "id": "auxiliary-spacecraft-historical-2006-01-20-2006-08-12",
+      "id": "auxiliary-spacecraft-historical-2006-01-20-2006-08-13",
       "stream": "auxiliary",
       "group": "spacecraft",
       "kind": "historical",
       "startUtc": "2006-01-20T00:00:00Z",
-      "endUtc": "2006-08-12T00:00:00Z",
+      "endUtc": "2006-08-13T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 205,
+      "samplesPerBody": 206,
       "bodyKeys": [
         "voyager-1",
         "voyager-2",
@@ -10671,18 +10671,18 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-historical-2006-01-20-2006-08-12.bin.gz",
-      "byteLength": 14081,
-      "uncompressedByteLength": 15206,
-      "sha256": "4017a99711cf4ca1428b9c90920edd3bf34b6a81976d561db401ddce68bab4f0"
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-historical-2006-01-20-2006-08-13.bin.gz",
+      "byteLength": 14144,
+      "uncompressedByteLength": 15278,
+      "sha256": "434cbece606dc7def3d5ba7476815308fc9fcf465d1b76b80618d043150a24e9"
     },
     {
-      "id": "auxiliary-spacecraft-recent-2006-08-12-2026-08-12",
+      "id": "auxiliary-spacecraft-recent-2006-08-13-2026-08-13",
       "stream": "auxiliary",
       "group": "spacecraft",
       "kind": "recent",
-      "startUtc": "2006-08-12T00:00:00Z",
-      "endUtc": "2026-08-12T00:00:00Z",
+      "startUtc": "2006-08-13T00:00:00Z",
+      "endUtc": "2026-08-13T00:00:00Z",
       "stepSeconds": 86400,
       "samplesPerBody": 7306,
       "bodyKeys": [
@@ -10702,10 +10702,10 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-recent-2006-08-12-2026-08-12.bin.gz",
-      "byteLength": 649316,
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-recent-2006-08-13-2026-08-13.bin.gz",
+      "byteLength": 649339,
       "uncompressedByteLength": 964900,
-      "sha256": "40829b2289a236af82f37556dde1ee5780cc61c78b155e5d7dfa45e04206d5e8"
+      "sha256": "5f4e853fec3ab9b62c67e36ed5d795923fbf00fe0eaba2a2657e7a9c7b7fdcd5"
     }
   ]
 });
