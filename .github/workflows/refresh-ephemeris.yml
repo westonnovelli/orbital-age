@@ -35,6 +35,8 @@ concurrency:
 jobs:
   refresh-and-deploy:
     runs-on: ubuntu-latest
+    outputs:
+      published_ref: ${{ steps.commit-dataset.outputs.published_ref }}
 
     steps:
       - name: Checkout
@@ -72,6 +74,7 @@ jobs:
         run: npm test
 
       - name: Commit regenerated dataset
+        id: commit-dataset
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -84,10 +87,11 @@ jobs:
             git commit -m "chore(ephemeris): scheduled refresh through today+1"
             git push origin master
           fi
+          echo "published_ref=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
   deploy-pages:
     needs: refresh-and-deploy
     if: needs.refresh-and-deploy.result == 'success'
     uses: ./.github/workflows/deploy-pages.yml
     with:
-      ref: master
+      ref: ${{ needs.refresh-and-deploy.outputs.published_ref }}

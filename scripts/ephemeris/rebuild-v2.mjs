@@ -65,7 +65,13 @@ function readExistingAuxiliaryChunks({ epochs, selectedKeys, vectorsByKey, cover
       vectorsByKey.set(key, aligned);
       const manifestBody = manifest.bodies[key];
       if (manifestBody?.coverageStartUtc) coverageStartByKey.set(key, manifestBody.coverageStartUtc);
-      if (manifestBody?.coverageEndUtc) coverageEndByKey.set(key, manifestBody.coverageEndUtc);
+      const existingEnd = coverageEndByKey.get(key);
+      const chunkEnd = chunk.endUtc;
+      if (manifestBody?.coverageEndUtc || !existingEnd || Date.parse(chunkEnd) > Date.parse(existingEnd)) {
+        coverageEndByKey.set(key, manifestBody?.coverageEndUtc && Date.parse(manifestBody.coverageEndUtc) > Date.parse(chunkEnd)
+          ? manifestBody.coverageEndUtc
+          : chunkEnd);
+      }
     }
   }
 }
@@ -306,8 +312,14 @@ async function readVectors({ source, targetKeys, auxiliaryKeys }) {
       const rows = snapshotRowsByKey.get(row.body) ?? new Map();
       rows.set(row.epochUnixS, [row.xAu, row.yAu, row.zAu]);
       snapshotRowsByKey.set(row.body, rows);
-      coverageStartByKey.set(row.body, coverageStartByKey.get(row.body) ?? row.epochUtc);
-      coverageEndByKey.set(row.body, row.epochUtc);
+      const existingStart = coverageStartByKey.get(row.body);
+      const existingEnd = coverageEndByKey.get(row.body);
+      if (!existingStart || Date.parse(row.epochUtc) < Date.parse(existingStart)) {
+        coverageStartByKey.set(row.body, row.epochUtc);
+      }
+      if (!existingEnd || Date.parse(row.epochUtc) > Date.parse(existingEnd)) {
+        coverageEndByKey.set(row.body, row.epochUtc);
+      }
     }
 
     for (const [key, rows] of snapshotRowsByKey) {

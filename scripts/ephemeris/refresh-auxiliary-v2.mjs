@@ -35,12 +35,75 @@ function parseArgs(argv) {
   return {
     fetch: flags.has("--fetch"),
     incremental: flags.has("--incremental"),
+    backfill: flags.has("--backfill"),
     replace: flags.has("--replace"),
     yes: flags.has("--yes"),
     printPlan: flags.has("--print-plan"),
     only,
     append: Boolean(only)
   };
+}
+
+async function backfillSnapshotsFromCachedRaw(auxiliary) {
+  const replacementPath = `${snapshotsPath}.backfill`;
+  const output = fs.createWriteStream(replacementPath, { encoding: "utf8" });
+  const rawCoverageEndByKey = new Map();
+  const write = async (text) => {
+    if (output.write(text)) return;
+    await new Promise((resolve, reject) => {
+      const onDrain = () => {
+        output.off("error", onError);
+        resolve();
+      };
+      const onError = (error) => {
+        output.off("drain", onDrain);
+        reject(error);
+      };
+      output.once("drain", onDrain);
+      output.once("error", onError);
+    });
+  };
+
+  try {
+    for (const target of auxiliary) {
+      const rawPath = path.join(rawDir, `${target.key}.json`);
+      if (!fs.existsSync(rawPath)) {
+        throw new Error(`Missing cached raw Horizons response: ${path.relative(cwd, rawPath)}`);
+      }
+      const payload = JSON.parse(fs.readFileSync(rawPath, "utf8"));
+      const rows = parseHorizonsCsvRows(payload.result, target);
+      rawCoverageEndByKey.set(target.key, rows.at(-1).epochUnixS);
+      for (const row of rows) {
+        await write(`${JSON.stringify(row)}\n`);
+      }
+      console.log(`Backfilled ${target.key} through ${rows.at(-1).epochUtc}`);
+    }
+
+    const selectedKeys = new Set(auxiliary.map((target) => target.key));
+    const input = readline.createInterface({
+      input: fs.createReadStream(snapshotsPath, { encoding: "utf8" }),
+      crlfDelay: Infinity
+    });
+    for await (const line of input) {
+      if (!line.trim()) continue;
+      const row = JSON.parse(line);
+      const rawEnd = rawCoverageEndByKey.get(row.body);
+      if (selectedKeys.has(row.body) && rawEnd !== undefined && row.epochUnixS <= rawEnd) {
+        continue;
+      }
+      await write(`${line}\n`);
+    }
+    await new Promise((resolve, reject) => {
+      output.once("error", reject);
+      output.end(resolve);
+    });
+    fs.renameSync(replacementPath, snapshotsPath);
+    console.log(`Merged cached historical auxiliary coverage into ${path.relative(cwd, snapshotsPath)}.`);
+  } catch (error) {
+    output.destroy();
+    if (fs.existsSync(replacementPath)) fs.rmSync(replacementPath);
+    throw error;
+  }
 }
 
 function utcDateFromIso(iso) {
@@ -236,6 +299,9 @@ async function main() {
   if (!options.fetch && !options.yes && !options.printPlan) {
     throw new Error("Pass --fetch, --yes, or --print-plan.");
   }
+  if (options.backfill && options.incremental) {
+    throw new Error("Use --backfill separately from --incremental.");
+  }
 
   const unavailableIncrementalKeys = new Set();
   if (options.fetch) {
@@ -295,6 +361,11 @@ async function main() {
   }
 
   if (!options.yes && !options.fetch) {
+    return;
+  }
+
+  if (options.backfill) {
+    await backfillSnapshotsFromCachedRaw(auxiliary);
     return;
   }
 

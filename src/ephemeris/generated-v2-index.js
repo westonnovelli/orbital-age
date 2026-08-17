@@ -4,7 +4,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v2",
   "encoder": "binary-f32-gzip",
-  "generatedOn": "2026-08-17T07:59:39.796Z",
+  "generatedOn": "2026-08-17T15:14:27.947Z",
   "compatibility": {
     "manifestSchema": "ephemeris.manifest.v2",
     "requiredFrame": "ECLIPJ2000",
@@ -1117,8 +1117,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "pallas": {
       "key": "pallas",
@@ -1178,8 +1177,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "vesta": {
       "key": "vesta",
@@ -1240,8 +1238,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "hygiea": {
       "key": "hygiea",
@@ -1301,8 +1298,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "psyche": {
       "key": "psyche",
@@ -1362,8 +1358,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "juno": {
       "key": "juno",
@@ -1423,8 +1418,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "astraea": {
       "key": "astraea",
@@ -1484,8 +1478,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "hebe": {
       "key": "hebe",
@@ -1545,8 +1538,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "iris": {
       "key": "iris",
@@ -1606,8 +1598,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "flora": {
       "key": "flora",
@@ -1667,8 +1658,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "metis": {
       "key": "metis",
@@ -1728,8 +1718,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "parthenope": {
       "key": "parthenope",
@@ -1789,8 +1778,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "victoria": {
       "key": "victoria",
@@ -1850,8 +1838,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "egeria": {
       "key": "egeria",
@@ -1911,8 +1898,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "irene": {
       "key": "irene",
@@ -1972,8 +1958,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "eunomia": {
       "key": "eunomia",
@@ -2033,8 +2018,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "thetis": {
       "key": "thetis",
@@ -2094,8 +2078,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "melpomene": {
       "key": "melpomene",
@@ -2155,8 +2138,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "fortuna": {
       "key": "fortuna",
@@ -2216,8 +2198,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "massalia": {
       "key": "massalia",
@@ -2277,8 +2258,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "lutetia": {
       "key": "lutetia",
@@ -2338,8 +2318,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "kalliope": {
       "key": "kalliope",
@@ -2399,8 +2378,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "thalia": {
       "key": "thalia",
@@ -2460,8 +2438,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "themis": {
       "key": "themis",
@@ -2521,8 +2498,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "phocaea": {
       "key": "phocaea",
@@ -2582,8 +2558,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "proserpina": {
       "key": "proserpina",
@@ -2643,8 +2618,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "euterpe": {
       "key": "euterpe",
@@ -2704,8 +2678,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "bellona": {
       "key": "bellona",
@@ -2765,8 +2738,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "amphitrite": {
       "key": "amphitrite",
@@ -2826,8 +2798,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "urania": {
       "key": "urania",
@@ -2887,8 +2858,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "euphrosyne": {
       "key": "euphrosyne",
@@ -2948,8 +2918,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "pomona": {
       "key": "pomona",
@@ -3009,8 +2978,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "polyhymnia": {
       "key": "polyhymnia",
@@ -3070,8 +3038,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "circe": {
       "key": "circe",
@@ -3131,8 +3098,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "leukothea": {
       "key": "leukothea",
@@ -3192,8 +3158,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "atalante": {
       "key": "atalante",
@@ -3253,8 +3218,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "fides": {
       "key": "fides",
@@ -3314,8 +3278,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "leda": {
       "key": "leda",
@@ -3375,8 +3338,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "laetitia": {
       "key": "laetitia",
@@ -3436,8 +3398,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "harmonia": {
       "key": "harmonia",
@@ -3497,8 +3458,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "daphne": {
       "key": "daphne",
@@ -3558,8 +3518,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "isis": {
       "key": "isis",
@@ -3619,8 +3578,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "ariadne": {
       "key": "ariadne",
@@ -3680,8 +3638,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "nysa": {
       "key": "nysa",
@@ -3741,8 +3698,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "eugenia": {
       "key": "eugenia",
@@ -3802,8 +3758,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "hestia": {
       "key": "hestia",
@@ -3863,8 +3818,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "aglaja": {
       "key": "aglaja",
@@ -3924,8 +3878,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "doris": {
       "key": "doris",
@@ -3985,8 +3938,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "pales": {
       "key": "pales",
@@ -4046,8 +3998,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "virginia": {
       "key": "virginia",
@@ -4107,8 +4058,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "nemausa": {
       "key": "nemausa",
@@ -4168,8 +4118,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "asteroid-52-europa": {
       "key": "asteroid-52-europa",
@@ -4229,8 +4178,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "kalypso": {
       "key": "kalypso",
@@ -4290,8 +4238,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "alexandra": {
       "key": "alexandra",
@@ -4351,8 +4298,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "pandora": {
       "key": "pandora",
@@ -4412,8 +4358,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "melete": {
       "key": "melete",
@@ -4473,8 +4418,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "mnemosyne": {
       "key": "mnemosyne",
@@ -4534,8 +4478,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "concordia": {
       "key": "concordia",
@@ -4595,8 +4538,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "elpis": {
       "key": "elpis",
@@ -4656,8 +4598,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "echo": {
       "key": "echo",
@@ -4717,8 +4658,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "danae": {
       "key": "danae",
@@ -4778,8 +4718,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "erato": {
       "key": "erato",
@@ -4839,8 +4778,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "ausonia": {
       "key": "ausonia",
@@ -4900,8 +4838,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "angelina": {
       "key": "angelina",
@@ -4961,8 +4898,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "cybele": {
       "key": "cybele",
@@ -5022,8 +4958,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "maja": {
       "key": "maja",
@@ -5083,8 +5018,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "asia": {
       "key": "asia",
@@ -5144,8 +5078,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "leto": {
       "key": "leto",
@@ -5205,8 +5138,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "hesperia": {
       "key": "hesperia",
@@ -5266,8 +5198,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "panopaea": {
       "key": "panopaea",
@@ -5327,8 +5258,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "niobe": {
       "key": "niobe",
@@ -5388,8 +5318,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "feronia": {
       "key": "feronia",
@@ -5449,8 +5378,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "klytia": {
       "key": "klytia",
@@ -5510,8 +5438,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "galatea": {
       "key": "galatea",
@@ -5571,8 +5498,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "eurydike": {
       "key": "eurydike",
@@ -5632,8 +5558,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "freia": {
       "key": "freia",
@@ -5693,8 +5618,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "frigga": {
       "key": "frigga",
@@ -5754,8 +5678,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "diana": {
       "key": "diana",
@@ -5815,8 +5738,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "eurynome": {
       "key": "eurynome",
@@ -5876,8 +5798,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "sappho": {
       "key": "sappho",
@@ -5937,8 +5858,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "terpsichore": {
       "key": "terpsichore",
@@ -5998,8 +5918,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "alkmene": {
       "key": "alkmene",
@@ -6059,8 +5978,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "beatrix": {
       "key": "beatrix",
@@ -6120,8 +6038,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "klio": {
       "key": "klio",
@@ -6181,8 +6098,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "asteroid-85-io": {
       "key": "asteroid-85-io",
@@ -6242,8 +6158,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "semele": {
       "key": "semele",
@@ -6303,8 +6218,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "sylvia": {
       "key": "sylvia",
@@ -6364,8 +6278,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "thisbe": {
       "key": "thisbe",
@@ -6425,8 +6338,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "julia": {
       "key": "julia",
@@ -6486,8 +6398,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "antiope": {
       "key": "antiope",
@@ -6547,8 +6458,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "aegina": {
       "key": "aegina",
@@ -6608,8 +6518,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "undina": {
       "key": "undina",
@@ -6669,8 +6578,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "minerva": {
       "key": "minerva",
@@ -6730,8 +6638,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "aurora": {
       "key": "aurora",
@@ -6791,8 +6698,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "arethusa": {
       "key": "arethusa",
@@ -6852,8 +6758,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "aegle": {
       "key": "aegle",
@@ -6913,8 +6818,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "klotho": {
       "key": "klotho",
@@ -6974,8 +6878,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "ianthe": {
       "key": "ianthe",
@@ -7035,8 +6938,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "dike": {
       "key": "dike",
@@ -7096,8 +6998,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "hekate": {
       "key": "hekate",
@@ -7157,8 +7058,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "eros": {
       "key": "eros",
@@ -7224,8 +7124,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "bennu": {
       "key": "bennu",
@@ -7356,8 +7255,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "apophis": {
       "key": "apophis",
@@ -7422,8 +7320,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "halley": {
       "key": "halley",
@@ -7489,8 +7386,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "67p": {
       "key": "67p",
@@ -7556,8 +7452,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "encke": {
       "key": "encke",
@@ -7622,8 +7517,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "tempel-1": {
       "key": "tempel-1",
@@ -7688,8 +7582,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "wild-2": {
       "key": "wild-2",
@@ -7754,8 +7647,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "hartley-2": {
       "key": "hartley-2",
@@ -7820,8 +7712,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "eris": {
       "key": "eris",
@@ -7881,8 +7772,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "makemake": {
       "key": "makemake",
@@ -7942,8 +7832,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "haumea": {
       "key": "haumea",
@@ -8003,8 +7892,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "quaoar": {
       "key": "quaoar",
@@ -8064,8 +7952,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "orcus": {
       "key": "orcus",
@@ -8125,8 +8012,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "io": {
       "key": "io",
@@ -8186,8 +8072,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "europa": {
       "key": "europa",
@@ -8247,8 +8132,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "ganymede": {
       "key": "ganymede",
@@ -8308,8 +8192,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "callisto": {
       "key": "callisto",
@@ -8369,8 +8252,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "enceladus": {
       "key": "enceladus",
@@ -8430,8 +8312,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "rhea": {
       "key": "rhea",
@@ -8491,8 +8372,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "titan": {
       "key": "titan",
@@ -8552,8 +8432,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "ariel": {
       "key": "ariel",
@@ -8613,8 +8492,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "titania": {
       "key": "titania",
@@ -8674,8 +8552,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "miranda": {
       "key": "miranda",
@@ -8735,8 +8612,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
         "distance": {
           "enabled": false
         }
-      },
-      "coverageStartUtc": "2026-07-25T00:00:00Z"
+      }
     },
     "triton": {
       "key": "triton",
@@ -9564,8 +9440,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           "enabled": true
         }
       },
-      "coverageStartUtc": "2020-07-31T00:00:00Z",
-      "coverageEndUtc": "2026-02-17T00:00:00Z"
+      "coverageStartUtc": "2020-07-31T00:00:00Z"
     },
     "cassini": {
       "key": "cassini",
@@ -9631,8 +9506,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           "enabled": true
         }
       },
-      "coverageStartUtc": "1997-10-16T00:00:00Z",
-      "coverageEndUtc": "2017-09-13T00:00:00Z"
+      "coverageStartUtc": "1997-10-16T00:00:00Z"
     },
     "juno-spacecraft": {
       "key": "juno-spacecraft",
@@ -9830,8 +9704,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           "enabled": true
         }
       },
-      "coverageStartUtc": "2026-04-03T00:00:00Z",
-      "coverageEndUtc": "2026-04-10T23:00:00Z"
+      "coverageStartUtc": "2026-04-03T00:00:00Z"
     }
   },
   "chunks": [
@@ -10061,6 +9934,22 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "stepSeconds": 86400,
       "samplesPerBody": 12217,
       "bodyKeys": [
+        "ceres",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
         "triton",
         "larissa",
         "proteus"
@@ -10070,9 +9959,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1766-07-23-1800-01-02.bin.gz",
-      "byteLength": 821,
-      "uncompressedByteLength": 440220,
-      "sha256": "6f2dab3225a9384b4b065f2332175fc23e4e90bd25fe2b0a170328acade1d736"
+      "byteLength": 2098599,
+      "uncompressedByteLength": 2786027,
+      "sha256": "6836f29ca4fd77bbef03bff17a545a7bf9013d346b4848c1d05d43432f4ba676"
     },
     {
       "id": "auxiliary-dwarf-planets-historical-1800-01-02-1800-01-03",
@@ -10084,6 +9973,22 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "stepSeconds": 86400,
       "samplesPerBody": 2,
       "bodyKeys": [
+        "ceres",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
         "triton",
         "larissa",
         "proteus",
@@ -10096,9 +10001,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1800-01-02-1800-01-03.bin.gz",
-      "byteLength": 426,
-      "uncompressedByteLength": 571,
-      "sha256": "ef4b17f2781a871de1fede512a3cd0e08381869b8d929fcb44c013b0c6553ae0"
+      "byteLength": 930,
+      "uncompressedByteLength": 1098,
+      "sha256": "cef005aa8f2910f0c31485d5d1d6a2f03ac7fd4740e9a38feff586d69bde8b17"
     },
     {
       "id": "auxiliary-dwarf-planets-historical-1800-01-03-1836-04-20",
@@ -10110,6 +10015,22 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "stepSeconds": 86400,
       "samplesPerBody": 13257,
       "bodyKeys": [
+        "ceres",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
         "triton",
         "larissa",
         "proteus",
@@ -10122,9 +10043,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1800-01-03-1836-04-20.bin.gz",
-      "byteLength": 826723,
-      "uncompressedByteLength": 954935,
-      "sha256": "2b9b1eb600b1e39c63bbd4e1d8ed9782170166ec7594cc88a1af4b928a6a7e0c"
+      "byteLength": 3104706,
+      "uncompressedByteLength": 3500422,
+      "sha256": "6f2fa561d0dedd7fb68dc0171317a7b14a2a0fc9718258455717401e751f3c78"
     },
     {
       "id": "auxiliary-dwarf-planets-historical-1836-04-20-1872-08-05",
@@ -10136,6 +10057,22 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "stepSeconds": 86400,
       "samplesPerBody": 13257,
       "bodyKeys": [
+        "ceres",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
         "triton",
         "larissa",
         "proteus",
@@ -10148,9 +10085,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1836-04-20-1872-08-05.bin.gz",
-      "byteLength": 826224,
-      "uncompressedByteLength": 954935,
-      "sha256": "37b2d0cc33af66ee67aa9130f458e8855e530a37f9d62c281f54c1eb0ecc0652"
+      "byteLength": 3095756,
+      "uncompressedByteLength": 3500422,
+      "sha256": "3fbe1cf4e6a6ad501e5ef686a3c03e09dbe2583e6f30012babb6bf7aca058664"
     },
     {
       "id": "auxiliary-dwarf-planets-historical-1872-08-05-1908-11-21",
@@ -10162,6 +10099,22 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "stepSeconds": 86400,
       "samplesPerBody": 13257,
       "bodyKeys": [
+        "ceres",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
         "triton",
         "larissa",
         "proteus",
@@ -10174,9 +10127,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1872-08-05-1908-11-21.bin.gz",
-      "byteLength": 824087,
-      "uncompressedByteLength": 954935,
-      "sha256": "f9693ff5f916d680ee068e4b7797aad6c47792e8f15e088ba99cc994236f632a"
+      "byteLength": 3099557,
+      "uncompressedByteLength": 3500422,
+      "sha256": "dfc7e1c1db4f3e78f6a9cd76475bcec31e9ff1c9ec3819a70e18daf7150bacc6"
     },
     {
       "id": "auxiliary-dwarf-planets-historical-1908-11-21-1945-03-08",
@@ -10188,6 +10141,22 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "stepSeconds": 86400,
       "samplesPerBody": 13257,
       "bodyKeys": [
+        "ceres",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
         "triton",
         "larissa",
         "proteus",
@@ -10200,9 +10169,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1908-11-21-1945-03-08.bin.gz",
-      "byteLength": 846921,
-      "uncompressedByteLength": 954935,
-      "sha256": "ecfded479d8b32c3b7deb955c25b7b9fdc46432f2d43abb770969e1a6c19b0e9"
+      "byteLength": 3122416,
+      "uncompressedByteLength": 3500422,
+      "sha256": "cab3dcdbe73dc692006b12d6cdd8cf6d170c444e76fd32e2de0f9804a4e9b2c3"
     },
     {
       "id": "auxiliary-dwarf-planets-historical-1945-03-08-1981-06-23",
@@ -10214,6 +10183,22 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "stepSeconds": 86400,
       "samplesPerBody": 13257,
       "bodyKeys": [
+        "ceres",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
         "triton",
         "larissa",
         "proteus",
@@ -10226,9 +10211,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1945-03-08-1981-06-23.bin.gz",
-      "byteLength": 825533,
-      "uncompressedByteLength": 954935,
-      "sha256": "cf991d40bb959c8db099584d0ffdcd75f33c84b16a880ba1a09a959a4fd88636"
+      "byteLength": 3100930,
+      "uncompressedByteLength": 3500422,
+      "sha256": "07e15fe7a8cea964253a465e70c0f80e5e37c02f91d96e7678e768f9bb749422"
     },
     {
       "id": "auxiliary-dwarf-planets-historical-1981-06-23-2006-08-18",
@@ -10240,6 +10225,22 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "stepSeconds": 86400,
       "samplesPerBody": 9188,
       "bodyKeys": [
+        "ceres",
+        "eris",
+        "makemake",
+        "haumea",
+        "quaoar",
+        "orcus",
+        "io",
+        "europa",
+        "ganymede",
+        "callisto",
+        "enceladus",
+        "rhea",
+        "titan",
+        "ariel",
+        "titania",
+        "miranda",
         "triton",
         "larissa",
         "proteus",
@@ -10252,9 +10253,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1981-06-23-2006-08-18.bin.gz",
-      "byteLength": 582058,
-      "uncompressedByteLength": 661966,
-      "sha256": "33bc5c7a7df9acbed683c8f1b369ac1e8e86c3613f737a866def970ce0c096c2"
+      "byteLength": 2154614,
+      "uncompressedByteLength": 2426205,
+      "sha256": "fe2727afcc49c5b78efd3920d0ddee035ac9325c1e9558f13692634e4a263a96"
     },
     {
       "id": "auxiliary-dwarf-planets-recent-2006-08-18-2026-08-18",
@@ -10297,6 +10298,3576 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "byteLength": 1711483,
       "uncompressedByteLength": 1929353,
       "sha256": "57b1e073d1263cb40d71899326a8d45428c3d24db3f0081232f75a89496b888d"
+    },
+    {
+      "id": "auxiliary-belt-historical-1766-07-23-1774-08-15",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1766-07-23T00:00:00Z",
+      "endUtc": "1774-08-15T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1766-07-23-1774-08-15.bin.gz",
+      "byteLength": 3261773,
+      "uncompressedByteLength": 3501164,
+      "sha256": "ef35b836bf49361e74177611eceb07d845ca8ccb8e0e9e03c6e69312f55e6a47"
+    },
+    {
+      "id": "auxiliary-belt-historical-1774-08-15-1782-09-07",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1774-08-15T00:00:00Z",
+      "endUtc": "1782-09-07T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1774-08-15-1782-09-07.bin.gz",
+      "byteLength": 3262234,
+      "uncompressedByteLength": 3501164,
+      "sha256": "1b13f8df58eef9cc2c76d6cbda7ad8cb322c629cbefd678d29753072d11dd512"
+    },
+    {
+      "id": "auxiliary-belt-historical-1782-09-07-1790-09-30",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1782-09-07T00:00:00Z",
+      "endUtc": "1790-09-30T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1782-09-07-1790-09-30.bin.gz",
+      "byteLength": 3262111,
+      "uncompressedByteLength": 3501164,
+      "sha256": "4fe2b259d91a7fc02825e7791a1b5b380146d3c27692af396ba8756c94510b9c"
+    },
+    {
+      "id": "auxiliary-belt-historical-1790-09-30-1798-10-23",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1790-09-30T00:00:00Z",
+      "endUtc": "1798-10-23T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1790-09-30-1798-10-23.bin.gz",
+      "byteLength": 3262919,
+      "uncompressedByteLength": 3501164,
+      "sha256": "0be8759954e4750b6fa6617b2277dbd78cf406419f47c72f2b85d3641e57b6c9"
+    },
+    {
+      "id": "auxiliary-belt-historical-1798-10-23-1806-11-16",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1798-10-23T00:00:00Z",
+      "endUtc": "1806-11-16T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1798-10-23-1806-11-16.bin.gz",
+      "byteLength": 3262259,
+      "uncompressedByteLength": 3501164,
+      "sha256": "d97d9dfec5fe5f878ed665cb5f308a6426d2e2767f58261f10b6a5a36c7c9ea3"
+    },
+    {
+      "id": "auxiliary-belt-historical-1806-11-16-1814-12-09",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1806-11-16T00:00:00Z",
+      "endUtc": "1814-12-09T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1806-11-16-1814-12-09.bin.gz",
+      "byteLength": 3261120,
+      "uncompressedByteLength": 3501164,
+      "sha256": "e8b7a936c75d492d5ad4a05e6cd219df9a27ef0a3abb3c4a2c6abe0615d9fc97"
+    },
+    {
+      "id": "auxiliary-belt-historical-1814-12-09-1823-01-01",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1814-12-09T00:00:00Z",
+      "endUtc": "1823-01-01T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1814-12-09-1823-01-01.bin.gz",
+      "byteLength": 3261616,
+      "uncompressedByteLength": 3501164,
+      "sha256": "145df1cd2317a504173db8bedb4e7347b19c023c72d7012d8fe85aac949e6a7f"
+    },
+    {
+      "id": "auxiliary-belt-historical-1823-01-01-1831-01-24",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1823-01-01T00:00:00Z",
+      "endUtc": "1831-01-24T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1823-01-01-1831-01-24.bin.gz",
+      "byteLength": 3261959,
+      "uncompressedByteLength": 3501164,
+      "sha256": "1bc464906b1ab8e228ade3402a26eed855c475f2e03ce44ea179e5959e11bb86"
+    },
+    {
+      "id": "auxiliary-belt-historical-1831-01-24-1839-02-16",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1831-01-24T00:00:00Z",
+      "endUtc": "1839-02-16T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1831-01-24-1839-02-16.bin.gz",
+      "byteLength": 3261738,
+      "uncompressedByteLength": 3501164,
+      "sha256": "78ad34c59cbb16ec701176918be2fc360726587c14fbb91144e5cf0b096fcccf"
+    },
+    {
+      "id": "auxiliary-belt-historical-1839-02-16-1847-03-11",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1839-02-16T00:00:00Z",
+      "endUtc": "1847-03-11T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1839-02-16-1847-03-11.bin.gz",
+      "byteLength": 3261548,
+      "uncompressedByteLength": 3501164,
+      "sha256": "3c1d2b21613ac53c85fb41963c0faf8e6c660f602d1c6fdddaa9f265e05bb7aa"
+    },
+    {
+      "id": "auxiliary-belt-historical-1847-03-11-1855-04-03",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1847-03-11T00:00:00Z",
+      "endUtc": "1855-04-03T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1847-03-11-1855-04-03.bin.gz",
+      "byteLength": 3262326,
+      "uncompressedByteLength": 3501164,
+      "sha256": "b52fba5020b8d5a4537ed4112d19115d84cdcde8fd87e64fe5ddc2cd57523df8"
+    },
+    {
+      "id": "auxiliary-belt-historical-1855-04-03-1863-04-26",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1855-04-03T00:00:00Z",
+      "endUtc": "1863-04-26T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1855-04-03-1863-04-26.bin.gz",
+      "byteLength": 3263194,
+      "uncompressedByteLength": 3501164,
+      "sha256": "7a47632f32bfb74e819a9b70c533a7cfa036bfcdc2d948ea26a35cbda5514ca8"
+    },
+    {
+      "id": "auxiliary-belt-historical-1863-04-26-1871-05-19",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1863-04-26T00:00:00Z",
+      "endUtc": "1871-05-19T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1863-04-26-1871-05-19.bin.gz",
+      "byteLength": 3262130,
+      "uncompressedByteLength": 3501164,
+      "sha256": "3fc3888c4cf04480bcb9565c7568ba800161fa1956eb3acd6fa69ab2cf79dee2"
+    },
+    {
+      "id": "auxiliary-belt-historical-1871-05-19-1879-06-11",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1871-05-19T00:00:00Z",
+      "endUtc": "1879-06-11T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1871-05-19-1879-06-11.bin.gz",
+      "byteLength": 3262352,
+      "uncompressedByteLength": 3501164,
+      "sha256": "feed7c87c4b263d44777ad64b5e8209a2ce72c28654cdc30f964301c4ea4cf70"
+    },
+    {
+      "id": "auxiliary-belt-historical-1879-06-11-1887-07-04",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1879-06-11T00:00:00Z",
+      "endUtc": "1887-07-04T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1879-06-11-1887-07-04.bin.gz",
+      "byteLength": 3261216,
+      "uncompressedByteLength": 3501164,
+      "sha256": "b0dde267b6645b75db39feae9c238990454ad2ae39ea6ab69b432cc53d809d60"
+    },
+    {
+      "id": "auxiliary-belt-historical-1887-07-04-1895-07-27",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1887-07-04T00:00:00Z",
+      "endUtc": "1895-07-27T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1887-07-04-1895-07-27.bin.gz",
+      "byteLength": 3261194,
+      "uncompressedByteLength": 3501164,
+      "sha256": "ef6acb1662409550dda179bfe1a071aba2360b91599a7ca7d6c67bfe852a80c7"
+    },
+    {
+      "id": "auxiliary-belt-historical-1895-07-27-1903-08-20",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1895-07-27T00:00:00Z",
+      "endUtc": "1903-08-20T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1895-07-27-1903-08-20.bin.gz",
+      "byteLength": 3261973,
+      "uncompressedByteLength": 3501164,
+      "sha256": "5b2b3ce2b1f5c53968ac41670170fd4172a65406de239cfb8bde4ef0ea49d978"
+    },
+    {
+      "id": "auxiliary-belt-historical-1903-08-20-1911-09-12",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1903-08-20T00:00:00Z",
+      "endUtc": "1911-09-12T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1903-08-20-1911-09-12.bin.gz",
+      "byteLength": 3261320,
+      "uncompressedByteLength": 3501164,
+      "sha256": "fdd768572f2e2a9a3d811d25ebf62615e613c3390470cb9d9e57e334048d8866"
+    },
+    {
+      "id": "auxiliary-belt-historical-1911-09-12-1919-10-05",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1911-09-12T00:00:00Z",
+      "endUtc": "1919-10-05T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1911-09-12-1919-10-05.bin.gz",
+      "byteLength": 3261255,
+      "uncompressedByteLength": 3501164,
+      "sha256": "c88d33d32e1238f0e13b91bd7c07a36bd873ba51336bbdcded667538762edc6d"
+    },
+    {
+      "id": "auxiliary-belt-historical-1919-10-05-1927-10-28",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1919-10-05T00:00:00Z",
+      "endUtc": "1927-10-28T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1919-10-05-1927-10-28.bin.gz",
+      "byteLength": 3262751,
+      "uncompressedByteLength": 3501164,
+      "sha256": "20dad58607c5291728f23733923a766f06e6dd238d58367628f6f6686c7b91c6"
+    },
+    {
+      "id": "auxiliary-belt-historical-1927-10-28-1935-11-20",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1927-10-28T00:00:00Z",
+      "endUtc": "1935-11-20T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1927-10-28-1935-11-20.bin.gz",
+      "byteLength": 3262879,
+      "uncompressedByteLength": 3501164,
+      "sha256": "808e80611a2013d227aca71e299c62faa07f9082f2cb676c3e23306d82d58755"
+    },
+    {
+      "id": "auxiliary-belt-historical-1935-11-20-1943-12-13",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1935-11-20T00:00:00Z",
+      "endUtc": "1943-12-13T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1935-11-20-1943-12-13.bin.gz",
+      "byteLength": 3261944,
+      "uncompressedByteLength": 3501164,
+      "sha256": "5ff911ceda1645a5e82e972fa069a3e80eb842bb200cd0498110e1d85ba02673"
+    },
+    {
+      "id": "auxiliary-belt-historical-1943-12-13-1952-01-05",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1943-12-13T00:00:00Z",
+      "endUtc": "1952-01-05T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1943-12-13-1952-01-05.bin.gz",
+      "byteLength": 3262714,
+      "uncompressedByteLength": 3501164,
+      "sha256": "f0570b5c2b38b3ed15bfb1892fca3dd769b1819e16837198b3526f72e8e47e45"
+    },
+    {
+      "id": "auxiliary-belt-historical-1952-01-05-1960-01-28",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1952-01-05T00:00:00Z",
+      "endUtc": "1960-01-28T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1952-01-05-1960-01-28.bin.gz",
+      "byteLength": 3260976,
+      "uncompressedByteLength": 3501164,
+      "sha256": "98e56e8d21838c1fdd6b7eaee3d78b328f881ea52d4f5501ea96e719f2bfae74"
+    },
+    {
+      "id": "auxiliary-belt-historical-1960-01-28-1968-02-20",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1960-01-28T00:00:00Z",
+      "endUtc": "1968-02-20T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1960-01-28-1968-02-20.bin.gz",
+      "byteLength": 3260817,
+      "uncompressedByteLength": 3501164,
+      "sha256": "76890d6f17d478b4635455faf7435b96ae4d181dec96f1d660f54d2ffe95d7a3"
+    },
+    {
+      "id": "auxiliary-belt-historical-1968-02-20-1976-03-14",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1968-02-20T00:00:00Z",
+      "endUtc": "1976-03-14T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1968-02-20-1976-03-14.bin.gz",
+      "byteLength": 3262286,
+      "uncompressedByteLength": 3501164,
+      "sha256": "c4b4361b4f2ef5520bb1f5fe60f718a34ac047c4d669057d23a85989aa78badd"
+    },
+    {
+      "id": "auxiliary-belt-historical-1976-03-14-1984-04-06",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1976-03-14T00:00:00Z",
+      "endUtc": "1984-04-06T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1976-03-14-1984-04-06.bin.gz",
+      "byteLength": 3261395,
+      "uncompressedByteLength": 3501164,
+      "sha256": "429904038589f40204e9de1f6b0cdc1cb0330f084cc973d56ad5651424f9ef30"
+    },
+    {
+      "id": "auxiliary-belt-historical-1984-04-06-1992-04-29",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1984-04-06T00:00:00Z",
+      "endUtc": "1992-04-29T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1984-04-06-1992-04-29.bin.gz",
+      "byteLength": 3261327,
+      "uncompressedByteLength": 3501164,
+      "sha256": "d27d80274004141e44e6031a65e461f8d40a7c65d60d0f67b19105394185a468"
+    },
+    {
+      "id": "auxiliary-belt-historical-1992-04-29-2000-05-22",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "1992-04-29T00:00:00Z",
+      "endUtc": "2000-05-22T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2946,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-1992-04-29-2000-05-22.bin.gz",
+      "byteLength": 3262133,
+      "uncompressedByteLength": 3501164,
+      "sha256": "442ad6ce4f81b35c65159f0a6c0322248d823e6c04a1f24a912041fa6c05abfb"
+    },
+    {
+      "id": "auxiliary-belt-historical-2000-05-22-2006-08-18",
+      "stream": "auxiliary",
+      "group": "belt",
+      "kind": "historical",
+      "startUtc": "2000-05-22T00:00:00Z",
+      "endUtc": "2006-08-18T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 2280,
+      "bodyKeys": [
+        "pallas",
+        "vesta",
+        "hygiea",
+        "psyche",
+        "juno",
+        "astraea",
+        "hebe",
+        "iris",
+        "flora",
+        "metis",
+        "parthenope",
+        "victoria",
+        "egeria",
+        "irene",
+        "eunomia",
+        "thetis",
+        "melpomene",
+        "fortuna",
+        "massalia",
+        "lutetia",
+        "kalliope",
+        "thalia",
+        "themis",
+        "phocaea",
+        "proserpina",
+        "euterpe",
+        "bellona",
+        "amphitrite",
+        "urania",
+        "euphrosyne",
+        "pomona",
+        "polyhymnia",
+        "circe",
+        "leukothea",
+        "atalante",
+        "fides",
+        "leda",
+        "laetitia",
+        "harmonia",
+        "daphne",
+        "isis",
+        "ariadne",
+        "nysa",
+        "eugenia",
+        "hestia",
+        "aglaja",
+        "doris",
+        "pales",
+        "virginia",
+        "nemausa",
+        "asteroid-52-europa",
+        "kalypso",
+        "alexandra",
+        "pandora",
+        "melete",
+        "mnemosyne",
+        "concordia",
+        "elpis",
+        "echo",
+        "danae",
+        "erato",
+        "ausonia",
+        "angelina",
+        "cybele",
+        "maja",
+        "asia",
+        "leto",
+        "hesperia",
+        "panopaea",
+        "niobe",
+        "feronia",
+        "klytia",
+        "galatea",
+        "eurydike",
+        "freia",
+        "frigga",
+        "diana",
+        "eurynome",
+        "sappho",
+        "terpsichore",
+        "alkmene",
+        "beatrix",
+        "klio",
+        "asteroid-85-io",
+        "semele",
+        "sylvia",
+        "thisbe",
+        "julia",
+        "antiope",
+        "aegina",
+        "undina",
+        "minerva",
+        "aurora",
+        "arethusa",
+        "aegle",
+        "klotho",
+        "ianthe",
+        "dike",
+        "hekate"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-historical-2000-05-22-2006-08-18.bin.gz",
+      "byteLength": 2524129,
+      "uncompressedByteLength": 2709956,
+      "sha256": "a55fd8c6654db063739dfa7773a21f5be850eb71703481a72b88cc3d651fc85d"
     },
     {
       "id": "auxiliary-belt-recent-2006-08-18-2026-08-18",
@@ -10427,16 +13998,19 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "stepSeconds": 86400,
       "samplesPerBody": 48741,
       "bodyKeys": [
-        "bennu"
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis"
       ],
       "format": "binary-f32-gzip",
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/near-earth/auxiliary-near-earth-historical-1766-07-23-1900-01-02.bin.gz",
-      "byteLength": 907,
-      "uncompressedByteLength": 585273,
-      "sha256": "8cf353b4c11cb3b167603718a95c7104abb856a2afc298d34a44322f7a781fd3"
+      "byteLength": 1631412,
+      "uncompressedByteLength": 2339974,
+      "sha256": "33d6f3d9afa181c09f29cac36b04a202f4614decb3ff7fccd4d3fb72ae4af94d"
     },
     {
       "id": "auxiliary-near-earth-historical-1900-01-02-2006-08-18",
@@ -10448,16 +14022,19 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "stepSeconds": 86400,
       "samplesPerBody": 38945,
       "bodyKeys": [
-        "bennu"
+        "eros",
+        "bennu",
+        "ryugu",
+        "apophis"
       ],
       "format": "binary-f32-gzip",
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/near-earth/auxiliary-near-earth-historical-1900-01-02-2006-08-18.bin.gz",
-      "byteLength": 434550,
-      "uncompressedByteLength": 467721,
-      "sha256": "7ec880e72792e6b94a2d30df2b32d495175dad07d048b01a995a34b792f3ec1a"
+      "byteLength": 1736279,
+      "uncompressedByteLength": 1869766,
+      "sha256": "3cd715b83a2dd3e7a2881dca57fce6ecf37d6a4e270520a5f6aff3075d02905c"
     },
     {
       "id": "auxiliary-near-earth-recent-2006-08-18-2026-08-18",
@@ -10482,6 +14059,58 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "byteLength": 326070,
       "uncompressedByteLength": 351089,
       "sha256": "3895bca0e81a05a4d03706bb57ac9f0e996ae7cb6bf9cf5356ab7e53622d0b6f"
+    },
+    {
+      "id": "auxiliary-comets-historical-1766-07-23-1899-08-25",
+      "stream": "auxiliary",
+      "group": "comets",
+      "kind": "historical",
+      "startUtc": "1766-07-23T00:00:00Z",
+      "endUtc": "1899-08-25T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 48611,
+      "bodyKeys": [
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/comets/auxiliary-comets-historical-1766-07-23-1899-08-25.bin.gz",
+      "byteLength": 3159485,
+      "uncompressedByteLength": 3500412,
+      "sha256": "68179770b5f3828431664eddba9caca8a9960b3f1ab530778f0937d6c79e2a75"
+    },
+    {
+      "id": "auxiliary-comets-historical-1899-08-25-2006-08-18",
+      "stream": "auxiliary",
+      "group": "comets",
+      "kind": "historical",
+      "startUtc": "1899-08-25T00:00:00Z",
+      "endUtc": "2006-08-18T00:00:00Z",
+      "stepSeconds": 86400,
+      "samplesPerBody": 39075,
+      "bodyKeys": [
+        "halley",
+        "67p",
+        "encke",
+        "tempel-1",
+        "wild-2",
+        "hartley-2"
+      ],
+      "format": "binary-f32-gzip",
+      "contentType": "application/octet-stream",
+      "compression": "gzip",
+      "vectorEncoding": "float32-le",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/comets/auxiliary-comets-historical-1899-08-25-2006-08-18.bin.gz",
+      "byteLength": 2554030,
+      "uncompressedByteLength": 2813820,
+      "sha256": "2a296fe6200328842d7a2f88ce330d8c383d9a6e08b189eaf4bc59b01efb149f"
     },
     {
       "id": "auxiliary-comets-recent-2006-08-18-2026-08-18",
@@ -10703,9 +14332,9 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
       "compression": "gzip",
       "vectorEncoding": "float32-le",
       "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-recent-2006-08-18-2026-08-18.bin.gz",
-      "byteLength": 649458,
+      "byteLength": 649470,
       "uncompressedByteLength": 964900,
-      "sha256": "dc8b970453e2886a36585eb140b4f8e6e39c85d4c86a27133132666ed8f42f59"
+      "sha256": "da86248df535af998b068cc673484cf85f567fa339adbf9674e64b8d0e25cebd"
     }
   ]
 });
