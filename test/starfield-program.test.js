@@ -42,27 +42,23 @@ function makeStubGL() {
   };
 }
 
-test("createStarfieldProgram returns expected attribute and uniform locations", () => {
+test("createStarfieldProgram exposes the WebGL1 screen-space starfield inputs", () => {
   const gl = makeStubGL();
   const result = createStarfieldProgram(gl);
 
   assert.ok(result.program, "program should exist");
 
-  // Three attributes: position, size, brightness
-  assert.equal(typeof result.attributes.position, "number");
-  assert.equal(typeof result.attributes.size, "number");
-  assert.equal(typeof result.attributes.brightness, "number");
+  assert.equal(typeof result.attributes.clipPosition, "number");
 
-  // Two uniforms: matrix, baseColor
-  assert.ok(result.uniforms.matrix, "matrix uniform should exist");
+  assert.ok(result.uniforms.viewport, "viewport uniform should exist");
+  assert.ok(result.uniforms.seed, "seed uniform should exist");
+  assert.ok(result.uniforms.count, "count uniform should exist");
   assert.ok(result.uniforms.baseColor, "baseColor uniform should exist");
 });
 
-test("createStarfieldProgram attributes have distinct locations", () => {
+test("createStarfieldProgram needs only one clip-space attribute", () => {
   const gl = makeStubGL();
   const { attributes } = createStarfieldProgram(gl);
 
-  const locations = [attributes.position, attributes.size, attributes.brightness];
-  const unique = new Set(locations);
-  assert.equal(unique.size, 3, "all attribute locations should be distinct");
+  assert.deepEqual(Object.keys(attributes), ["clipPosition"]);
 });

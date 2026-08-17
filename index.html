@@ -134,6 +134,22 @@
           >
             Labels: Off
           </button>
+          <button
+            id="journey-visibility-toggle"
+            type="button"
+            class="btn btn--ghost scene-controls__btn"
+            aria-pressed="true"
+          >
+            Journey: On
+          </button>
+          <button
+            id="heliopause-toggle"
+            type="button"
+            class="btn btn--ghost scene-controls__btn"
+            aria-pressed="true"
+          >
+            Heliopause: On
+          </button>
         </div>
 
         <!-- Bottom-right zoom cluster: flattened — the zoom bar (slider + +/-)
@@ -162,14 +178,25 @@
               id="framing-auto-fit"
               type="button"
               class="btn btn--ghost framing__btn"
+              aria-label="Solar System Fit"
               aria-pressed="true"
             >
-              Auto-fit
+              Solar System Fit
+            </button>
+            <button
+              id="framing-journey-fit"
+              type="button"
+              class="btn btn--ghost framing__btn"
+              aria-label="Journey Fit"
+              aria-pressed="false"
+            >
+              Journey Fit
             </button>
             <button
               id="framing-inner-planets"
               type="button"
               class="btn btn--ghost framing__btn"
+              aria-label="Inner Planets"
               aria-pressed="false"
             >
               Inner Planets
@@ -178,6 +205,7 @@
               id="framing-zoom-earth"
               type="button"
               class="btn btn--ghost framing__btn"
+              aria-label="Zoom to Earth"
               aria-pressed="false"
             >
               Zoom to Earth
@@ -186,6 +214,7 @@
               id="framing-origin"
               type="button"
               class="btn btn--ghost framing__btn"
+              aria-label="Origin (Sun)"
               aria-pressed="false"
             >
               Origin (Sun)

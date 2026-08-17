@@ -36,6 +36,22 @@ export class OrthoCamera2D {
     this.#rebuild();
   }
 
+  // Replace the height-based extent used by aspect-aware fit presets. Dynamic
+  // camera modes (such as Journey Fit) can grow their frame without reaching
+  // into the camera's clamp implementation; the current zoom remains clamped
+  // to the updated limits just as it does after a viewport resize.
+  setFitHalfHeight(fitHalfHeight) {
+    const nextFit = Number(fitHalfHeight);
+    if (!Number.isFinite(nextFit) || nextFit <= 0) {
+      return this.maxHalfHeight;
+    }
+    this.fitHalfHeight = nextFit;
+    this.#updateMaxForAspect();
+    this.halfHeight = clamp(this.halfHeight, this.minHalfHeight, this.maxHalfHeight);
+    this.#rebuild();
+    return this.maxHalfHeight;
+  }
+
   // When a fit halfHeight is known, grow the max zoom-out on portrait viewports
   // so the system fits horizontally: width = halfHeight * aspect, so to contain a
   // half-extent of `fitHalfHeight` by width we need halfHeight >= fit / aspect.

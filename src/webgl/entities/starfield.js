@@ -1,72 +1,56 @@
 import { createStarfieldProgram } from "./starfield-program.js";
-import { starfieldSpread, autoFitHalfHeight } from "../scale.js";
 
-// Default spread, derived from the scale layer rather than a hardcoded magic
-// number, so the starfield covers the framed region. Callers (app.js) pass an
-// explicit scale-derived spread; this default is the fallback.
-const DEFAULT_SPREAD = starfieldSpread(autoFitHalfHeight(2.0));
+const DEFAULT_STAR_COUNT = 1000;
+const DEFAULT_SEED = 42;
+const MAX_STAR_COUNT = 10000;
 
-// Mulberry32 seeded PRNG
-function mulberry32(seed) {
-  return function () {
-    seed |= 0;
-    seed = (seed + 0x6d2b79f5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+function normalizedCount(value) {
+  const count = Math.floor(Number(value));
+  if (!Number.isFinite(count)) return DEFAULT_STAR_COUNT;
+  return Math.max(1, Math.min(MAX_STAR_COUNT, count));
 }
 
+function normalizedSeed(value) {
+  const seed = Number(value);
+  return Number.isFinite(seed) ? seed : DEFAULT_SEED;
+}
+
+// One WebGL1-friendly full-screen pass. The fragment shader generates a stable
+// pseudo-random star in each screen-space cell, keeping density steady on zoom.
 export class StarfieldEntity {
-  constructor({ count = 1000, spread = DEFAULT_SPREAD, baseColor = [1, 1, 1, 1], seed = 42 } = {}) {
-    this.count = count;
+  constructor({ count = DEFAULT_STAR_COUNT, baseColor = [1, 1, 1, 1], seed = DEFAULT_SEED } = {}) {
+    this.count = normalizedCount(count);
+    this.seed = normalizedSeed(seed);
     this.baseColor = baseColor;
     this.buffer = null;
     this.starfield = null;
-
-    // Generate star data: [x, y, size, brightness] per star
-    const rand = mulberry32(seed);
-    const data = new Float32Array(count * 4);
-    for (let i = 0; i < count; i++) {
-      const offset = i * 4;
-      data[offset] = (rand() * 2 - 1) * spread;     // x: -spread to +spread
-      data[offset + 1] = (rand() * 2 - 1) * spread;  // y: -spread to +spread
-      data[offset + 2] = 1.0 + rand();                // size: 1.0–2.0 px
-      data[offset + 3] = 0.3 + rand() * 0.7;          // brightness: 0.3–1.0
-    }
-    this.data = data;
+    this.clipVertices = new Float32Array([
+      -1, -1, 1, -1, -1, 1,
+      -1, 1, 1, -1, 1, 1
+    ]);
   }
 
   init(gl) {
     this.starfield = createStarfieldProgram(gl);
     this.buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.data, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, this.clipVertices, gl.STATIC_DRAW);
   }
 
-  render({ gl, camera }) {
-    if (!this.starfield || !this.buffer) {
-      return;
-    }
+  render({ gl }) {
+    if (!this.starfield || !this.buffer) return;
 
-    const stride = 16; // 4 floats × 4 bytes
-
+    const width = Math.max(1, Number(gl.drawingBufferWidth) || 1);
+    const height = Math.max(1, Number(gl.drawingBufferHeight) || 1);
     gl.useProgram(this.starfield.program);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-
-    gl.enableVertexAttribArray(this.starfield.attributes.position);
-    gl.vertexAttribPointer(this.starfield.attributes.position, 2, gl.FLOAT, false, stride, 0);
-
-    gl.enableVertexAttribArray(this.starfield.attributes.size);
-    gl.vertexAttribPointer(this.starfield.attributes.size, 1, gl.FLOAT, false, stride, 8);
-
-    gl.enableVertexAttribArray(this.starfield.attributes.brightness);
-    gl.vertexAttribPointer(this.starfield.attributes.brightness, 1, gl.FLOAT, false, stride, 12);
-
-    gl.uniformMatrix3fv(this.starfield.uniforms.matrix, false, camera.matrix);
+    gl.enableVertexAttribArray(this.starfield.attributes.clipPosition);
+    gl.vertexAttribPointer(this.starfield.attributes.clipPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform2f(this.starfield.uniforms.viewport, width, height);
+    gl.uniform1f(this.starfield.uniforms.seed, this.seed);
+    gl.uniform1f(this.starfield.uniforms.count, this.count);
     gl.uniform4fv(this.starfield.uniforms.baseColor, this.baseColor);
-
-    gl.drawArrays(gl.POINTS, 0, this.count);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 
   dispose(gl) {

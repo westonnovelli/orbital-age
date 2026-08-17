@@ -2,8 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { OrbitalApp } from "../src/app.js";
-import { ephemerisBootPromise } from "../src/orbital-time.js";
+import {
+  bodyHeliocentricPositionAuAtInstant,
+  ephemerisBootPromise
+} from "../src/orbital-time.js";
+import { distanceTraveledKm } from "../src/stats.js";
 import { WebGLRenderer } from "../src/webgl/renderer.js";
+import { StarfieldEntity } from "../src/webgl/entities/starfield.js";
 
 // Submit tests assert the synchronous scene-hydration path. Ensure the v2
 // primary stream's asynchronous boot preload has completed before registering
@@ -170,12 +175,18 @@ function buildUi() {
     resetButton: new FakeElement({ id: "reset-timeline" }),
     speedSelect: new FakeElement({ id: "playback-speed" }),
     timelineStatus: new FakeElement({ id: "timeline-status" }),
+    statsHud: new FakeElement({ id: "stats-hud" }),
+    hudOrbits: new FakeElement({ id: "hud-orbits" }),
+    hudAge: new FakeElement({ id: "hud-age" }),
+    hudDistance: new FakeElement({ id: "hud-distance" }),
     bodiesPanel: new FakeElement(),
     bodiesList,
     bodiesTabs: new FakeElement({ id: "bodies-tabs", ownerDocument: doc }),
     bodiesTabControls: new FakeElement({ id: "bodies-tab-controls", ownerDocument: doc }),
     trueScaleToggle: new FakeElement({ id: "true-scale-toggle" }),
     labelsToggle: new FakeElement({ id: "labels-toggle" }),
+    journeyVisibilityToggle: new FakeElement({ id: "journey-visibility-toggle" }),
+    heliopauseToggle: new FakeElement({ id: "heliopause-toggle" }),
     labelsOverlay: new FakeElement({ id: "scene-labels", ownerDocument: doc }),
     telemetryPanel: new FakeElement(),
     telemetrySubject: new FakeElement({ id: "telemetry-subject" }),
@@ -184,6 +195,7 @@ function buildUi() {
     telemetryLaunchDate: new FakeElement({ id: "telemetry-launch-date" }),
     telemetryMetric: new FakeElement({ id: "telemetry-metric" }),
     autoFitButton: new FakeElement({ id: "framing-auto-fit" }),
+    journeyFitButton: new FakeElement({ id: "framing-journey-fit" }),
     innerPlanetsButton: new FakeElement({ id: "framing-inner-planets" }),
     zoomEarthButton: new FakeElement({ id: "framing-zoom-earth" }),
     originButton: new FakeElement({ id: "framing-origin" }),
@@ -348,6 +360,74 @@ test("submit flow enables timeline controls and updates playback UI state", asyn
   ui.resetButton.dispatch("click");
   assert.equal(ui.timelineDate.textContent, "2000-01-01");
   assert.equal(ui.timelinePlayToggle.textContent, "Play");
+});
+
+test("journey distance and displayed DAM share the timeline DAM value while body odometers remain independent", async (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  await ui.form.dispatch("submit");
+
+  const journey = app.outwardJourneyEntity;
+  assert.ok(journey, "a journey entity is created");
+  assert.ok(app.scene.nodes.includes(journey), "the journey entity is attached to the scene");
+  const birthdayEarth = bodyHeliocentricPositionAuAtInstant(
+    "earth",
+    new Date("2000-01-01T00:00:00Z")
+  );
+  assert.deepEqual(journey.journeyState.origin, {
+    x: birthdayEarth.xAu,
+    y: birthdayEarth.yAu
+  });
+  assert.equal(journey.journeyState.distanceAu, 0, "birthday starts at zero distance");
+  assert.deepEqual(journey.journeyState.endpoint, journey.journeyState.origin);
+  assert.equal(ui.journeyVisibilityToggle.getAttribute("aria-pressed"), "true");
+
+  const elapsedDays = 365.25;
+  const damKm = distanceTraveledKm(elapsedDays);
+  const conflictingEarthOdometerKm = 123_456_789;
+  app.timelineController.onStateChange({
+    ...app.timelineController.getState(),
+    elapsedDays,
+    bodyTraveledKm: new Map([["earth", conflictingEarthOdometerKm]])
+  });
+
+  assert.equal(journey.journeyState.distanceAu, damKm / 149_597_870.7);
+  assert.equal(ui.hudDistance.textContent, "DIST 940,000,000 km");
+
+  const timelineDateBeforeToggle = app.timelineController.getState().timelineDateIso;
+  const framingModeBeforeToggle = app.framingMode;
+  const cameraCenterBeforeToggle = { x: app.camera.centerX, y: app.camera.centerY };
+  ui.journeyVisibilityToggle.dispatch("click");
+
+  assert.equal(journey.visible, false);
+  assert.equal(ui.journeyVisibilityToggle.getAttribute("aria-pressed"), "false");
+  assert.equal(app.timelineController.getState().timelineDateIso, timelineDateBeforeToggle);
+  assert.equal(app.framingMode, framingModeBeforeToggle);
+  assert.deepEqual(
+    { x: app.camera.centerX, y: app.camera.centerY },
+    cameraCenterBeforeToggle
+  );
 });
 
 test("first journey starts looping audio; mute toggle pauses and resumes it", async (t) => {
@@ -766,6 +846,168 @@ test("bottom-right zoom cluster wires presets, +/- buttons, and the zoom bar", a
   assert.ok(setZoomCalls.at(-1) < lastZoom, "higher slider value zooms in");
 });
 
+test("Journey Fit expands from the active journey while Solar System Fit retains the outer-body frame", async (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  await ui.form.dispatch("submit");
+
+  const solarSystemExtent = app.camera.maxHalfHeight;
+  ui.journeyFitButton.dispatch("click");
+  const birthdayRadius = Math.hypot(
+    app.outwardJourneyEntity.journeyState.origin.x,
+    app.outwardJourneyEntity.journeyState.origin.y
+  );
+  assert.equal(
+    app.camera.halfHeight,
+    birthdayRadius * 1.1,
+    "an early journey fits its Sun-centered birthday Earth extent, not a configured probe roster"
+  );
+
+  app.outwardJourneyEntity.setJourneyState({
+    origin: { x: 4, y: 3 },
+    outwardDirection: { x: 1, y: 0 },
+    distanceAu: 180,
+    endpoint: { x: 184, y: 3 }
+  });
+
+  ui.journeyFitButton.dispatch("click");
+  assert.equal(app.framingMode, "journey");
+  assert.equal(ui.journeyFitButton.getAttribute("aria-pressed"), "true");
+  assert.equal(app.camera.minHalfHeight, 0.3, "Journey Fit keeps Zoom to Earth as its floor");
+  assert.ok(app.camera.maxHalfHeight > solarSystemExtent, "Journey Fit grows to include the outward extent");
+  assert.equal(app.camera.halfHeight, app.camera.maxHalfHeight, "Journey Fit starts at its current dynamic target");
+  assert.equal(
+    app.camera.maxHalfHeight,
+    Math.hypot(184, 3) * 1.1,
+    "Journey Fit measures the endpoint from the Sun rather than the non-zero birthday Earth origin"
+  );
+
+  const halfHeightBeforeGrowth = app.camera.halfHeight;
+  app.timelineController.onStateChange({
+    ...app.timelineController.getState(),
+    elapsedDays: 100_000,
+    bodyTraveledKm: new Map([["earth", 250 * 149_597_870.7]])
+  });
+  assert.ok(app.camera.maxHalfHeight > halfHeightBeforeGrowth, "Journey Fit raises its extent as DAM grows");
+  assert.ok(
+    app.camera.halfHeight > halfHeightBeforeGrowth && app.camera.halfHeight < app.camera.maxHalfHeight,
+    "Journey Fit smoothly approaches a newly expanded extent"
+  );
+
+  ui.autoFitButton.dispatch("click");
+  assert.equal(app.framingMode, "solar-system");
+  assert.equal(ui.autoFitButton.getAttribute("aria-pressed"), "true");
+  assert.equal(app.camera.halfHeight, solarSystemExtent, "Solar System Fit retains the active-body extent");
+  assert.equal(ui.journeyFitButton.getAttribute("aria-pressed"), "false");
+});
+
+test("Journey Fit snaps to the dynamic extent after a paused timeline scrub", async (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  await ui.form.dispatch("submit");
+
+  ui.journeyFitButton.dispatch("click");
+  app.timelineController.onStateChange({
+    ...app.timelineController.getState(),
+    normalizedProgress: 0.8,
+    playing: false,
+    elapsedDays: 100_000,
+    bodyTraveledKm: new Map([["earth", 1_000 * 149_597_870.7]])
+  });
+
+  assert.ok(app.camera.maxHalfHeight > 54, "the scrubbed journey has a larger dynamic extent");
+  assert.equal(
+    app.camera.halfHeight,
+    app.camera.maxHalfHeight,
+    "a paused scrub must not leave Journey Fit short of its final extent"
+  );
+});
+
+test("Journey Fit snaps to the dynamic extent when playback completes", async (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  await ui.form.dispatch("submit");
+
+  ui.journeyFitButton.dispatch("click");
+  app.timelineController.onStateChange({
+    ...app.timelineController.getState(),
+    normalizedProgress: 1,
+    playing: false,
+    elapsedDays: 100_000,
+    bodyTraveledKm: new Map([["earth", 1_000 * 149_597_870.7]])
+  });
+
+  assert.ok(app.camera.maxHalfHeight > 54, "completion has a larger dynamic extent");
+  assert.equal(
+    app.camera.halfHeight,
+    app.camera.maxHalfHeight,
+    "completion must not leave Journey Fit short of its final extent"
+  );
+});
+
 // Project a scene point to CSS pixels the same way the app does, so the test can
 // aim a synthetic click at a body's on-screen location.
 function projectToScreen(camera, sceneX, sceneY, width, height) {
@@ -834,7 +1076,7 @@ test("clicking near a body's projected position follows it", async (t) => {
   }
 });
 
-test("labels toggle flips overlay visibility and positions labels", async (t) => {
+test("labels toggle flips overlay visibility and positions body labels", async (t) => {
   const originalInitialize = WebGLRenderer.prototype.initialize;
   const originalSetScene = WebGLRenderer.prototype.setScene;
   const originalStart = WebGLRenderer.prototype.start;
@@ -863,8 +1105,8 @@ test("labels toggle flips overlay visibility and positions labels", async (t) =>
   await ui.form.dispatch("submit");
 
   // One label per rendered body is built in the overlay, hidden by default.
-  assert.equal(app.bodyLabels.size, 10);
-  assert.equal(ui.labelsOverlay.children.length, 10);
+  assert.equal(app.bodyLabels.size, 11);
+  assert.equal(ui.labelsOverlay.children.length, 11);
   assert.equal(ui.labelsOverlay.classList.contains("scene-labels--hidden"), true);
   assert.equal(app.labelsVisible, false);
   assert.equal(ui.labelsToggle.getAttribute("aria-pressed"), "false");
@@ -895,6 +1137,72 @@ test("labels toggle flips overlay visibility and positions labels", async (t) =>
   ui.labelsToggle.dispatch("click");
   assert.equal(app.labelsVisible, false);
   assert.equal(ui.labelsOverlay.classList.contains("scene-labels--hidden"), true);
+});
+
+test("heliopause display toggle is independent from Journey visibility and Labels", async (t) => {
+  const originalInitialize = WebGLRenderer.prototype.initialize;
+  const originalSetScene = WebGLRenderer.prototype.setScene;
+  const originalStart = WebGLRenderer.prototype.start;
+  const originalFieldSet = globalThis.HTMLFieldSetElement;
+  const originalOutput = globalThis.HTMLOutputElement;
+  t.after(() => {
+    WebGLRenderer.prototype.initialize = originalInitialize;
+    WebGLRenderer.prototype.setScene = originalSetScene;
+    WebGLRenderer.prototype.start = originalStart;
+    globalThis.HTMLFieldSetElement = originalFieldSet;
+    globalThis.HTMLOutputElement = originalOutput;
+  });
+
+  globalThis.HTMLFieldSetElement = FakeFieldSetElement;
+  globalThis.HTMLOutputElement = FakeOutputElement;
+  WebGLRenderer.prototype.initialize = () => true;
+  WebGLRenderer.prototype.setScene = () => {};
+  WebGLRenderer.prototype.start = () => {};
+
+  const ui = buildUi();
+  ui.dateInput.value = "2000-01-01";
+  ui.canvas.rect = { left: 0, top: 0, width: 200, height: 200 };
+  const app = new OrbitalApp(ui);
+  app.initialize();
+  await ui.form.dispatch("submit");
+
+  assert.equal(app.heliopauseEntity.radiusAu, 120);
+  assert.equal(app.heliopauseEntity.visible, true);
+  assert.equal(ui.heliopauseToggle.getAttribute("aria-pressed"), "true");
+  assert.equal(app.bodyLabels.get("heliopause").textContent, "Heliopause · approx. 120 AU");
+
+  ui.journeyVisibilityToggle.dispatch("click");
+  assert.equal(app.outwardJourneyEntity.visible, false);
+  assert.equal(app.heliopauseEntity.visible, true);
+
+  ui.heliopauseToggle.dispatch("click");
+  assert.equal(app.heliopauseEntity.visible, false);
+  assert.equal(ui.heliopauseToggle.getAttribute("aria-pressed"), "false");
+
+  ui.labelsToggle.dispatch("click");
+  assert.equal(ui.labelsOverlay.classList.contains("scene-labels--hidden"), false);
+  assert.match(String(app.bodyLabels.get("heliopause").style.transform), /translate\(/);
+
+  ui.heliopauseToggle.dispatch("click");
+  assert.equal(app.heliopauseEntity.visible, true);
+  assert.equal(ui.heliopauseToggle.getAttribute("aria-pressed"), "true");
+
+  ui.journeyFitButton.dispatch("click");
+  const label = app.bodyLabels.get("heliopause");
+  assert.match(String(label.style.transform), /translate\(/);
+
+  ui.labelsToggle.dispatch("click");
+  assert.equal(ui.labelsOverlay.classList.contains("scene-labels--hidden"), true);
+});
+
+test("app adds exactly one configured screen-space starfield", async (t) => {
+  const { app } = await bootJourney(t);
+  const starfields = app.scene.nodes.filter((node) => node instanceof StarfieldEntity);
+  const [starfield] = starfields;
+  assert.ok(starfield, "the submitted journey adds a starfield to the scene");
+  assert.equal(starfields.length, 1, "there is no separate inner or outer visual field");
+  assert.equal(starfield.count, 1000, "the app keeps its fixed star budget");
+  assert.equal(starfield.data, undefined, "the scene does not keep world-space star layers");
 });
 
 test("mobile sheet toggles flip open + aria state and are mutually exclusive", async (t) => {

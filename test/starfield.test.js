@@ -20,6 +20,7 @@ function makeStubGL() {
     STATIC_DRAW: 0x88E4,
     FLOAT: 0x1406,
     POINTS: 0x0000,
+    TRIANGLES: 0x0004,
     createShader(type) {
       const s = { type };
       shaders.push(s);
@@ -71,6 +72,12 @@ function makeStubGL() {
     uniform4fv(loc, value) {
       calls.push({ fn: "uniform4fv", loc, value });
     },
+    uniform1f(loc, value) {
+      calls.push({ fn: "uniform1f", loc, value });
+    },
+    uniform2f(loc, x, y) {
+      calls.push({ fn: "uniform2f", loc, x, y });
+    },
     drawArrays(mode, first, count) {
       calls.push({ fn: "drawArrays", mode, first, count });
     },
@@ -85,49 +92,13 @@ function makeStubGL() {
   };
 }
 
-test("StarfieldEntity constructor generates correct number of stars", () => {
-  const entity = new StarfieldEntity({ count: 500 });
+test("StarfieldEntity keeps one deterministic screen-space configuration without world-space star data", () => {
+  const entity = new StarfieldEntity({ count: 500, seed: 7 });
+
   assert.equal(entity.count, 500);
-  assert.equal(entity.data.length, 500 * 4);
-});
-
-test("StarfieldEntity generates deterministic data with same seed", () => {
-  const a = new StarfieldEntity({ count: 100, seed: 7 });
-  const b = new StarfieldEntity({ count: 100, seed: 7 });
-  assert.deepEqual(a.data, b.data);
-});
-
-test("StarfieldEntity generates different data with different seeds", () => {
-  const a = new StarfieldEntity({ count: 100, seed: 1 });
-  const b = new StarfieldEntity({ count: 100, seed: 2 });
-  assert.notDeepEqual(a.data, b.data);
-});
-
-test("StarfieldEntity star positions are within spread range", () => {
-  const spread = 3.0;
-  const entity = new StarfieldEntity({ count: 200, spread });
-  for (let i = 0; i < entity.count; i++) {
-    const x = entity.data[i * 4];
-    const y = entity.data[i * 4 + 1];
-    assert.ok(x >= -spread && x <= spread, `x=${x} out of range`);
-    assert.ok(y >= -spread && y <= spread, `y=${y} out of range`);
-  }
-});
-
-test("StarfieldEntity star sizes are between 1.0 and 2.0", () => {
-  const entity = new StarfieldEntity({ count: 200 });
-  for (let i = 0; i < entity.count; i++) {
-    const size = entity.data[i * 4 + 2];
-    assert.ok(size >= 1.0 && size <= 2.0, `size=${size} out of range`);
-  }
-});
-
-test("StarfieldEntity star brightness values are between 0.3 and 1.0", () => {
-  const entity = new StarfieldEntity({ count: 200 });
-  for (let i = 0; i < entity.count; i++) {
-    const brightness = entity.data[i * 4 + 3];
-    assert.ok(brightness >= 0.3 && brightness <= 1.0, `brightness=${brightness} out of range`);
-  }
+  assert.equal(entity.seed, 7);
+  assert.equal(entity.data, undefined, "the field must not retain layered world-space stars");
+  assert.deepEqual(Array.from(entity.clipVertices), [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
 });
 
 test("StarfieldEntity init creates buffer and program", () => {
@@ -140,7 +111,7 @@ test("StarfieldEntity init creates buffer and program", () => {
   assert.ok(entity.starfield.program, "program should exist");
 });
 
-test("StarfieldEntity render issues single drawArrays call", () => {
+test("StarfieldEntity renders one bounded screen-space pass with its configured seed and nominal density", () => {
   const gl = makeStubGL();
   const entity = new StarfieldEntity({ count: 50 });
   entity.init(gl);
@@ -150,9 +121,13 @@ test("StarfieldEntity render issues single drawArrays call", () => {
 
   const drawCalls = gl._calls.filter(c => c.fn === "drawArrays");
   assert.equal(drawCalls.length, 1);
-  assert.equal(drawCalls[0].mode, gl.POINTS);
+  assert.equal(drawCalls[0].mode, gl.TRIANGLES);
   assert.equal(drawCalls[0].first, 0);
-  assert.equal(drawCalls[0].count, 50);
+  assert.equal(drawCalls[0].count, 6);
+  assert.ok(
+    gl._calls.some((call) => call.fn === "uniform1f" && call.value === 50),
+    "the shader receives the configured screen-space star budget"
+  );
 });
 
 test("StarfieldEntity render is a no-op before init", () => {

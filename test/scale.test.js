@@ -5,6 +5,7 @@ import {
   AU_TO_SCENE,
   AUTO_FIT_MARGIN,
   autoFitHalfHeight,
+  starfieldSpreadForJourneyExtent,
   starfieldSpread
 } from "../src/webgl/scale.js";
 import { zoomBarTToHalfHeight, zoomBarHalfHeightToT } from "../src/app.js";
@@ -36,6 +37,20 @@ test("starfieldSpread extends beyond the framed halfHeight", () => {
   const halfHeight = 33;
   const spread = starfieldSpread(halfHeight);
   assert.ok(spread > halfHeight, "starfield must cover beyond the frame");
+});
+
+test("starfield spread covers the maximum Sun-centered journey extent", () => {
+  const maximumJourneyDistanceAu = 1600;
+  const spread = starfieldSpreadForJourneyExtent({
+    solarSystemHalfHeight: autoFitHalfHeight(30.33),
+    maximumJourneyDistanceAu,
+    journeyOriginRadiusAu: 1
+  });
+
+  assert.ok(
+    spread > (maximumJourneyDistanceAu + 1) * AU_TO_SCENE,
+    "starfield covers the journey radius measured from the Sun"
+  );
 });
 
 test("INNER_PLANETS framing frames past Mars' aphelion with headroom", () => {

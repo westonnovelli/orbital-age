@@ -150,3 +150,19 @@ test("setZoom clamps the zoom-cluster log range [0.3, 54.23]", () => {
   // A mid-range value is applied verbatim.
   assert.equal(camera.setZoom(1.84), 1.84);
 });
+
+test("dynamic Journey Fit preserves the Earth-Moon floor and recalculates its aspect-aware ceiling", () => {
+  const camera = new OrthoCamera2D({
+    halfHeight: 54,
+    minHalfHeight: 0.3,
+    maxHalfHeight: 54,
+    fitHalfHeight: 54
+  });
+  camera.setViewport(100, 200); // Portrait: fit must grow to contain its width.
+
+  camera.setFitHalfHeight(120);
+
+  assert.equal(camera.minHalfHeight, 0.3, "Journey Fit keeps Zoom to Earth's floor");
+  assert.equal(camera.maxHalfHeight, 240, "portrait fit grows for the journey's horizontal extent");
+  assert.equal(camera.setZoom(1000), 240, "the active body/probe and journey extent are not clipped");
+});

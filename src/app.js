@@ -3,6 +3,8 @@ import {
   SUPPORTED_DATE_RANGE,
   ensureEphemerisLoaded,
   ephemerisBootPromise,
+  bodyHeliocentricPositionAuAtInstant,
+  daysBetweenUtc,
   getBodyRegistry,
   normalizeToUtcMidnight,
   parseIsoDateUtc,
@@ -17,7 +19,18 @@ import { OrbitalTrailEntity } from "./webgl/entities/orbital-trail.js";
 import { TimelineControllerEntity } from "./webgl/entities/timeline-controller.js";
 import { CameraIntroTweenEntity } from "./webgl/entities/camera-intro.js";
 import { StarfieldEntity } from "./webgl/entities/starfield.js";
-import { autoFitHalfHeight, starfieldSpread } from "./webgl/scale.js";
+import {
+  HELIOPAUSE_RADIUS_AU,
+  HeliopauseHaloEntity,
+  OutwardJourneyEntity,
+  OUTWARD_JOURNEY_RENDER_MODE
+} from "./webgl/entities/outward-journey.js";
+import { autoFitHalfHeight } from "./webgl/scale.js";
+import {
+  KM_PER_AU,
+  createOutwardJourneyState,
+  journeyExtentHalfHeight
+} from "./outward-journey.js";
 import { orbitsCompleted, currentAge, distanceTraveledKm } from "./stats.js";
 import { BODY_MECHANICS } from "./body-mechanics.js";
 
@@ -280,17 +293,11 @@ export function manifestRenderConfigs(dataset, bodyRegistry = getBodyRegistry(),
   return dataset === PRIMARY_EPHEMERIS_STREAM ? LEGACY_PRIMARY_RENDERED_BODIES : LEGACY_AUXILIARY_RENDERED_BODIES;
 }
 
-// The background and initial camera framing must account for every rendered
-// dataset, not only the eager planets. Auxiliary outer bodies can extend well
-// beyond Pluto, so sizing the starfield from the primary stream leaves the
-// expanded view without enough background coverage.
-const MAX_ORBIT_RADIUS_AU = Math.max(
-  ...[PRIMARY_EPHEMERIS_STREAM, AUXILIARY_EPHEMERIS_STREAM].flatMap((stream) =>
-    manifestRenderConfigs(stream).map((body) => body.orbitRadiusAu ?? 0)
-  )
+// Solar System Fit intentionally frames only primary solar-system bodies;
+// Journey Fit instead follows the live Sun-centered outward-journey envelope.
+const AUTO_FIT_HALF_HEIGHT = solarSystemFitHalfHeightForBodies(
+  manifestRenderConfigs(PRIMARY_EPHEMERIS_STREAM)
 );
-const AUTO_FIT_HALF_HEIGHT = autoFitHalfHeight(MAX_ORBIT_RADIUS_AU);
-const STARFIELD_SPREAD = starfieldSpread(AUTO_FIT_HALF_HEIGHT);
 
 // Maximum zoom-in framing ("Zoom to Earth"). Earth orbits at ~1 AU; this frames
 // a small region around it so the Moon — added in a later phase with an
@@ -311,6 +318,10 @@ const INNER_PLANETS_HALF_HEIGHT = autoFitHalfHeight(INNER_PLANETS_FRAME_AU);
 // Opening flythrough: a journey begins framed on the inner planets and slowly
 // zooms out to Auto-fit over this many seconds before settling. Tunable.
 const INTRO_ZOOM_SECONDS = 4.5;
+
+// Journey Fit eases only the active dynamic frame. The compact interpolation
+// keeps an expanding outward ring legible rather than snapping the view out.
+const JOURNEY_FIT_EASING = 0.16;
 
 // Zoom-bar log mapping bounds. The bar maps a [0,1] slider position to a camera
 // halfHeight logarithmically over the framing range so equal travel == equal zoom
@@ -441,6 +452,14 @@ export function parseSpeedValue(value) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_SPEED_DAYS_PER_SECOND;
 }
 
+export function createBirthdayOutwardJourneyState(birthday, distanceTraveledKm = 0) {
+  const earth = bodyHeliocentricPositionAuAtInstant("earth", birthday);
+  return createOutwardJourneyState({
+    originAu: { x: earth.xAu, y: earth.yAu },
+    distanceTraveledKm
+  });
+}
+
 // Title-case a body key for display ("earth" -> "Earth").
 export function formatBodyName(key) {
   const str = String(key ?? "");
@@ -513,10 +532,25 @@ export function zoomBarHalfHeightToT(
   return Math.min(1, Math.max(0, t));
 }
 
-function maxOrbitRadiusForBodies(configs) {
+function maxOrbitRadiusForBodies(configs, predicate = () => true) {
   return Math.max(0, ...configs
-    .filter((body) => body.cameraFit !== false)
+    .filter(predicate)
     .map((body) => Number(body.orbitRadiusAu) || 0));
+}
+
+export function solarSystemFitHalfHeightForBodies(configs) {
+  return autoFitHalfHeight(maxOrbitRadiusForBodies(
+    configs,
+    (body) =>
+      (body.stream ?? PRIMARY_EPHEMERIS_STREAM) === PRIMARY_EPHEMERIS_STREAM &&
+      body.kind !== "spacecraft" &&
+      body.cameraFit !== false
+  ));
+}
+
+export function maximumSupportedJourneyDistanceAu() {
+  const days = Math.max(0, daysBetweenUtc(SUPPORTED_DATE_RANGE.min, SUPPORTED_DATE_RANGE.max));
+  return distanceTraveledKm(days) / KM_PER_AU;
 }
 
 export class OrbitalApp {
@@ -543,6 +577,7 @@ export class OrbitalApp {
     hudAge,
     hudDistance,
     autoFitButton,
+    journeyFitButton,
     innerPlanetsButton,
     zoomEarthButton,
     originButton,
@@ -556,6 +591,8 @@ export class OrbitalApp {
     bodiesTabControls,
     trueScaleToggle,
     labelsToggle,
+    journeyVisibilityToggle,
+    heliopauseToggle,
     labelsOverlay,
     telemetryPanel,
     telemetrySubject,
@@ -611,6 +648,7 @@ export class OrbitalApp {
     // Bottom-right zoom cluster: framing presets + a log-mapped zoom bar and
     // +/- buttons, all two-way synced with the camera (and the wheel).
     this.autoFitButton = autoFitButton;
+    this.journeyFitButton = journeyFitButton;
     this.innerPlanetsButton = innerPlanetsButton;
     this.zoomEarthButton = zoomEarthButton;
     this.originButton = originButton;
@@ -654,6 +692,15 @@ export class OrbitalApp {
     this.labelsOverlay = labelsOverlay;
     this.bodyLabels = new Map();
     this.labelsVisible = false;
+    // The outward-journey layer starts enabled for every journey. Its visibility
+    // is intentionally independent from timeline playback and camera framing.
+    this.journeyVisibilityToggle = journeyVisibilityToggle;
+    this.outwardJourneyEntity = null;
+    this.heliopauseEntity = null;
+    this.journeyVisible = true;
+    this.heliopauseToggle = heliopauseToggle;
+    this.heliopauseVisible = true;
+    this.journeyOrigin = null;
 
     // Top-left Orbital Mechanics panel: dynamic fields reflecting the currently-
     // followed body (or the Sun when nothing is followed). Updated from
@@ -702,10 +749,11 @@ export class OrbitalApp {
     // Whether the chrome is currently reparented into the sheets (phone tier).
     this.mobileSheetsActive = false;
 
-    // Tracks which framing preset is active ("auto-fit" | "inner" | "earth" |
-    // "origin") so the buttons can reflect state and zooming toward Earth implies
-    // tracking. A manual zoom (wheel/bar/+-) clears it to null (no active preset).
-    this.framingMode = "auto-fit";
+    // Tracks which framing preset is active ("solar-system" | "journey" |
+    // "inner" | "earth" | "origin") so the buttons can reflect state and
+    // zooming toward Earth implies tracking. A manual zoom (wheel/bar/+-)
+    // clears it to null (no active preset).
+    this.framingMode = "solar-system";
 
     // The opening flythrough tween (set per journey in #startJourney); null when
     // no journey is running or after it has settled / been cancelled.
@@ -735,6 +783,9 @@ export class OrbitalApp {
       maxHalfHeight: AUTO_FIT_HALF_HEIGHT,
       fitHalfHeight: AUTO_FIT_HALF_HEIGHT
     });
+    // Solar System Fit is the stable primary-body frame. Journey Fit computes
+    // its own live Sun-centered extent from the birthday Earth origin and DAM.
+    this.solarSystemFitHalfHeight = AUTO_FIT_HALF_HEIGHT;
     this.renderer = new WebGLRenderer(canvas, { camera: this.camera });
     this.timelineController = null;
     this.deepTimeLoader = null;
@@ -904,7 +955,20 @@ export class OrbitalApp {
     });
 
     this.timelineController = timelineController;
-    this.#expandAutoFitForActiveBodies();
+    const initialState = timelineController.getState();
+    const outwardJourneyEntity = new OutwardJourneyEntity({
+      mode: OUTWARD_JOURNEY_RENDER_MODE,
+      visible: this.journeyVisible
+    });
+    const initialJourney = createBirthdayOutwardJourneyState(
+      validation.date,
+      distanceTraveledKm(initialState.elapsedDays)
+    );
+    outwardJourneyEntity.setJourneyState(initialJourney);
+    this.outwardJourneyEntity = outwardJourneyEntity;
+    this.heliopauseEntity = new HeliopauseHaloEntity({ visible: this.heliopauseVisible });
+    this.journeyOrigin = initialJourney.origin;
+    this.#refreshFitBounds();
     await timelineController.prepareTrails({
       signal: journeySignal,
       onProgress: (fraction, bodyKey) => {
@@ -939,7 +1003,7 @@ export class OrbitalApp {
       },
       onComplete: () => {
         this.introTween = null;
-        this.#applyFraming("auto-fit");
+        this.#applyFraming("solar-system");
       }
     });
     this.introTween = introTween;
@@ -947,11 +1011,13 @@ export class OrbitalApp {
     this.sunEntity = new SunEntity();
     const scene = new Scene()
       .add(introTween)
-      .add(new StarfieldEntity({ spread: STARFIELD_SPREAD }))
-      .add(this.sunEntity);
+      .add(new StarfieldEntity())
+      .add(this.sunEntity)
+      .add(this.heliopauseEntity);
     for (const trail of trails) {
       scene.add(trail);
     }
+    scene.add(outwardJourneyEntity);
     scene.add(timelineController);
     for (const body of bodies) {
       scene.add(body.marker);
@@ -1115,27 +1181,29 @@ export class OrbitalApp {
     this.timelineController.addBodies(bodies, { precomputeTrails: false });
     this.activeBodyConfigs = [...this.activeBodyConfigs, ...configs];
     this.auxiliaryBodiesAttached = true;
-    this.#expandAutoFitForActiveBodies();
+    this.#refreshFitBounds();
     this.#buildBodiesPanel();
     this.#buildBodyLabels();
     this.#applyTrueScale(this.trueScale);
     this.#updateBodyLabels();
   }
 
-  #expandAutoFitForActiveBodies() {
+  #refreshFitBounds() {
     if (!this.camera) {
       return;
     }
 
-    const nextFit = autoFitHalfHeight(maxOrbitRadiusForBodies(this.activeBodyConfigs));
-    if (!Number.isFinite(nextFit) || nextFit <= (this.camera.fitHalfHeight ?? 0)) {
-      return;
+    this.solarSystemFitHalfHeight = Math.max(
+      AUTO_FIT_HALF_HEIGHT,
+      solarSystemFitHalfHeightForBodies(this.activeBodyConfigs)
+    );
+    const wasSolarSystemFit = this.framingMode === "solar-system";
+    if (this.framingMode === "journey") {
+      this.#updateJourneyFit();
+    } else {
+      this.camera.setFitHalfHeight(this.solarSystemFitHalfHeight);
     }
-
-    const wasAutoFit = this.framingMode === "auto-fit";
-    this.camera.fitHalfHeight = nextFit;
-    this.camera.setViewport(this.camera.viewportWidth, this.camera.viewportHeight);
-    if (wasAutoFit) {
+    if (wasSolarSystemFit) {
       this.camera.setZoom(this.camera.maxHalfHeight);
       this.camera.setCenter(0, 0);
       this.timelineController?.setTrackBodyKey(null);
@@ -1809,6 +1877,14 @@ export class OrbitalApp {
       this.bodyLabels.set(config.key, label);
     }
 
+    const heliopauseLabel = doc.createElement("span");
+    heliopauseLabel.className = "scene-label";
+    heliopauseLabel.dataset.key = "heliopause";
+    heliopauseLabel.textContent = "Heliopause · approx. 120 AU";
+    heliopauseLabel.setAttribute("aria-hidden", "true");
+    this.labelsOverlay.append(heliopauseLabel);
+    this.bodyLabels.set("heliopause", heliopauseLabel);
+
     // Reflect the current visibility (default hidden) on the overlay container.
     this.#applyLabelsVisible(this.labelsVisible);
   }
@@ -1841,6 +1917,16 @@ export class OrbitalApp {
       this.#applyLabelsVisible(!this.labelsVisible);
     });
     this.#syncLabelsButton();
+
+    this.journeyVisibilityToggle?.addEventListener("click", () => {
+      this.#applyJourneyVisible(!this.journeyVisible);
+    });
+    this.#syncJourneyVisibilityButton();
+
+    this.heliopauseToggle?.addEventListener("click", () => {
+      this.#applyHeliopauseVisible(!this.heliopauseVisible);
+    });
+    this.#syncHeliopauseButton();
 
     // Keyboard shortcuts are document-level so they work without focusing the
     // canvas; ignore them while typing in a form field so the date input etc.
@@ -2077,6 +2163,34 @@ export class OrbitalApp {
     this.labelsToggle.textContent = this.labelsVisible ? "Labels: On" : "Labels: Off";
   }
 
+  #applyJourneyVisible(visible) {
+    this.journeyVisible = Boolean(visible);
+    this.outwardJourneyEntity?.setVisible(this.journeyVisible);
+    this.#syncJourneyVisibilityButton();
+  }
+
+  #syncJourneyVisibilityButton() {
+    if (!this.journeyVisibilityToggle) {
+      return;
+    }
+    this.journeyVisibilityToggle.setAttribute("aria-pressed", String(this.journeyVisible));
+    this.journeyVisibilityToggle.textContent = this.journeyVisible ? "Journey: On" : "Journey: Off";
+  }
+
+  #applyHeliopauseVisible(visible) {
+    this.heliopauseVisible = Boolean(visible);
+    this.heliopauseEntity?.setVisible(this.heliopauseVisible);
+    this.#syncHeliopauseButton();
+  }
+
+  #syncHeliopauseButton() {
+    if (!this.heliopauseToggle) {
+      return;
+    }
+    this.heliopauseToggle.setAttribute("aria-pressed", String(this.heliopauseVisible));
+    this.heliopauseToggle.textContent = this.heliopauseVisible ? "Heliopause: On" : "Heliopause: Off";
+  }
+
   // Sync each label's screen position from the body's live render position using
   // transform-only writes (translate) so the per-frame update stays on the GPU
   // compositor and never triggers layout. Called from the per-frame UI path.
@@ -2094,7 +2208,9 @@ export class OrbitalApp {
     const height = rect.height || 1;
 
     for (const [key, label] of this.bodyLabels) {
-      const pos = positions.get(key);
+      const pos = key === "heliopause"
+        ? { x: HELIOPAUSE_RADIUS_AU, y: 0 }
+        : positions.get(key);
       if (!pos) {
         // Availability-bound bodies (for example Artemis II before launch and
         // after splashdown) are removed from the controller's live position map.
@@ -2125,10 +2241,11 @@ export class OrbitalApp {
       // names don't pile up at the edges.
       const onScreen =
         screen.ndcX >= -1 && screen.ndcX <= 1 && screen.ndcY >= -1 && screen.ndcY <= 1;
-      const visible =
+      const visible = key === "heliopause" || (
         this.bodyMarkers.get(key)?.visible !== false &&
         this.bodyMarkers.get(key)?.available !== false &&
-        config?.labelVisible !== false;
+        config?.labelVisible !== false
+      );
       label.style.display = onScreen && visible ? "" : "none";
       // Fold any per-body label offset (e.g. the Moon, nudged clear of Earth)
       // into the transform so the per-frame write stays transform-only.
@@ -2613,7 +2730,8 @@ export class OrbitalApp {
       { passive: false }
     );
 
-    this.autoFitButton?.addEventListener("click", () => this.#applyFraming("auto-fit"));
+    this.autoFitButton?.addEventListener("click", () => this.#applyFraming("solar-system"));
+    this.journeyFitButton?.addEventListener("click", () => this.#applyFraming("journey"));
     this.innerPlanetsButton?.addEventListener("click", () => this.#applyFraming("inner"));
     this.zoomEarthButton?.addEventListener("click", () => this.#applyFraming("earth"));
     this.originButton?.addEventListener("click", () => this.#applyFraming("origin"));
@@ -2659,18 +2777,23 @@ export class OrbitalApp {
   }
 
   // Apply a framing preset:
-  //   "auto-fit" — frame the whole system, no tracking
+  //   "solar-system" — frame every configured active body/probe, no tracking
+  //   "journey"  — dynamically frame configured bodies plus the outward journey
   //   "inner"    — frame the inner planets out through Mars, no tracking
   //   "earth"    — zoom in and track Earth as it orbits
   //   "origin"   — recenter on the Sun (origin), preserving the current zoom
   #applyFraming(mode) {
-    // A framing preset (including the tween's own settle into "auto-fit", which
+    // A framing preset (including the tween's own Solar System Fit settle, which
     // nulls introTween first) ends the opening flythrough.
     this.introTween?.cancel?.();
     this.introTween = null;
     this.framingMode = mode;
 
-    if (mode === "earth") {
+    if (mode === "journey") {
+      this.timelineController?.setTrackBodyKey(null);
+      this.camera.setCenter(0, 0);
+      this.#updateJourneyFit({ snap: true });
+    } else if (mode === "earth") {
       this.camera.setZoom(EARTH_MOON_HALF_HEIGHT);
       this.timelineController?.setTrackBodyKey(TRACKED_BODY_KEY);
     } else if (mode === "inner") {
@@ -2683,9 +2806,10 @@ export class OrbitalApp {
       this.timelineController?.setTrackBodyKey(null);
       this.camera.setCenter(0, 0);
     } else {
-      this.framingMode = "auto-fit";
+      this.framingMode = "solar-system";
+      this.camera.setFitHalfHeight(this.solarSystemFitHalfHeight);
       // maxHalfHeight is the aspect-aware fully-zoomed-out frame (grows on
-      // portrait so Pluto fits by width); fall back to the fixed auto-fit value.
+      // portrait so every configured active body/probe fits by width).
       this.camera.setZoom(this.camera.maxHalfHeight ?? AUTO_FIT_HALF_HEIGHT);
       this.timelineController?.setTrackBodyKey(null);
       this.camera.setCenter(0, 0);
@@ -2702,7 +2826,8 @@ export class OrbitalApp {
   }
 
   #updateFramingButtons() {
-    this.autoFitButton?.setAttribute("aria-pressed", String(this.framingMode === "auto-fit"));
+    this.autoFitButton?.setAttribute("aria-pressed", String(this.framingMode === "solar-system"));
+    this.journeyFitButton?.setAttribute("aria-pressed", String(this.framingMode === "journey"));
     this.innerPlanetsButton?.setAttribute("aria-pressed", String(this.framingMode === "inner"));
     this.zoomEarthButton?.setAttribute("aria-pressed", String(this.framingMode === "earth"));
     this.originButton?.setAttribute("aria-pressed", String(this.framingMode === "origin"));
@@ -2723,6 +2848,30 @@ export class OrbitalApp {
 
   #zoomBarMaxHalfHeight() {
     return Math.max(ZOOM_BAR_MAX_HALF_HEIGHT, this.camera?.maxHalfHeight ?? ZOOM_BAR_MAX_HALF_HEIGHT);
+  }
+
+  // Journey Fit frames the Sun-centered envelope of the live path. Static body
+  // and probe roster extents belong to Solar System Fit, so a new journey starts
+  // around its birthday Earth origin and expands with DAM.
+  #updateJourneyFit({ snap = false } = {}) {
+    const journey = this.outwardJourneyEntity?.journeyState;
+    if (!journey) {
+      return;
+    }
+
+    const targetFit = journeyExtentHalfHeight({
+      journey,
+      origin: { x: 0, y: 0 },
+      minimumHalfHeight: EARTH_MOON_HALF_HEIGHT
+    });
+    const target = this.camera.setFitHalfHeight(targetFit);
+    if (snap) {
+      this.camera.setZoom(target);
+    } else {
+      const current = this.camera.halfHeight;
+      this.camera.setZoom(current + (target - current) * JOURNEY_FIT_EASING);
+    }
+    this.#syncZoomBar();
   }
 
   #setTimelineEnabled(enabled) {
@@ -2757,6 +2906,26 @@ export class OrbitalApp {
   }
 
   #updateTimelineUi(state) {
+    const damDistanceKm = distanceTraveledKm(state.elapsedDays);
+    if (this.outwardJourneyEntity && this.journeyOrigin) {
+      this.outwardJourneyEntity.setJourneyState(
+        createOutwardJourneyState({
+          originAu: this.journeyOrigin,
+          distanceTraveledKm: damDistanceKm
+        })
+      );
+    }
+
+    // The journey geometry is refreshed from the same timeline state that
+    // drives its renderer. Only Journey Fit follows that dynamic extent; every
+    // other preset and manual zoom keeps its current framing.
+    if (this.framingMode === "journey") {
+      // A paused scrub or the final playback state may be the last timeline
+      // notification, so snap there rather than leaving the frame partway to
+      // its newly expanded extent. Continuous playback keeps the eased growth.
+      this.#updateJourneyFit({ snap: state.playing === false });
+    }
+
     if (this.timelineDate instanceof HTMLOutputElement) {
       this.timelineDate.value = state.timelineDateIso;
       this.timelineDate.textContent = state.timelineDateIso;
@@ -2788,8 +2957,7 @@ export class OrbitalApp {
       this.hudAge.textContent = `AGE ${currentAge(state.elapsedDays)}`;
     }
     if (this.hudDistance) {
-      const km = distanceTraveledKm(state.elapsedDays);
-      this.hudDistance.textContent = `DIST ${km.toLocaleString(undefined, { maximumFractionDigits: 0 })} km`;
+      this.hudDistance.textContent = `DIST ${damDistanceKm.toLocaleString(undefined, { maximumFractionDigits: 0 })} km`;
     }
 
     if (this.timelineStatus) {
