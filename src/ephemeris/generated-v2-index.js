@@ -4,7 +4,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v2",
   "encoder": "binary-f32-gzip",
-  "generatedOn": "2026-10-09T14:20:46.750Z",
+  "generatedOn": "2026-10-09T15:13:14.446Z",
   "compatibility": {
     "manifestSchema": "ephemeris.manifest.v2",
     "requiredFrame": "ECLIPJ2000",
@@ -9564,8 +9564,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           "enabled": true
         }
       },
-      "coverageStartUtc": "2020-07-31T00:00:00Z",
-      "coverageEndUtc": "2026-10-09T00:00:00Z"
+      "coverageStartUtc": "2020-07-31T00:00:00Z"
     },
     "cassini": {
       "key": "cassini",
@@ -9631,8 +9630,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           "enabled": true
         }
       },
-      "coverageStartUtc": "1997-10-16T00:00:00Z",
-      "coverageEndUtc": "2026-10-09T00:00:00Z"
+      "coverageStartUtc": "1997-10-16T00:00:00Z"
     },
     "juno-spacecraft": {
       "key": "juno-spacecraft",
@@ -9830,8 +9828,7 @@ export const EPHEMERIS_V2_INDEX = Object.freeze({
           "enabled": true
         }
       },
-      "coverageStartUtc": "2026-04-03T00:00:00Z",
-      "coverageEndUtc": "2026-10-09T00:00:00Z"
+      "coverageStartUtc": "2026-04-03T00:00:00Z"
     }
   },
   "chunks": [
