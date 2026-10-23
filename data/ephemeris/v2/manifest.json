@@ -3,7 +3,7 @@
   "formatVersion": "1.0.0",
   "chunkSchema": "ephemeris.chunk.v2",
   "encoder": "binary-f32-gzip",
-  "generatedOn": "2026-10-22T12:57:08.438Z",
+  "generatedOn": "2026-10-23T12:36:03.642Z",
   "compatibility": {
     "manifestSchema": "ephemeris.manifest.v2",
     "requiredFrame": "ECLIPJ2000",
@@ -14,7 +14,7 @@
   "source": {
     "provider": "JPL NAIF / JPL Horizons",
     "kernel": "de442s.bsp",
-    "retrievedOn": "2026-10-22",
+    "retrievedOn": "2026-10-23",
     "canonicalDataset": "data/ephemeris/v2/source.json"
   },
   "frame": "ECLIPJ2000",
@@ -29,8 +29,8 @@
   },
   "window": {
     "startUtc": "1766-07-23T00:00:00Z",
-    "endUtc": "2026-10-23T00:00:00Z",
-    "days": 95056
+    "endUtc": "2026-10-24T00:00:00Z",
+    "days": 95057
   },
   "datasets": {
     "primary": {
@@ -9564,7 +9564,7 @@
         }
       },
       "coverageStartUtc": "2020-07-31T00:00:00Z",
-      "coverageEndUtc": "2026-10-22T00:00:00Z"
+      "coverageEndUtc": "2026-10-23T00:00:00Z"
     },
     "cassini": {
       "key": "cassini",
@@ -9631,7 +9631,7 @@
         }
       },
       "coverageStartUtc": "1997-10-16T00:00:00Z",
-      "coverageEndUtc": "2026-10-22T00:00:00Z"
+      "coverageEndUtc": "2026-10-23T00:00:00Z"
     },
     "juno-spacecraft": {
       "key": "juno-spacecraft",
@@ -9830,7 +9830,7 @@
         }
       },
       "coverageStartUtc": "2026-04-03T00:00:00Z",
-      "coverageEndUtc": "2026-10-22T00:00:00Z"
+      "coverageEndUtc": "2026-10-23T00:00:00Z"
     }
   },
   "chunks": [
@@ -9989,14 +9989,14 @@
       "sha256": "8d4945edced99751390635c8a7959d4f0d6fc64375511e2d05c83d5d7a004a5b"
     },
     {
-      "id": "primary-primary-historical-1955-07-24-1986-10-23",
+      "id": "primary-primary-historical-1955-07-24-1986-10-24",
       "stream": "primary",
       "group": "primary",
       "kind": "historical",
       "startUtc": "1955-07-24T00:00:00Z",
-      "endUtc": "1986-10-23T00:00:00Z",
+      "endUtc": "1986-10-24T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 11415,
+      "samplesPerBody": 11416,
       "bodyKeys": [
         "sun",
         "mercury",
@@ -10014,18 +10014,18 @@
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/primary/primary/primary-primary-historical-1955-07-24-1986-10-23.bin.gz",
-      "byteLength": 1247633,
-      "uncompressedByteLength": 1507235,
-      "sha256": "4912c50182bd0e3add96f537ac32097c2f528ebdddd631c2bfc3bd58e98843e5"
+      "url": "../../data/ephemeris/v2/chunks/primary/primary/primary-primary-historical-1955-07-24-1986-10-24.bin.gz",
+      "byteLength": 1247766,
+      "uncompressedByteLength": 1507367,
+      "sha256": "6e093e6d8455a2791a4106cdfa47ee99f9fb11dee5b06c5fad043fdf63039315"
     },
     {
-      "id": "primary-primary-recent-1986-10-23-2026-10-23",
+      "id": "primary-primary-recent-1986-10-24-2026-10-24",
       "stream": "primary",
       "group": "primary",
       "kind": "recent",
-      "startUtc": "1986-10-23T00:00:00Z",
-      "endUtc": "2026-10-23T00:00:00Z",
+      "startUtc": "1986-10-24T00:00:00Z",
+      "endUtc": "2026-10-24T00:00:00Z",
       "stepSeconds": 86400,
       "samplesPerBody": 14611,
       "bodyKeys": [
@@ -10045,10 +10045,10 @@
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/primary/primary/primary-primary-recent-1986-10-23-2026-10-23.bin.gz",
-      "byteLength": 1605069,
+      "url": "../../data/ephemeris/v2/chunks/primary/primary/primary-primary-recent-1986-10-24-2026-10-24.bin.gz",
+      "byteLength": 1605067,
       "uncompressedByteLength": 1929103,
-      "sha256": "20a37d61e3348664c0154485a0a8abbc58cef97709e7b441172129408f55f900"
+      "sha256": "ee0ebfc195f2985870afdc26bc50ab8c1a3ec13592ecea46db0ea59fabed6796"
     },
     {
       "id": "auxiliary-dwarf-planets-historical-1766-07-23-1800-01-02",
@@ -10230,14 +10230,14 @@
       "sha256": "cf991d40bb959c8db099584d0ffdcd75f33c84b16a880ba1a09a959a4fd88636"
     },
     {
-      "id": "auxiliary-dwarf-planets-historical-1981-06-23-2006-10-23",
+      "id": "auxiliary-dwarf-planets-historical-1981-06-23-2006-10-24",
       "stream": "auxiliary",
       "group": "dwarf-planets",
       "kind": "historical",
       "startUtc": "1981-06-23T00:00:00Z",
-      "endUtc": "2006-10-23T00:00:00Z",
+      "endUtc": "2006-10-24T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 9254,
+      "samplesPerBody": 9255,
       "bodyKeys": [
         "triton",
         "larissa",
@@ -10250,18 +10250,18 @@
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1981-06-23-2006-10-23.bin.gz",
-      "byteLength": 586246,
-      "uncompressedByteLength": 666718,
-      "sha256": "4d83083f6c0041af45a8bce98fad6b670de7d3c9e9df497a7ad000afb1218abd"
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-historical-1981-06-23-2006-10-24.bin.gz",
+      "byteLength": 586306,
+      "uncompressedByteLength": 666790,
+      "sha256": "0c05172608de45f5584884ab4da0881dc298e39ef0b2bd0bf0ab4d207c625597"
     },
     {
-      "id": "auxiliary-dwarf-planets-recent-2006-10-23-2026-10-23",
+      "id": "auxiliary-dwarf-planets-recent-2006-10-24-2026-10-24",
       "stream": "auxiliary",
       "group": "dwarf-planets",
       "kind": "recent",
-      "startUtc": "2006-10-23T00:00:00Z",
-      "endUtc": "2026-10-23T00:00:00Z",
+      "startUtc": "2006-10-24T00:00:00Z",
+      "endUtc": "2026-10-24T00:00:00Z",
       "stepSeconds": 86400,
       "samplesPerBody": 7306,
       "bodyKeys": [
@@ -10292,18 +10292,18 @@
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-recent-2006-10-23-2026-10-23.bin.gz",
-      "byteLength": 1711291,
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/dwarf-planets/auxiliary-dwarf-planets-recent-2006-10-24-2026-10-24.bin.gz",
+      "byteLength": 1711279,
       "uncompressedByteLength": 1929353,
-      "sha256": "90c62a2efbb81f5b351c31ab65c29f8e0a8f5ce8c62edce0f75bc8bbbb486dd2"
+      "sha256": "b95e54301a08eeef5eefd31df6ed8364855e45c8ab74d7a006465ea188bce8ea"
     },
     {
-      "id": "auxiliary-belt-recent-2006-10-23-2026-10-23",
+      "id": "auxiliary-belt-recent-2006-10-24-2026-10-24",
       "stream": "auxiliary",
       "group": "belt",
       "kind": "recent",
-      "startUtc": "2006-10-23T00:00:00Z",
-      "endUtc": "2026-10-23T00:00:00Z",
+      "startUtc": "2006-10-24T00:00:00Z",
+      "endUtc": "2026-10-24T00:00:00Z",
       "stepSeconds": 86400,
       "samplesPerBody": 7306,
       "bodyKeys": [
@@ -10411,10 +10411,10 @@
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-recent-2006-10-23-2026-10-23.bin.gz",
-      "byteLength": 8090035,
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/belt/auxiliary-belt-recent-2006-10-24-2026-10-24.bin.gz",
+      "byteLength": 8090031,
       "uncompressedByteLength": 8680840,
-      "sha256": "1360c71e3a80c8d4cd8eb1dac7bbe94b4044da5a60944de6bb01ad0c074636f9"
+      "sha256": "0f075ab766b5b8403444a4871d482d1c8ba41448bca4aa101c932a9069d5b543"
     },
     {
       "id": "auxiliary-near-earth-historical-1766-07-23-1900-01-02",
@@ -10438,14 +10438,14 @@
       "sha256": "8cf353b4c11cb3b167603718a95c7104abb856a2afc298d34a44322f7a781fd3"
     },
     {
-      "id": "auxiliary-near-earth-historical-1900-01-02-2006-10-23",
+      "id": "auxiliary-near-earth-historical-1900-01-02-2006-10-24",
       "stream": "auxiliary",
       "group": "near-earth",
       "kind": "historical",
       "startUtc": "1900-01-02T00:00:00Z",
-      "endUtc": "2006-10-23T00:00:00Z",
+      "endUtc": "2006-10-24T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 39011,
+      "samplesPerBody": 39012,
       "bodyKeys": [
         "bennu"
       ],
@@ -10453,18 +10453,18 @@
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/near-earth/auxiliary-near-earth-historical-1900-01-02-2006-10-23.bin.gz",
-      "byteLength": 435280,
-      "uncompressedByteLength": 468513,
-      "sha256": "4c4b28ff93d0ccf64d56ca9aae65769ba1040f1c13ccab70e0f4738bd22cb4a7"
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/near-earth/auxiliary-near-earth-historical-1900-01-02-2006-10-24.bin.gz",
+      "byteLength": 435292,
+      "uncompressedByteLength": 468525,
+      "sha256": "ea31efe4cd15b87cf39b9395c671b2ed1d8761a54c370acd01bfe63eae39c66e"
     },
     {
-      "id": "auxiliary-near-earth-recent-2006-10-23-2026-10-23",
+      "id": "auxiliary-near-earth-recent-2006-10-24-2026-10-24",
       "stream": "auxiliary",
       "group": "near-earth",
       "kind": "recent",
-      "startUtc": "2006-10-23T00:00:00Z",
-      "endUtc": "2026-10-23T00:00:00Z",
+      "startUtc": "2006-10-24T00:00:00Z",
+      "endUtc": "2026-10-24T00:00:00Z",
       "stepSeconds": 86400,
       "samplesPerBody": 7306,
       "bodyKeys": [
@@ -10477,18 +10477,18 @@
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/near-earth/auxiliary-near-earth-recent-2006-10-23-2026-10-23.bin.gz",
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/near-earth/auxiliary-near-earth-recent-2006-10-24-2026-10-24.bin.gz",
       "byteLength": 326045,
       "uncompressedByteLength": 351089,
-      "sha256": "b7c545f405de843303186d25d423db2f0c46c60e917da58e45d8790c42e45648"
+      "sha256": "084a6358a711ccf3f63886e6668afb734503bd8b892ebac1ad3d424b56bca526"
     },
     {
-      "id": "auxiliary-comets-recent-2006-10-23-2026-10-23",
+      "id": "auxiliary-comets-recent-2006-10-24-2026-10-24",
       "stream": "auxiliary",
       "group": "comets",
       "kind": "recent",
-      "startUtc": "2006-10-23T00:00:00Z",
-      "endUtc": "2026-10-23T00:00:00Z",
+      "startUtc": "2006-10-24T00:00:00Z",
+      "endUtc": "2026-10-24T00:00:00Z",
       "stepSeconds": 86400,
       "samplesPerBody": 7306,
       "bodyKeys": [
@@ -10503,10 +10503,10 @@
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/comets/auxiliary-comets-recent-2006-10-23-2026-10-23.bin.gz",
-      "byteLength": 476724,
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/comets/auxiliary-comets-recent-2006-10-24-2026-10-24.bin.gz",
+      "byteLength": 476721,
       "uncompressedByteLength": 526447,
-      "sha256": "0eea1eefe0e64098c1bd3f895b5cf81ab686341e6ead3d12cce6c67048048730"
+      "sha256": "d5f5a83e5554a67d16b5c21bde99776115ac92af82b2edf6a82f56b0633d715e"
     },
     {
       "id": "auxiliary-spacecraft-historical-1911-09-30-1972-03-04",
@@ -10650,14 +10650,14 @@
       "sha256": "cc43d73ff2b55762bc4ab2c6a47a95e6f8d88d6dfbe0f1ffb50d8c90b1ae91bc"
     },
     {
-      "id": "auxiliary-spacecraft-historical-2006-01-20-2006-10-23",
+      "id": "auxiliary-spacecraft-historical-2006-01-20-2006-10-24",
       "stream": "auxiliary",
       "group": "spacecraft",
       "kind": "historical",
       "startUtc": "2006-01-20T00:00:00Z",
-      "endUtc": "2006-10-23T00:00:00Z",
+      "endUtc": "2006-10-24T00:00:00Z",
       "stepSeconds": 86400,
-      "samplesPerBody": 277,
+      "samplesPerBody": 278,
       "bodyKeys": [
         "voyager-1",
         "voyager-2",
@@ -10670,18 +10670,18 @@
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-historical-2006-01-20-2006-10-23.bin.gz",
-      "byteLength": 18705,
-      "uncompressedByteLength": 20390,
-      "sha256": "2fd6a749abbeb528568d415c9b771cb992cf8292a30f6ff895d8a4c570152eb5"
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-historical-2006-01-20-2006-10-24.bin.gz",
+      "byteLength": 18778,
+      "uncompressedByteLength": 20462,
+      "sha256": "de30a93772099f2bfdb59ce8ee58755553043425a5613a6b0d17cd5f9c8b0222"
     },
     {
-      "id": "auxiliary-spacecraft-recent-2006-10-23-2026-10-23",
+      "id": "auxiliary-spacecraft-recent-2006-10-24-2026-10-24",
       "stream": "auxiliary",
       "group": "spacecraft",
       "kind": "recent",
-      "startUtc": "2006-10-23T00:00:00Z",
-      "endUtc": "2026-10-23T00:00:00Z",
+      "startUtc": "2006-10-24T00:00:00Z",
+      "endUtc": "2026-10-24T00:00:00Z",
       "stepSeconds": 86400,
       "samplesPerBody": 7306,
       "bodyKeys": [
@@ -10701,10 +10701,10 @@
       "contentType": "application/octet-stream",
       "compression": "gzip",
       "vectorEncoding": "float32-le",
-      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-recent-2006-10-23-2026-10-23.bin.gz",
-      "byteLength": 650838,
+      "url": "../../data/ephemeris/v2/chunks/auxiliary/spacecraft/auxiliary-spacecraft-recent-2006-10-24-2026-10-24.bin.gz",
+      "byteLength": 650852,
       "uncompressedByteLength": 964900,
-      "sha256": "10d4403c0012d0289202baeb41a53f653b5a55cdac4382fc73796869266df176"
+      "sha256": "b58f40d687cbc7b23581208ec1831b5babf19e180c4156f64dbdc6a3e3ac15ea"
     }
   ]
 }
